@@ -1,0 +1,32 @@
+services:
+  db:
+    image: postgis/postgis:16-3.4
+    restart: always
+    environment:
+      POSTGRES_USER: plagaia
+      POSTGRES_PASSWORD: plagaia
+      POSTGRES_DB: plagaia_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    build:
+      context: ./backend
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000
+    volumes:
+      - ./backend:/app
+    environment:
+      - DATABASE_URL=postgresql+psycopg://plagaia:plagaia@db:5432/plagaia_db
+      - PYTHONUNBUFFERED=1
+      - ADMIN_EMAIL=admin@example.com
+      - ADMIN_PASSWORD=admin1234
+      - ADMIN_NAME=Admin
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db
+
+volumes:
+  postgres_data:

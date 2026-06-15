@@ -1,0 +1,8 @@
+# Local SQLite database
+app.db
+
+# Python bytecode
+__pycache__/
+*.py[cod]
+
+# Alembic versions are tracked, migration scripts should be committed

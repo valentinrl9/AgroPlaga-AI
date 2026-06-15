@@ -1,0 +1,5 @@
+tensorflow>=2.15,<2.20
+tensorflow-datasets>=4.9.0
+tensorflow-metadata>=1.17,<1.18
+importlib_resources>=6.0
+numpy>=1.24.0

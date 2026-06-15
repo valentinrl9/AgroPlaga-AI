@@ -1,0 +1,29 @@
+name: agro_plaga_ai
+description: Aplicación móvil AgroPlaga AI
+publish_to: "none"
+version: 0.1.0+1
+
+environment:
+  sdk: ">=2.18.0 <3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  cupertino_icons: ^1.0.2
+  http: 1.6.0
+  flutter_dotenv: ^6.0.1
+  flutter_map: ^8.3.0
+  shared_preferences: ^2.0.0
+  image_picker: ^1.1.2
+  image: ^4.5.4
+  tflite_flutter: ^0.12.1
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/ml/labels.txt
+    - assets/ml/plaga_model.tflite

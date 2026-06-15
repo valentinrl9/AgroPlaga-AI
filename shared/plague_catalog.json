@@ -1,0 +1,139 @@
+{
+  "version": "v1.5",
+  "region": "Poniente Almeriense (invernaderos)",
+  "labels": [
+    "sana",
+    "tuta absoluta",
+    "trips",
+    "mosca blanca",
+    "pulgón",
+    "arañuela roja",
+    "minador",
+    "piojo harinoso",
+    "oruga",
+    "mildiu",
+    "oídio",
+    "botritis",
+    "mancha bacteriana",
+    "fusarium",
+    "clorosis viral"
+  ],
+  "plagues": [
+    {
+      "name": "sana",
+      "scientific": "Sin patología detectable",
+      "type": "sana",
+      "priority": "vigilancia",
+      "crops": ["tomate", "pimiento", "pepino", "calabacín", "berenjena", "lechuga"]
+    },
+    {
+      "name": "tuta absoluta",
+      "scientific": "Phthorimaea operculella",
+      "eppo": "LYCTDE",
+      "type": "insecto",
+      "priority": "critica",
+      "crops": ["tomate", "pimiento", "berenjena"]
+    },
+    {
+      "name": "trips",
+      "scientific": "Frankliniella occidentalis",
+      "eppo": "FRIFOT",
+      "type": "insecto",
+      "priority": "critica",
+      "crops": ["tomate", "pimiento", "pepino", "calabacín"]
+    },
+    {
+      "name": "mosca blanca",
+      "scientific": "Bemisia tabaci",
+      "eppo": "BEMITA",
+      "type": "insecto",
+      "priority": "critica",
+      "crops": ["tomate", "pimiento", "pepino", "calabacín", "berenjena"]
+    },
+    {
+      "name": "pulgón",
+      "scientific": "Aphis gossypii",
+      "eppo": "APHIGO",
+      "type": "insecto",
+      "priority": "alta",
+      "crops": ["tomate", "pimiento", "pepino", "berenjena", "lechuga"]
+    },
+    {
+      "name": "arañuela roja",
+      "scientific": "Tetranychus urticae",
+      "eppo": "TETRUR",
+      "type": "acaro",
+      "priority": "critica",
+      "crops": ["tomate", "pimiento", "pepino", "calabacín", "berenjena"]
+    },
+    {
+      "name": "minador",
+      "scientific": "Liriomyza spp.",
+      "eppo": "LIRIBP",
+      "type": "insecto",
+      "priority": "alta",
+      "crops": ["tomate", "pimiento", "pepino", "calabacín"]
+    },
+    {
+      "name": "piojo harinoso",
+      "scientific": "Planococcus citri",
+      "eppo": "PLANCI",
+      "type": "insecto",
+      "priority": "alta",
+      "crops": ["tomate", "pimiento", "pepino", "berenjena"]
+    },
+    {
+      "name": "oruga",
+      "scientific": "Spodoptera exigua",
+      "eppo": "SPODEX",
+      "type": "insecto",
+      "priority": "alta",
+      "crops": ["tomate", "pimiento", "pepino", "calabacín"]
+    },
+    {
+      "name": "mildiu",
+      "scientific": "Phytophthora / Peronospora spp.",
+      "type": "hongo",
+      "priority": "critica",
+      "crops": ["tomate", "pimiento", "pepino", "calabacín", "lechuga"]
+    },
+    {
+      "name": "oídio",
+      "scientific": "Oidium / Golovinomyces spp.",
+      "type": "hongo",
+      "priority": "alta",
+      "crops": ["tomate", "pimiento", "pepino", "calabacín", "berenjena"]
+    },
+    {
+      "name": "botritis",
+      "scientific": "Botrytis cinerea",
+      "eppo": "BOTRCI",
+      "type": "hongo",
+      "priority": "critica",
+      "crops": ["tomate", "pimiento", "pepino", "calabacín", "lechuga"]
+    },
+    {
+      "name": "mancha bacteriana",
+      "scientific": "Pseudomonas syringae / Xanthomonas spp.",
+      "type": "bacteria",
+      "priority": "alta",
+      "crops": ["tomate", "pimiento", "pepino"]
+    },
+    {
+      "name": "fusarium",
+      "scientific": "Fusarium oxysporum",
+      "eppo": "FUSAOX",
+      "type": "hongo",
+      "priority": "alta",
+      "crops": ["tomate", "pimiento", "pepino", "calabacín"]
+    },
+    {
+      "name": "clorosis viral",
+      "scientific": "Tomato yellow leaf curl virus (TYLCV)",
+      "eppo": "TYLCSV",
+      "type": "virus",
+      "priority": "critica",
+      "crops": ["tomate", "pimiento"]
+    }
+  ]
+}
