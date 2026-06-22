@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.v1.routes import auth, users, scans, stats, zones, outbreak_events, alerts, heatmap, community, feedback, farms, tech_dashboard, analytics, plagues
+from app.api.v1.routes import auth, users, scans, stats, zones, outbreak_events, alerts, heatmap, community, feedback, farms, tech_dashboard, analytics, plagues, admin
 from app.core.config import settings
 from app.db.init_db import init_db
 from app.services.scheduler import start_scheduler, stop_scheduler
@@ -62,3 +62,4 @@ app.include_router(farms.router, prefix="/api/v1/farms", tags=["farms"])
 app.include_router(tech_dashboard.router, prefix="/api/v1/tech", tags=["tech-dashboard"])
 app.include_router(analytics.router, prefix="/api/v1/analytics", tags=["analytics"])
 app.include_router(plagues.router, prefix="/api/v1/plagues", tags=["plagues"])
+app.include_router(admin.router, prefix="/api/v1/admin", tags=["admin"])

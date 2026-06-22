@@ -3,10 +3,12 @@ from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db
+from app.core.config import settings
 from app.core.rate_limit import check_rate_limit
 from app.core.security import create_token_pair, get_password_hash, verify_password, decode_refresh_token
 from app.models.user import User
 from app.schemas.auth import RefreshRequest, Token, UserCreate, UserLogin
+from app.services.invite_service import consume_invite
 
 router = APIRouter()
 
@@ -27,13 +29,31 @@ def register(user_data: UserCreate, request: Request, db: Session = Depends(get_
     existing = db.query(User).filter(User.email == user_data.email).first()
     if existing:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Email already registered")
+
+    role = "farmer"
+    if settings.registration_mode == "invite_only":
+        if not user_data.invite_code or not user_data.invite_code.strip():
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Se requiere un código de invitación para registrarse.",
+            )
+        try:
+            invite = consume_invite(db, user_data.invite_code)
+            role = invite.role
+        except ValueError as exc:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+
     user = User(
         name=user_data.name,
         email=user_data.email,
         hashed_password=get_password_hash(user_data.password),
-        role="farmer",
+        role=role,
     )
     db.add(user)
+    db.flush()
+    if settings.registration_mode == "invite_only" and user_data.invite_code:
+        invite.redeemed_by_user_id = user.id
+        db.add(invite)
     db.commit()
     db.refresh(user)
     return _issue_tokens(user)

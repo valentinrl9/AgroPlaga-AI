@@ -1,0 +1,5 @@
+# Dominio público del piloto (variable API_DOMAIN en deploy/pilot.env)
+{$API_DOMAIN} {
+	encode gzip
+	reverse_proxy backend:8000
+}

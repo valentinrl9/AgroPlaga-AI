@@ -19,11 +19,21 @@ Plataforma de diagnóstico fitosanitario con IA local y red colaborativa comunit
 
 ## Backend (Docker recomendado)
 
+**Desarrollo local (LAN):**
+
 ```bash
 docker compose up --build
 ```
 
 La API queda en `http://localhost:8000` y las migraciones + seed SIGPAC se ejecutan al arrancar.
+
+**Piloto 24/7 (VPS + HTTPS):** ver [docs/PILOTO_DESPLIEGUE.md](docs/PILOTO_DESPLIEGUE.md).
+
+```bash
+cp deploy/pilot.env.example deploy/pilot.env
+# editar deploy/pilot.env
+./deploy/setup-pilot.sh
+```
 
 Sin Docker:
 

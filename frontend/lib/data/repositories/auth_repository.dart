@@ -37,14 +37,23 @@ class AuthRepository {
     return true;
   }
 
-  Future<bool> register(String name, String email, String password) async {
+  Future<bool> register(String name, String email, String password, {String? inviteCode}) async {
     if (name.isEmpty || email.isEmpty || password.isEmpty) {
       return false;
     }
 
+    final body = <String, dynamic>{
+      "name": name,
+      "email": email,
+      "password": password,
+    };
+    if (inviteCode != null && inviteCode.trim().isNotEmpty) {
+      body["invite_code"] = inviteCode.trim();
+    }
+
     final response = await _client.post(
       "/api/v1/auth/register",
-      {"name": name, "email": email, "password": password},
+      body,
     );
 
     final token = response["access_token"] as String?;

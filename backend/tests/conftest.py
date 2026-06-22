@@ -8,6 +8,9 @@ os.environ.setdefault(
     "DATABASE_URL",
     "postgresql+psycopg://plagaia:plagaia@localhost:5432/plagaia_db",
 )
+os.environ.setdefault("REGISTRATION_MODE", "open")
+os.environ.setdefault("ADMIN_EMAIL", "admin@example.com")
+os.environ.setdefault("ADMIN_PASSWORD", "admin1234")
 
 
 @pytest.fixture(scope="session", autouse=True)

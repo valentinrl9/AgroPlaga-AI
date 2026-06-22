@@ -24,3 +24,4 @@ class UserCreate(BaseModel):
     name: str
     email: str
     password: str
+    invite_code: str | None = None

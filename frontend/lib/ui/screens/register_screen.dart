@@ -16,6 +16,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
+  final _inviteCodeController = TextEditingController();
   final _authRepository = AuthRepository();
   bool _isLoading = false;
   String? _errorMessage;
@@ -25,10 +26,11 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final email = _emailController.text.trim();
     final password = _passwordController.text.trim();
     final confirmPassword = _confirmPasswordController.text.trim();
+    final inviteCode = _inviteCodeController.text.trim();
 
     if (name.isEmpty || email.isEmpty || password.isEmpty) {
       setState(() {
-        _errorMessage = "Todos los campos son requeridos.";
+        _errorMessage = "Nombre, email y contraseña son obligatorios.";
       });
       return;
     }
@@ -53,7 +55,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
     });
 
     try {
-      final success = await _authRepository.register(name, email, password);
+      final success = await _authRepository.register(
+        name,
+        email,
+        password,
+        inviteCode: inviteCode,
+      );
 
       if (success) {
         if (!mounted) return;
@@ -92,7 +99,21 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 "Crear cuenta AgroPlaga AI",
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
+              const Text(
+                "Piloto cerrado: necesitas un código personal del responsable.",
+                style: TextStyle(fontSize: 14, color: Color(0xFF757575)),
+              ),
               const SizedBox(height: 24),
+              TextField(
+                controller: _inviteCodeController,
+                textCapitalization: TextCapitalization.characters,
+                decoration: const InputDecoration(
+                  labelText: "Código de invitación",
+                  hintText: "PLG-PILOT-F01",
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 16),
               TextField(
                 controller: _nameController,
                 decoration: const InputDecoration(labelText: "Nombre completo"),

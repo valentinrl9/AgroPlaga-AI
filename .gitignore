@@ -42,3 +42,11 @@ ml/extra_data/**/*.png
 # Docs temporales de extracción ODT
 docs/_odt_extract/
 docs/_guia_odt_text.txt
+
+# Piloto VPS (secretos)
+deploy/pilot.env
+
+# APK sueltas en raíz del repo
+/app-release.apk
+*.apk
+!frontend/build/**/*.apk
