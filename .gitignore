@@ -13,7 +13,6 @@ venv/
 
 # Node (panel web)
 node_modules/
-web-panel/dist/
 
 # Flutter
 frontend/.dart_tool/

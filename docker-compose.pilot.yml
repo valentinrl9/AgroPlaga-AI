@@ -31,6 +31,9 @@ services:
       ADMIN_NAME: ${ADMIN_NAME:-Admin}
       REGISTRATION_MODE: ${REGISTRATION_MODE:-invite_only}
       PILOT_SEED_INVITES: ${PILOT_SEED_INVITES:-true}
+      MASTER_EMAIL: ${MASTER_EMAIL:-}
+      MASTER_PASSWORD: ${MASTER_PASSWORD:-}
+      MASTER_NAME: ${MASTER_NAME:-}
       CORS_ORIGINS: ${CORS_ORIGINS:-}
       CORS_ORIGIN_REGEX: ${CORS_ORIGIN_REGEX:-}
       PYTHONUNBUFFERED: "1"
@@ -48,6 +51,7 @@ services:
       API_DOMAIN: ${API_DOMAIN}
     volumes:
       - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - ./web-panel/dist:/srv/panel:ro
       - caddy_data:/data
       - caddy_config:/config
     depends_on:

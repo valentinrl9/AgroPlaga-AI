@@ -25,12 +25,19 @@ if [[ "${POSTGRES_PASSWORD:-}" == "cambiar-por-secreto-largo" ]] || [[ "${SECRET
   exit 1
 fi
 
+if [[ ! -d web-panel/dist ]] || [[ ! -f web-panel/dist/index.html ]]; then
+  echo "Compilando panel web B2B..."
+  bash deploy/build-panel.sh
+fi
+
 echo "Desplegando piloto en https://${API_DOMAIN} ..."
 docker compose -f docker-compose.pilot.yml --env-file "$ENV_FILE" up -d --build
 
 echo ""
 echo "Listo. Comprueba:"
 echo "  curl -sI https://${API_DOMAIN}/docs | head -n 1"
+echo "  curl -sI https://${API_DOMAIN}/panel/ | head -n 1"
+echo "  Panel B2B: https://${API_DOMAIN}/panel/"
 echo ""
 echo "APK (en tu PC con Flutter):"
 echo "  cd frontend && flutter build apk --release --dart-define=API_BASE_URL=https://${API_DOMAIN}"

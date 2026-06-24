@@ -74,6 +74,40 @@ Desde el móvil (datos, no Wi‑Fi de casa): abre `https://api.tudominio.com/doc
 
 ---
 
+## 2b. Panel web B2B (cooperativas / técnicos)
+
+Tras el despliegue, el panel queda en:
+
+**`https://TU_DOMINIO/panel/`**
+
+(ej. `https://agroplaga-ai.farm/panel/`)
+
+Login con cuenta **rol `tech` o `admin`** (mismo email/contraseña que la app).
+
+### Usuario maestro (entrevistas)
+
+Añade en `deploy/pilot.env` (no subas este archivo a GitHub):
+
+```env
+MASTER_EMAIL=valentinruizleon@gmail.com
+MASTER_PASSWORD=12345678
+MASTER_NAME=Valentín Ruiz León
+```
+
+Reinicia el backend para crear/actualizar la cuenta:
+
+```bash
+docker compose -f docker-compose.pilot.yml --env-file deploy/pilot.env -p agroplaga up -d --build backend
+```
+
+Comprueba el panel:
+
+```bash
+curl -sI https://agroplaga-ai.farm/panel/ | head -n 1
+```
+
+---
+
 ## 3. Compilar APK del piloto (en tu PC)
 
 ```powershell

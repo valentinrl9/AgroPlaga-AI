@@ -81,9 +81,40 @@ def seed_admin_user() -> None:
         db.close()
 
 
+def seed_master_user() -> None:
+    """Cuenta demo/maestro para entrevistas B2B (upsert por email)."""
+    email = os.getenv("MASTER_EMAIL", "").strip().lower()
+    password = os.getenv("MASTER_PASSWORD", "")
+    name = os.getenv("MASTER_NAME", "Master Demo")
+
+    if not email or not password:
+        return
+
+    db = SessionLocal()
+    try:
+        existing = db.query(User).filter(User.email == email).first()
+        if existing:
+            existing.name = name
+            existing.role = "admin"
+            existing.hashed_password = get_password_hash(password)
+        else:
+            db.add(
+                User(
+                    name=name,
+                    email=email,
+                    hashed_password=get_password_hash(password),
+                    role="admin",
+                )
+            )
+        db.commit()
+    finally:
+        db.close()
+
+
 def init_db() -> None:
     run_migrations()
     seed_sigpac_zones()
     seed_admin_user()
+    seed_master_user()
     if os.getenv("PILOT_SEED_INVITES", "").strip().lower() in {"1", "true", "yes"}:
         seed_pilot_invites()
