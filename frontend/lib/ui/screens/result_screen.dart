@@ -44,13 +44,13 @@ class _ResultScreenState extends State<ResultScreen> {
     if (mounted) setState(() => _alreadyContributed = contributed);
   }
 
-  Future<void> _sendFeedback({required bool isCorrect, String? correctedPlague}) async {
+  Future<void> _sendUsefulnessFeedback({required bool isHelpful}) async {
     setState(() => _sending = true);
     try {
       await _feedbackRepo.submit(
         scanId: widget.scan.id,
-        isCorrect: isCorrect,
-        correctedPlague: correctedPlague,
+        isCorrect: isHelpful,
+        comment: isHelpful ? "util_orientacion" : "no_confianza_utilidad",
       );
       if (mounted) setState(() => _feedbackSent = true);
     } catch (e) {
@@ -59,30 +59,6 @@ class _ResultScreenState extends State<ResultScreen> {
       }
     } finally {
       if (mounted) setState(() => _sending = false);
-    }
-  }
-
-  Future<void> _showCorrectionDialog() async {
-    final controller = TextEditingController();
-    final plague = await showDialog<String>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text("Plaga correcta"),
-        content: TextField(
-          controller: controller,
-          decoration: const InputDecoration(hintText: "Ej: mildiu, trips..."),
-        ),
-        actions: [
-          TextButton(onPressed: () => Navigator.pop(context), child: const Text("Cancelar")),
-          TextButton(
-            onPressed: () => Navigator.pop(context, controller.text.trim()),
-            child: const Text("Enviar"),
-          ),
-        ],
-      ),
-    );
-    if (plague != null && plague.isNotEmpty) {
-      await _sendFeedback(isCorrect: false, correctedPlague: plague);
     }
   }
 
@@ -98,30 +74,46 @@ class _ResultScreenState extends State<ResultScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const Text(
-              "Posible plaga detectada",
+              "Orientación automática",
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 24),
+            const SizedBox(height: 6),
+            const Text(
+              "No sustituye al técnico. Si dudas, consulta con tu asesor.",
+              style: TextStyle(fontSize: 13, color: Color(0xFF616161)),
+            ),
+            const SizedBox(height: 20),
             CardScan.fromScan(scan),
             const SizedBox(height: 16),
-            const Text("¿El diagnóstico fue correcto?", style: TextStyle(fontWeight: FontWeight.w600)),
+            const Text(
+              "¿Te resultó útil este diagnóstico?",
+              style: TextStyle(fontWeight: FontWeight.w600),
+            ),
+            const SizedBox(height: 4),
+            const Text(
+              "No hace falta que sepas el nombre exacto de la plaga.",
+              style: TextStyle(fontSize: 12, color: Color(0xFF757575)),
+            ),
             const SizedBox(height: 8),
             if (_feedbackSent)
-              const Text("Gracias, tu feedback ayuda a mejorar la IA.", style: TextStyle(color: Color(0xFF2E7D32)))
+              const Text(
+                "Gracias. Tu opinión nos ayuda a mejorar la app.",
+                style: TextStyle(color: Color(0xFF2E7D32)),
+              )
             else
               Row(
                 children: [
                   Expanded(
                     child: OutlinedButton(
-                      onPressed: _sending ? null : () => _sendFeedback(isCorrect: true),
-                      child: const Text("Sí, correcto"),
+                      onPressed: _sending ? null : () => _sendUsefulnessFeedback(isHelpful: true),
+                      child: const Text("Sí, me orienta"),
                     ),
                   ),
                   const SizedBox(width: 8),
                   Expanded(
                     child: OutlinedButton(
-                      onPressed: _sending ? null : _showCorrectionDialog,
-                      child: const Text("No, corregir"),
+                      onPressed: _sending ? null : () => _sendUsefulnessFeedback(isHelpful: false),
+                      child: const Text("No, no me fío"),
                     ),
                   ),
                 ],

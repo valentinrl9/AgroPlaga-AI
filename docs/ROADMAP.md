@@ -2,7 +2,7 @@
 
 **Autor:** Valentín Ruiz León  
 **Actualizado:** 15 jun 2026  
-**Estado:** ✅ **v1 MVP completado** — validado en dispositivo Android + backend Docker (LAN)
+**Estado:** ✅ **v1 MVP completado** — piloto Lean en campo (validaciones pendientes)
 
 ---
 
@@ -11,7 +11,8 @@
 | Versión | Objetivo | Incluye |
 |---------|----------|---------|
 | **v1 (MVP)** | Escanear y colaborar perfectos | PlagaScan, contribución al mapa, heatmap, alertas reactivas, gamificación, panel B2B, analítica personal |
-| **v2** | Previsión y refinamiento avanzado | Predicción climática, modelos ARIMA/Prophet, capa de riesgo en mapa, KDE/Redis, FCM, PDF, hardening producción |
+| **v1.6** | Experiencia móvil perito/técnico | Home “Centro de mando”, validación pro, mapa con capas, informes, modo cooperativa |
+| **v2** | Previsión y refinamiento avanzado | Predicción climática, modelos ARIMA/Prophet, capa de riesgo en mapa, KDE/Redis, FCM, hardening producción |
 
 **Decisión (jun 2026):** la predicción queda **fuera del MVP**. Primero cerrar v1 redondo; estudiar previsión cuando haya datos y uso real.
 
@@ -102,7 +103,21 @@ AgroPlaga AI combina **diagnóstico fitosanitario offline** (PlagaScan + TFLite)
 - [x] API `GET /api/v1/plagues` + recomendaciones para las 15 clases
 - [ ] Reentrenamiento con `ml/extra_data/` (insectos de invernadero) — **pausado post-MVP**
 
-**Entregable:** diagnóstico offline en tiempo real. ✅ Validado en Android release.
+#### v1.5 — Feedback IA y roles (decisión post-piloto, jun 2026)
+> **Decisión de producto:** el agricultor **no corrige** la plaga detectada (no es experto; genera desconfianza si la IA falla a menudo).  
+> El agricultor solo indica **confianza / utilidad** del resultado («¿te ha sido útil?» / «¿te fías lo suficiente para actuar?»).  
+> La **validación y corrección** de diagnósticos para mapa y reentrenamiento corresponde al **técnico/perito** (app + panel web).
+
+- [x] **Quitar** botón «No, corregir plaga» del flujo agricultor (`result_screen.dart`).
+- [x] **Sustituir** por pregunta de confianza/utilidad (sin pedir nombre de plaga); comentario en API feedback (`util_orientacion` / `no_confianza_utilidad`).
+- [ ] **Mensaje honesto en UI:** la IA es orientativa; el técnico valida lo dudoso; mejoras del modelo en versiones futuras.
+- [ ] **Validación técnica de escaneos** (v1.6): perito corrige plaga/severidad; auditado (`validated_by`, `corrected_plague`).
+- [ ] **Pipeline reentrenamiento:** exportar solo pares imagen+etiqueta **validados por técnico** → `ml/extra_data/` → `train_plagascan.py`.
+- [ ] Deprecar o restringir `corrected_plague` en feedback de rol `farmer` (mantener API para migración).
+
+**Entregable v1.5:** circuito de mejora IA **credibile** (experto valida → datos → nuevo TFLite), sin cargar al agricultor.
+
+**Entregable MVP:** diagnóstico offline en tiempo real. ✅ Validado en Android release.
 
 ---
 
@@ -185,6 +200,41 @@ AgroPlaga AI combina **diagnóstico fitosanitario offline** (PlagaScan + TFLite)
 
 ---
 
+### Fase 11 — Experiencia móvil perito / técnico ⏳ PENDIENTE (post-piloto)
+> **Cuándo:** tras cerrar las validaciones del piloto Lean (`docs/PILOTO_EXPERIMENTO.md`).  
+> **Problema:** hoy agricultor y perito comparten casi la misma app; el rol `tech` solo añade “Validar eventos”. El panel B2B web ya existe; falta **diferenciar la app móvil** para que el perito sienta una herramienta profesional propia.  
+> **Principio:** misma app, **home y flujos distintos por rol**; reutilizar API existente (`/tech/dashboard`, heatmap, outbreak-events, farms, alerts).
+
+#### Bloque A — Identidad de rol (base, semana 1)
+- [ ] **Home “Centro de mando”** para `tech` / `admin`: KPIs grandes (pendientes de validar, % validados, zonas activas, alertas abiertas) consumiendo `GET /api/v1/tech/dashboard`.
+- [ ] Navegación inferior o menú distinto al del agricultor (priorizar validación, mapa técnico, informes).
+- [ ] Ocultar o relegar flujos de consumo (PlagaScan como acción secundaria, no hero del home técnico).
+
+#### Bloque B — Validación profesional (semana 1–2)
+- [ ] **Cola de validación fullscreen** (“swipe técnico”): un evento a pantalla completa con foto del scan, plaga, confianza del modelo, mapa mini y acciones **Confirmar / Corregir / Descartar**.
+- [ ] **Corregir diagnóstico** al validar: campos `corrected_plague`, `corrected_severity`, `tech_notes` + auditoría (`validated_by`, `validated_at`).
+- [ ] **Segunda opinión del modelo**: mostrar predicción IA + top alternativas con %; el perito elige la correcta o “ninguna” (requiere exponer top-N del clasificador o stub inicial en API).
+
+#### Bloque C — Visibilidad en el territorio (semana 2–3)
+- [ ] **Sello “Validado por técnico”** en mapa y comunidad cuando `validated=true` (nombre o rol del validador, sin parcela).
+- [ ] **Mapa técnico con capas** (toggles): calor IA, solo pendientes, solo validados por mí, alertas activas (reutilizar `/heatmap` + filtros en `outbreak-events`).
+- [ ] **Modo “Visita a finca”**: seleccionar finca/zona → últimos scans del agricultor, alertas activas e historial de la zona (filtros sobre endpoints existentes).
+
+#### Bloque D — Priorización e impacto (semana 3–4)
+- [ ] **Alertas prioritarias para peritos**: bandeja o push in-app de eventos `validated=false` con severidad alta en zonas activas (FCM opcional en v2; in-app suficiente al inicio).
+- [ ] **Panel de impacto personal**: eventos validados esta semana, tasa de corrección al modelo, zonas cubiertas (agregaciones SQL por `validated_by`).
+- [ ] **Modo cooperativa (multi-agricultor)**: lista de agricultores del piloto con semáforo verde/ámbar/rojo (sin alertas / pendientes / severidad alta).
+
+#### Bloque E — Entregables de campo (semana 4–5)
+- [ ] **Bitácora de campo con voz**: nota de audio (30–60 s) adjunta al validar; upload + `tech_audio_url` (transcripción diferida).
+- [ ] **Informe PDF de visita** (1 página): mapa, eventos, validaciones y recomendaciones; botón desde “Visita a finca” o dashboard (Flutter PDF o reutilizar lógica del export CSV del panel web).
+
+**Entregable v1.6:** app móvil donde el perito tiene **centro de mando, validación pro, mapa con capas e informe**, claramente diferenciada del flujo agricultor.
+
+**Dependencias:** piloto Lean cerrado · datos reales de validación · APK piloto estable en producción.
+
+---
+
 ### Fase 10 — Producción y auditoría (v1 cierre / v2 hardening)
 - [ ] HTTPS, CORS estricto, secretos en vault
 - [ ] Cifrado backups AES-256
@@ -209,11 +259,22 @@ PlagaScan (IA + guardar + finca)
                     → APK release + checklist E2E en dispositivo ✅
 ```
 
+**Post-piloto — v1.6 Experiencia perito (tras validaciones de campo):**
+```
+Piloto Lean cerrado + métricas cualitativas
+    → Home “Centro de mando” (tech dashboard en móvil)
+        → Validación pro (fullscreen + corregir + segunda opinión)
+            → Mapa con capas + sello “Validado por técnico”
+                → Visita a finca + alertas prioritarias + impacto personal
+                    → Modo cooperativa + bitácora voz + informe PDF
+```
+
 **v2 (siguiente horizonte):**
 ```
-Datos acumulados + feedback IA
+Datos acumulados + feedback IA + v1.6 en producción
     → Open-Meteo + modelos por zona/plaga
         → Capa de riesgo predictivo en mapa
+            → FCM push, Redis, hardening comercial
 ```
 
 ---
@@ -264,8 +325,16 @@ APK: `frontend/build/app/outputs/flutter-apk/app-release.apk`
 
 ## Próximo sprint — post-MVP
 
-**Opción A — v1.5 IA:** reentrenamiento con capturas locales + feedback usuarios  
-**Opción B — Fase 10:** despliegue VPS, TLS, hardening para mercado  
-**Opción C — v2:** predicción climática cuando haya volumen de datos (Fase 9)
+**Ahora (piloto Lean):** ejecutar experimento de campo → entrevistas semana 0, 2, 4 (`docs/PILOTO_EXPERIMENTO.md`). **No abrir desarrollo de features nuevas** hasta cerrar aprendizaje.
 
+**Después del piloto — orden acordado:**
+
+| Orden | Fase | Objetivo |
+|-------|------|----------|
+| 1 | **v1.6 Perito móvil** (Fase 11) | Diferenciar app técnico: centro de mando → validación pro → mapa capas → informes |
+| 2 | **v1.5 IA** | Quitar corrección agricultor; confianza/utilidad; reentrenamiento solo con validación perito |
+| 3 | **Fase 10** | Hardening producción (ya parcial: VPS + Caddy en piloto) |
+| 4 | **v2** | Predicción climática cuando haya volumen de datos (Fase 9) |
+
+**Explícitamente diferido hasta post-piloto:** Fase 11 completa.  
 **Explícitamente fuera del MVP cerrado:** Fase 9 (predicción) hasta decidir v2.

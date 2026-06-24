@@ -25,7 +25,7 @@
     | ID | Hipótesis | Se confirma si… | Se invalida si… |
     |----|-----------|-----------------|-----------------|
     | **H1 — Adopción** | El agricultor escanea plagas en campo con el móvil | ≥50% del cohort activo en semana 4; ≥2 escaneos/usuario/semana (media) | &lt;30% activo en semana 4; abandono tras 1 uso |
-    | **H2 — Valor IA** | PlagaScan ayuda a decidir o detectar antes | ≥60% entrevistados dice “útil” o “bastante útil”; feedback “correcto” ≥40% | Mayoría dice “no confío”; correcciones constantes sin valor percibido |
+    | **H2 — Valor IA** | PlagaScan ayuda a decidir o detectar antes | ≥60% entrevistados dice “útil” o “bastante útil”; **confianza** autodeclarada ≥3/5 | Mayoría dice “no confío”; abandono tras ver resultados erróneos |
     | **H3 — Colaboración** | Parte de los diagnósticos alimentan el mapa comarcal | ≥30% escaneos → contribución SIGPAC | Casi nadie contribuye; “no veo para qué” |
     | **H4 — Valor B2B** | Técnico/cooperativa extrae valor de datos agregados | Técnico revisa mapa/alertas ≥1/semana; ve utilidad en focos o CSV | Panel ignorado; “no aporta nada que no tenga ya” |
 
@@ -37,9 +37,9 @@
 
     | Rol | Qué prueba | Entrevista |
     |-----|------------|------------|
-    | **Agricultor** | PlagaScan, guardar, recomendaciones, contribuir (opcional) | Entrevista A (15–20 min) |
-    | **Técnico / perito** | Validación eventos, calidad fotos, mapa, alertas | Entrevista B (20 min) |
-    | **Cooperativa** | Panel web, focos por zona, export CSV, visión agregada | Entrevista C (20 min) |
+    | **Agricultor** | PlagaScan, guardar, recomendaciones, contribuir (opcional) | [Guion A](PILOTO_ENTREVISTAS.md#rol-1--agricultor) |
+    | **Técnico / perito** | Validación eventos, calidad fotos, mapa, alertas | [Guion B](PILOTO_ENTREVISTAS.md#rol-2--técnico--perito-agrícola) |
+    | **Cooperativa** | Panel web, focos por zona, export CSV, visión agregada | [Guion C](PILOTO_ENTREVISTAS.md#rol-3--cooperativa--responsable-técnico-sat) |
 
     Un mismo contacto puede cubrir varios roles; adapta preguntas, no leas el guion entero.
 
@@ -66,7 +66,7 @@
     2. **Qué pedimos:** usarla cuando veáis un problema fitosanitario real, no solo “probar una vez”.
     3. **Privacidad:** la parcela exacta no se publica; el mapa usa **zona SIGPAC** (municipio/recinto).
     4. **Contribución:** tras un escaneo podéis decir si queréis **añadir el foco al mapa** comarcal (anonimizado).
-    5. **Si la IA falla:** corregid la plaga en la app — nos ayuda a mejorar el modelo.
+    5. **Si la IA falla:** no corrijáis la plaga — **avisad al técnico** o usad el resultado solo como orientación. Los **técnicos validan** lo dudoso. En la app solo os preguntaremos si **os resultó útil o si confiáis** en el resultado.
     6. **Soporte:** [tu WhatsApp] si no arranca, no entra o da error.
     7. **Duración:** 4–6 semanas; luego entrevista corta de cierre.
 
@@ -76,82 +76,30 @@
 
     ## 6. Guiones de entrevista
 
-    ### Entrevista A — Agricultor (semana 2 y semana 5–6)
+    **Documento completo (profesional, por rol):** [PILOTO_ENTREVISTAS.md](PILOTO_ENTREVISTAS.md)
 
-    **Duración:** 15–20 min · **Formato:** presencial en finca o llamada · **Graba notas, no hace falta grabar audio**
+    Incluye apertura, preguntas semana 2 y cierre semana 5–6, señales verde/roja y plantilla de notas.  
+    **No pidas al agricultor que corrija plagas** en entrevista; pregunta por **confianza y utilidad**.
 
-    #### Apertura
-    - “Queremos tu opinión honesta; no hay respuestas buenas o malas. Si algo no sirve, dímelo.”
+    Resumen rápido:
 
-    #### Uso y contexto
-    1. ¿Cuántas veces has abierto la app desde que te la instalé?
-    2. ¿La has usado **dentro del invernadero**? ¿Con qué luz/condiciones?
-    3. ¿Qué cultivos o plagas probaste?
-    4. ¿Te resultó **fácil o incómoda** hacer la foto? ¿Qué mejorarías?
-
-    #### Valor del diagnóstico (H2)
-    5. ¿Te fiaste del resultado de la IA? ¿Por qué sí o no?
-    6. ¿Las **recomendaciones** te parecieron acertadas para tu caso?
-    7. Cuando la IA se equivocó, ¿usaste **corregir plaga**? ¿Fue claro?
-
-    #### Mapa y colaboración (H3)
-    8. ¿Contribuiste al mapa? ¿Entendiste para qué sirve?
-    9. Si no contribuiste: ¿qué te frenó? (privacidad, pereza, no lo entendí, no veo valor)
-    10. ¿Mirarías alertas o focos de tu comarca en la app? ¿Con qué frecuencia?
-
-    #### Retención (H1)
-    11. Del 1 al 5, ¿la seguirías usando el **próximo mes** sin que te lo recuerden?
-    12. ¿Se la recomendarías a otro agricultor de la zona?
-
-    #### Cierre
-    13. **Una cosa** que quitarías y **una cosa** que mantendrías.
-    14. ¿Algo que no te pregunté y debería saber?
+    - **Agricultor:** uso real, confianza IA, mapa, retención (15–20 min).
+    - **Técnico:** calidad IA, validación profesional, mapa/alertas, disposición de pago B2B (20 min).
+    - **Cooperativa:** panel web, datos agregados, modelo freemium + licencia (20 min).
 
     ---
 
-    ### Entrevista B — Técnico / perito agrícola
+    ### Entrevista A — Agricultor (referencia; ver guion completo)
 
-    **Duración:** 20 min · **Semanas:** 2 y 5–6
+    Preguntas clave: ¿cuánto usaste? ¿confías en el resultado? ¿contribuiste al mapa? ¿seguirías usándola?
 
-    #### Calidad técnica e IA
-    1. ¿Has revisado escaneos o fotos de los agricultores del piloto?
-    2. ¿La IA acierta en las plagas **prioritarias** del Poniente (tuta, trips, mosca blanca, mildiu…)?
-    3. ¿Qué clases fallan más? ¿Por calidad de foto o por modelo?
-    4. ¿El feedback “plaga corregida” es usable para un futuro reentrenamiento?
+    ### Entrevista B — Técnico (referencia; ver guion completo)
 
-    #### Mapa y alertas (H3, H4)
-    5. ¿Has mirado el **mapa de focos** o las **alertas**? ¿Con qué frecuencia?
-    6. ¿Los focos por zona SIGPAC tienen sentido para tu trabajo?
-    7. ¿Validaste eventos desde la app o web? ¿Fue ágil?
+    Preguntas clave: ¿acierta la IA en plagas del Poniente? ¿validarías/corregirías diagnósticos? ¿valor del mapa?
 
-    #### Valor profesional (H4)
-    8. ¿Esto sustituye algo que ya haces (WhatsApp, Excel, ojo de campo) o **añade** algo?
-    9. ¿Lo usarías en la cooperativa si hubiera más usuarios? ¿Qué faltaría?
+    ### Entrevista C — Cooperativa (referencia; ver guion completo)
 
-    #### Cierre
-    10. ¿Seguirías recomendando la app a agricultores de tu cartera?
-    11. Tres mejoras concretas por orden de prioridad.
-
-    ---
-
-    ### Entrevista C — Cooperativa / responsable técnico
-
-    **Duración:** 20 min · **Semanas:** 3 y 6
-
-    #### Panel y datos agregados (H4)
-    1. ¿Has entrado al **panel web**? ¿Qué pantalla miraste?
-    2. ¿La comparativa por zonas y focos críticos te aporta algo que no tengas hoy?
-    3. ¿Exportar CSV de eventos sería útil en vuestra rutina? ¿Para qué?
-    4. ¿Confiáis en datos **sin parcela exacta** (solo zona SIGPAC)? ¿Preocupa privacidad?
-
-    #### Visión de negocio
-    5. Si el piloto funcionara, ¿lo integraríais en el servicio a socios? ¿Cómo?
-    6. ¿Pagaríais por esto (directa o indirectamente)? ¿Qué tendría que demostrar?
-    7. ¿Cuántos agricultores activos harían falta para que tenga sentido para la cooperativa?
-
-    #### Cierre
-    8. ¿Perseverar, pivotar el enfoque (solo mapa / solo IA / solo técnicos) o parar?
-    9. ¿Estaríais dispuestos a ampliar el piloto a más socios?
+    Preguntas clave: ¿panel útil? ¿licencia 200–500 €/año realista? ¿ampliar piloto?
 
     ---
 
@@ -179,7 +127,7 @@
     | Total escaneos | | | | | | |
     | Escaneos / usuario activo | | | | | | |
     | % escaneos → contribución | | | | | | |
-    | Feedback IA (correcto / corregido) | | | | | | |
+    | Confianza IA (útil / confía 1-5, entrevista) | | | | | | |
     | Retención S1→S4 (%) | — | | | | | |
 
     ---
@@ -191,7 +139,7 @@
     - [ ] Calculada **retención** semana 1 → semana 4 (objetivo ≥50%)
     - [ ] Calculada **frecuencia** media escaneos/usuario/semana (objetivo ≥2 en semanas activas)
     - [ ] Calculado **% conversión** escaneo → contribución mapa (objetivo ≥30%)
-    - [ ] Revisado ratio feedback **correcto vs. plaga corregida**
+    - [ ] Revisada **confianza/utilidad IA** en entrevistas (objetivo H2 ≥3/5 en mayoría)
     - [ ] Anotados usuarios **nunca activos** y **power users**
 
     ### Entrevistas cualitativas
@@ -284,6 +232,7 @@
     ## 12. Referencias
 
     - Despliegue técnico: [PILOTO_DESPLIEGUE.md](PILOTO_DESPLIEGUE.md)
+    - **Guiones entrevista:** [PILOTO_ENTREVISTAS.md](PILOTO_ENTREVISTAS.md)
     - Roadmap estratégico: [ROADMAP_LEAN.md](ROADMAP_LEAN.md)
     - Roadmap técnico v1: [ROADMAP.md](ROADMAP.md)
 

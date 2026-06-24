@@ -24,10 +24,10 @@ def submit_feedback(
     if scan.user_id != current_user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="No puedes valorar este escaneo")
 
-    if not body.is_correct and not body.corrected_plague:
+    if not body.is_correct and not body.corrected_plague and not (body.comment and body.comment.strip()):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Indica la plaga correcta si el diagnóstico fue erróneo",
+            detail="Indica un comentario si el diagnóstico no fue útil",
         )
 
     entry = Feedback(
