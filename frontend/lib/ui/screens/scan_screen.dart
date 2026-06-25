@@ -7,6 +7,7 @@ import "../../core/session.dart";
 import "../../data/repositories/farm_repository.dart";
 import "../../data/repositories/scan_repository.dart";
 import "../../models/farm.dart";
+import "../../models/scan.dart";
 import "../../ml/plaga_classifier.dart";
 import "../widgets/primary_button.dart";
 import "../widgets/severity_badge.dart";
@@ -32,6 +33,7 @@ class _ScanScreenState extends State<ScanScreen> {
   bool _farmsLoading = false;
   bool _isAnalyzing = false;
   bool _isSaving = false;
+  bool _shareWithTech = false;
   String? _errorMessage;
 
   static const _crops = ["Tomate", "Pimiento", "Calabacín", "Pepino", "Berenjena", "Lechuga"];
@@ -112,6 +114,11 @@ class _ScanScreenState extends State<ScanScreen> {
       return;
     }
 
+    if (_shareWithTech && _imageBytes == null) {
+      setState(() => _errorMessage = "Para compartir con el técnico necesitas una foto.");
+      return;
+    }
+
     final hasSession = await Session.restore();
     if (!hasSession) {
       if (!mounted) return;
@@ -138,13 +145,25 @@ class _ScanScreenState extends State<ScanScreen> {
     });
 
     try {
-      final scan = await _scanRepository.createScan(
-        crop: _crop,
-        plague: _diagnosis!.plague,
-        severity: _severityOptions[_severityLevel]!,
-        confidence: _diagnosis!.confidence,
-        farmId: _selectedFarmId,
-      );
+      final Scan scan;
+      if (_shareWithTech && _imageBytes != null) {
+        scan = await _scanRepository.createScanWithImage(
+          crop: _crop,
+          plague: _diagnosis!.plague,
+          severity: _severityOptions[_severityLevel]!,
+          confidence: _diagnosis!.confidence,
+          farmId: _selectedFarmId,
+          imageBytes: _imageBytes!.toList(),
+        );
+      } else {
+        scan = await _scanRepository.createScan(
+          crop: _crop,
+          plague: _diagnosis!.plague,
+          severity: _severityOptions[_severityLevel]!,
+          confidence: _diagnosis!.confidence,
+          farmId: _selectedFarmId,
+        );
+      }
 
       if (!mounted) return;
       Navigator.pushReplacementNamed(context, Routes.result, arguments: scan);
@@ -302,6 +321,22 @@ class _ScanScreenState extends State<ScanScreen> {
                     onChanged: _isBusy ? null : (v) => setState(() => _severityLevel = v ?? 2),
                   ),
                 ),
+              ),
+            ],
+            if (_diagnosis != null && _imageBytes != null) ...[
+              const SizedBox(height: 12),
+              CheckboxListTile(
+                contentPadding: EdgeInsets.zero,
+                value: _shareWithTech,
+                onChanged: _isBusy
+                    ? null
+                    : (value) => setState(() => _shareWithTech = value ?? false),
+                title: const Text("Compartir foto con mi técnico/cooperativa"),
+                subtitle: const Text(
+                  "Opcional. Solo lo verá tu técnico para validar el diagnóstico. El mapa comunitario sigue siendo anónimo.",
+                  style: TextStyle(fontSize: 12),
+                ),
+                controlAffinity: ListTileControlAffinity.leading,
               ),
             ],
             const SizedBox(height: 20),

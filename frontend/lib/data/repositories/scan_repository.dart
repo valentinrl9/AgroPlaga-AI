@@ -28,4 +28,32 @@ class ScanRepository {
 
     return Scan.fromJson(response);
   }
+
+  Future<Scan> createScanWithImage({
+    required String crop,
+    required String plague,
+    required String severity,
+    required List<int> imageBytes,
+    double confidence = 0.0,
+    String? location,
+    int? farmId,
+  }) async {
+    final response = await _client.postMultipartAuth(
+      "/api/v1/scans/with-image",
+      {
+        "crop": crop,
+        "plague": plague,
+        "severity": severity,
+        "confidence": confidence.toString(),
+        "share_with_tech": "true",
+        if (location != null) "location": location,
+        if (farmId != null) "farm_id": farmId.toString(),
+      },
+      "image",
+      imageBytes,
+      "scan.jpg",
+    );
+
+    return Scan.fromJson(response);
+  }
 }

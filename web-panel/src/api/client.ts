@@ -1,4 +1,4 @@
-import type { OutbreakEvent, TechDashboard, UserProfile } from "../types";
+import type { OutbreakEvent, PilotFarmer, ScanValidatePayload, TechDashboard, TechScanQueueItem, UserProfile } from "../types";
 
 const TOKEN_KEY = "agroplaga_token";
 
@@ -53,6 +53,31 @@ export function fetchDashboard(hours = 168): Promise<TechDashboard> {
 
 export function fetchPendingEvents(): Promise<OutbreakEvent[]> {
   return request<OutbreakEvent[]>("/api/v1/outbreak-events?hours=168");
+}
+
+export function fetchPendingScans(): Promise<TechScanQueueItem[]> {
+  return request<TechScanQueueItem[]>("/api/v1/tech/pending-scans");
+}
+
+export function fetchPilotFarmers(): Promise<PilotFarmer[]> {
+  return request<PilotFarmer[]>("/api/v1/tech/farmers");
+}
+
+export function validateScan(scanId: number, payload: ScanValidatePayload): Promise<void> {
+  return request(`/api/v1/scans/${scanId}/validate`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
+
+export async function fetchScanImageBlobUrl(scanId: number): Promise<string> {
+  const token = getToken();
+  const response = await fetch(`/api/v1/scans/${scanId}/image`, {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  });
+  if (!response.ok) throw new Error("No se pudo cargar la imagen");
+  const blob = await response.blob();
+  return URL.createObjectURL(blob);
 }
 
 export function validateEvent(eventId: number, validated: boolean): Promise<OutbreakEvent> {

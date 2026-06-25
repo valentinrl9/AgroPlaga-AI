@@ -1,0 +1,21 @@
+Los 10 códigos (1 uso · caducan 15 ago 2026)
+
+7 agricultores → rol farmer
+Código
+PLG-PILOT-F01
+PLG-PILOT-F02
+PLG-PILOT-F03
+PLG-PILOT-F04
+PLG-PILOT-F05
+PLG-PILOT-F06
+PLG-PILOT-F07
+
+2 técnicos → rol tech (validación + panel web)
+Código
+PLG-PILOT-T01
+PLG-PILOT-T02
+
+1 cooperativa → rol tech (panel web + validación)
+Código
+PLG-PILOT-C01
+

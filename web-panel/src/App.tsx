@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import Layout from "./components/Layout";
 import DashboardPage from "./pages/DashboardPage";
+import FarmersPage from "./pages/FarmersPage";
 import LoginPage from "./pages/LoginPage";
 import ValidationPage from "./pages/ValidationPage";
 import { getToken } from "./api/client";
@@ -24,6 +25,7 @@ export default function App() {
       >
         <Route index element={<DashboardPage />} />
         <Route path="validacion" element={<ValidationPage />} />
+        <Route path="agricultores" element={<FarmersPage />} />
       </Route>
     </Routes>
   );

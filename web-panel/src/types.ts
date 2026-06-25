@@ -60,3 +60,35 @@ export interface OutbreakEvent {
   model_version: string;
   validated: boolean;
 }
+
+export interface TechScanQueueItem {
+  id: number;
+  crop: string;
+  plague: string;
+  confidence: number;
+  severity: string;
+  farm_id: number | null;
+  farm_name: string | null;
+  farmer_id: number;
+  farmer_name: string;
+  farmer_email: string;
+  created_at: string;
+  share_with_tech: boolean;
+  tech_status: string | null;
+  has_image: boolean;
+}
+
+export interface PilotFarmer {
+  id: number;
+  name: string;
+  email: string;
+  shared_scans: number;
+  pending_scans: number;
+  status: "inactive" | "ok" | "pending";
+}
+
+export interface ScanValidatePayload {
+  action: "confirm" | "correct" | "reject";
+  corrected_plague?: string;
+  tech_notes?: string;
+}

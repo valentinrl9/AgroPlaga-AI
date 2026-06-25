@@ -1,7 +1,11 @@
 import os
+from pathlib import Path
+
 from dotenv import load_dotenv
 
 load_dotenv()
+
+_DEFAULT_SCAN_DIR = Path(__file__).resolve().parents[2] / "data" / "scans"
 
 class Settings:
     app_name: str = os.getenv("APP_NAME", "AgroPlaga AI")
@@ -21,5 +25,6 @@ class Settings:
     cors_origin_regex: str | None = (
         None if _cors_regex == "none" else (_cors_regex or r"https?://(localhost|127\.0\.0\.1)(:\d+)?")
     )
+    scan_images_dir: str = os.getenv("SCAN_IMAGES_DIR", str(_DEFAULT_SCAN_DIR))
 
 settings = Settings()

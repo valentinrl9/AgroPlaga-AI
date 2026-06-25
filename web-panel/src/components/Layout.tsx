@@ -42,7 +42,8 @@ export default function Layout() {
       </header>
       <nav className="nav">
         <NavLink to="/" end>Dashboard</NavLink>
-        <NavLink to="/validacion">Validar eventos</NavLink>
+        <NavLink to="/validacion">Validar escaneos</NavLink>
+        <NavLink to="/agricultores">Agricultores</NavLink>
       </nav>
       <main className="content">
         <Outlet />

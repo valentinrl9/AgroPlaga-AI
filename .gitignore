@@ -30,6 +30,8 @@ Thumbs.db
 
 # Datos locales / volúmenes
 postgres_data/
+backend/data/scans/*
+!backend/data/scans/.gitkeep
 *.db
 app.db
 

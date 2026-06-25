@@ -323,18 +323,19 @@ APK: `frontend/build/app/outputs/flutter-apk/app-release.apk`
 
 ---
 
-## Próximo sprint — post-MVP
+## Próximo hito — v1.6-core 🎯
 
-**Ahora (piloto Lean):** ejecutar experimento de campo → entrevistas semana 0, 2, 4 (`docs/PILOTO_EXPERIMENTO.md`). **No abrir desarrollo de features nuevas** hasta cerrar aprendizaje.
+**Decisión 15 jun 2026:** adelantar validación perito con foto **antes** de demos B2B. La validación del mapa anónimo actual no permite probar H4 (valor cooperativa/técnico).
 
-**Después del piloto — orden acordado:**
+**Spec de implementación:** [PROXIMO_HITO_V16_CORE.md](PROXIMO_HITO_V16_CORE.md)
 
 | Orden | Fase | Objetivo |
 |-------|------|----------|
-| 1 | **v1.6 Perito móvil** (Fase 11) | Diferenciar app técnico: centro de mando → validación pro → mapa capas → informes |
-| 2 | **v1.5 IA** | Quitar corrección agricultor; confianza/utilidad; reentrenamiento solo con validación perito |
-| 3 | **Fase 10** | Hardening producción (ya parcial: VPS + Caddy en piloto) |
-| 4 | **v2** | Predicción climática cuando haya volumen de datos (Fase 9) |
+| **1 (ahora)** | **v1.6-core** | Foto opt-in, cola panel, corregir plaga, semáforo agricultores piloto |
+| 2 | Piloto H4 | Entrevistas técnicos/cooperativa **tras** desplegar v1.6-core |
+| 3 | **v1.6 completo** (Fase 11) | Centro de mando móvil, mapa capas, informes PDF |
+| 4 | **v1.5 IA** | Reentrenamiento con fotos validadas por perito |
+| 5 | **Fase 10 / v2** | Hardening + predicción |
 
-**Explícitamente diferido hasta post-piloto:** Fase 11 completa.  
+**Piloto agricultor (H1–H3):** puede continuar con APK actual; idealmente con APK v1.6-core cuando esté lista.  
 **Explícitamente fuera del MVP cerrado:** Fase 9 (predicción) hasta decidir v2.

@@ -2,7 +2,8 @@
 
 **Autor:** Valentín Ruiz León  
 **Actualizado:** 15 jun 2026  
-**Estado:** 🚀 **Piloto Lean en campo** — despliegue VPS OK; validaciones con participantes en curso
+**Estado:** ✅ **v1.6-core implementado** — pendiente deploy VPS + APK nueva  
+**Documento del hito:** [PROXIMO_HITO_V16_CORE.md](PROXIMO_HITO_V16_CORE.md)
 
 ---
 
@@ -12,7 +13,8 @@
 |---------|----------|---------|--------|
 | **v1 (MVP-Lean)** | Validar valor central en campo | PlagaScan (offline), consentimiento SIGPAC, agregación anónima, trazabilidad por UUID de dispositivo. | **Listo para despliegue** |
 | **v1.5 (Refinamiento)** | Escalar robustez y feedback | Panel B2B completo, analítica personal, reentrenamiento IA con fotos reales de campo. | *Pausado hasta aprendizaje* |
-| **v1.6 (Perito móvil)** | Diferenciar rol técnico en app | Centro de mando, validación pro, mapa capas, informes, modo cooperativa | *Tras piloto* |
+| **v1.6-core** | Validación perito vendible | Foto opt-in, cola panel, corregir plaga, semáforo agricultores piloto | **✅ Implementado** |
+| **v1.6 (completo)** | Diferenciar rol técnico en app | Centro de mando móvil, mapa capas, informes PDF, modo cooperativa | *Tras v1.6-core* |
 | **v2 (Escalabilidad)** | Previsión y hardening comercial | Modelos ARIMA/Prophet, k-anonymity masivo, Redis, FCM Push, subida a tiendas. | *Diferido* |
 
 **Decisión estratégica (jun 2026):** Se congela el desarrollo de nuevas funciones (predicción, optimización de infraestructura) para evitar el desperdicio (*waste*). Todo el foco se desplaza a conseguir aprendizaje validado con un grupo piloto de 5-6 agricultores.
@@ -58,19 +60,13 @@ AgroPlaga AI combina **diagnóstico fitosanitario offline** con una **red colabo
     - *Retención:* ¿Los usuarios de la semana 1 siguen utilizando la herramienta en la semana 4?
 - [ ] **Validación cualitativa:** Entrevistas de campo para analizar la calidad de las fotos y usabilidad bajo el plástico del invernadero.
 
-### Fase 4 — Post-piloto: experiencia perito / técnico ⏳ (Pendiente)
-> **Gate:** cerrar entrevistas y métricas del piloto → decisión pivotar / perseverar.  
-> **Detalle completo:** `docs/ROADMAP.md` → **Fase 11** (v1.6).
+### Fase 3b — v1.6-core (validación perito) ✅ **COMPLETADA**
+> **Spec:** [PROXIMO_HITO_V16_CORE.md](PROXIMO_HITO_V16_CORE.md) — pendiente deploy VPS + APK.
 
-Orden de implantación acordado (misma app, flujos distintos por rol):
+### Fase 4 — v1.6 completo (post v1.6-core) ⏳
+> **Detalle:** `docs/ROADMAP.md` → **Fase 11**.
 
-1. Home “Centro de mando” (KPIs desde `/tech/dashboard`)
-2. Cola de validación fullscreen + corregir diagnóstico (solo rol técnico) + segunda opinión del modelo
-3. Sello “Validado por técnico” + mapa con capas + modo “Visita a finca”
-4. Alertas prioritarias + panel de impacto personal + modo cooperativa (semáforo multi-agricultor)
-5. Bitácora de voz en campo + informe PDF de visita
-
-**No iniciar Fase 4** hasta terminar Fase 3.
+Centro de mando móvil, mapa capas, informes PDF, bitácora de voz, etc.
 
 ### Fases en Pausa (Fases 6, 7, 8, 9 y 10 del plan original) ⏸️
 - Modificaciones avanzadas de la IA y reentrenamiento masivo (Pausado post-MVP).
@@ -81,18 +77,18 @@ Orden de implantación acordado (misma app, flujos distintos por rol):
 
 ## Orden de Construcción Lean
 
-**Ahora:**
+**Ahora (orden acordado):**
 ```
-Piloto desplegado (HTTPS + invitaciones)
-    → Reparto APK + códigos a 10 participantes
-        → Medir retención, conversión y frecuencia (semanas 2–6)
-            → Entrevistas cualitativas (semana 0, 2, 4)
-                → Reunión: ¿Pivotar o perseverar?
+v1.6-core (foto + cola perito en panel)  ← PRÓXIMO HITO
+    → APK agricultor con opt-in foto
+        → Piloto agricultores (H1–H3) en paralelo si aplica
+            → Onboarding técnicos/cooperativa (H4) solo tras v1.6-core
+                → Entrevistas + métricas → ¿Pivotar o perseverar?
 ```
 
-**Después del piloto (si perseveramos):**
+**Después (si perseveramos):**
 ```
-Fase 11 / v1.6 — Experiencia perito móvil (ver ROADMAP.md)
-    → v1.5 reentrenamiento IA con feedback de validaciones
+v1.6 completo (móvil perito, mapa capas, informes)
+    → v1.5 reentrenamiento IA con fotos validadas por perito
         → v2 predicción + hardening comercial
 ```

@@ -99,6 +99,39 @@ class ApiClient {
     return _parseResponse(response);
   }
 
+  Future<Map<String, dynamic>> postMultipartAuth(
+    String path,
+    Map<String, String> fields,
+    String fileField,
+    List<int> fileBytes,
+    String filename,
+  ) async {
+    await ensureAuth();
+
+    Future<http.Response> sendOnce() async {
+      final request = http.MultipartRequest("POST", _uri(path));
+      if (_token != null && _token!.isNotEmpty) {
+        request.headers["Authorization"] = "Bearer $_token";
+      }
+      request.fields.addAll(fields);
+      request.files.add(
+        http.MultipartFile.fromBytes(
+          fileField,
+          fileBytes,
+          filename: filename,
+        ),
+      );
+      final streamed = await request.send();
+      return http.Response.fromStream(streamed);
+    }
+
+    var response = await sendOnce();
+    if (response.statusCode == 401 && await Session.tryRefreshToken()) {
+      response = await sendOnce();
+    }
+    return _parseResponse(response);
+  }
+
   Map<String, dynamic> _parseResponse(http.Response response) {
     final body = response.body.isEmpty ? "{}" : response.body;
     final decoded = jsonDecode(body);
