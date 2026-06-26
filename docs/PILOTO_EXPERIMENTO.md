@@ -29,7 +29,7 @@
     | **H3 — Colaboración** | Parte de los diagnósticos alimentan el mapa comarcal | ≥30% escaneos → contribución SIGPAC | Casi nadie contribuye; “no veo para qué” |
     | **H4 — Valor B2B** | Técnico/cooperativa extrae valor de validación con foto | Técnico usa cola v1.6-core ≥1/semana; confirma/corrige diagnósticos reales | Panel ignorado; “no puedo verificar nada” |
 
-    > **Gate H4 (15 jun 2026):** no medir H4 con el panel actual (validación anónima sin foto). Esperar a **v1.6-core** → [PROXIMO_HITO_V16_CORE.md](PROXIMO_HITO_V16_CORE.md).
+    > **Gate H4 (15 jun 2026):** medir H4 con la cola **Validar escaneos** del panel (v1.6-core). Detalle: [ROADMAP_LEAN.md](ROADMAP_LEAN.md) → Fase 3b.
 
     **Umbrales orientativos** — ajústalos al tamaño real del cohort (5–6 personas).
 

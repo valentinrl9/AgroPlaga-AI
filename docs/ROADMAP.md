@@ -1,8 +1,8 @@
 # AgroPlaga AI — Roadmap de Desarrollo
 
 **Autor:** Valentín Ruiz León  
-**Actualizado:** 15 jun 2026  
-**Estado:** ✅ **v1 MVP completado** — piloto Lean en campo (validaciones pendientes)
+**Actualizado:** 26 jun 2026  
+**Estado:** ✅ **v1 MVP + v1.6-core** — piloto Lean en campo
 
 ---
 
@@ -10,9 +10,12 @@
 
 | Versión | Objetivo | Incluye |
 |---------|----------|---------|
-| **v1 (MVP)** | Escanear y colaborar perfectos | PlagaScan, contribución al mapa, heatmap, alertas reactivas, gamificación, panel B2B, analítica personal |
-| **v1.6** | Experiencia móvil perito/técnico | Home “Centro de mando”, validación pro, mapa con capas, informes, modo cooperativa |
-| **v2** | Previsión y refinamiento avanzado | Predicción climática, modelos ARIMA/Prophet, capa de riesgo en mapa, KDE/Redis, FCM, hardening producción |
+| **v1 (MVP)** | Escanear y colaborar | PlagaScan, mapa SIGPAC, alertas, panel B2B, analítica personal ✅ |
+| **v1.6-core** | Validación perito con foto | Cola panel, corregir plaga, opt-in agricultor ✅ |
+| **v1.6 (completo)** | Experiencia móvil perito/técnico | Centro de mando, mapa capas, informes, modo cooperativa |
+| **v1.7 (CEX)** | Cuaderno de campo digital | `farm_treatments`, plazos de seguridad, export PDF/CSV perito/cooperativa |
+| **v1.5 IA** | Reentrenamiento con campo real | Fotos validadas por perito → nuevo TFLite |
+| **v2** | Previsión y refinamiento avanzado | Predicción climática, ARIMA/Prophet, KDE/Redis, FCM, hardening producción |
 
 **Decisión (jun 2026):** la predicción queda **fuera del MVP**. Primero cerrar v1 redondo; estudiar previsión cuando haya datos y uso real.
 
@@ -28,15 +31,16 @@ AgroPlaga AI combina **diagnóstico fitosanitario offline** (PlagaScan + TFLite)
 
 ## Decisiones de arquitectura (v1)
 
-| Tema | Decisión |
-|------|----------|
-| `outbreaks` (tabla antigua) | **Eliminada.** Sustituida por `outbreak_events` (eventos colaborativos anonimizados). |
-| Zonas geográficas | Tabla `agri_zones` con códigos SIGPAC municipio (`04-087` = Almería–El Ejido). Sin parcela ni polígono exacto en datos públicos. |
-| Privacidad | Los eventos colaborativos **no almacenan `user_id`**. La reputación del usuario se gestiona con contador interno desacoplado. |
-| Severidad | Escala numérica unificada: `1` Leve, `2` Moderado, `3` Alto. |
-| Geometría | PostGIS: centroide municipal + jitter controlado (~150–400 m) para el mapa. |
-| Web cooperativas | API REST compartida. Panel web separado (React) en fase posterior; misma API que el móvil. |
-| Heatmap / alertas | Servicios desacoplados (`heatmap_service`, `alert_engine`) con precomputación y cache (Redis en producción). |
+| Tema | Decisión | Justificación |
+|------|----------|---------------|
+| `outbreaks` (tabla antigua) | **Eliminada.** Sustituida por `outbreak_events` (eventos colaborativos anonimizados). | |
+| Zonas geográficas | Tabla `agri_zones` con códigos SIGPAC municipio (`04-087` = Almería–El Ejido). Sin parcela ni polígono exacto en datos públicos. | |
+| Privacidad | Los eventos colaborativos **no almacenan `user_id`**. La reputación del usuario se gestiona con contador interno desacoplado. | |
+| Severidad | Escala numérica unificada: `1` Leve, `2` Moderado, `3` Alto. | |
+| Geometría | PostGIS: centroide municipal + jitter controlado (~150–400 m) para el mapa. | |
+| Web cooperativas | API REST compartida. Panel web separado (React) en fase posterior; misma API que el móvil. | |
+| Heatmap / alertas | Servicios desacoplados (`heatmap_service`, `alert_engine`) con precomputación y cache (Redis en producción). | |
+| **Cuaderno de Campo (CEX)** | Integrar tabla `farm_treatments` vinculada a `scans`, `farms` y `agri_zones`. Exportación estructurada (PDF/CSV) para perito y cooperativa. Registro **opt-in** del agricultor tras decidir aplicar tratamiento. | Transforma una obligación burocrática tediosa en un automatismo derivado del propio escaneo con IA offline. El perito y la cooperativa reciben borrador en tiempo casi real. |
 
 ---
 
@@ -175,15 +179,22 @@ AgroPlaga AI combina **diagnóstico fitosanitario offline** (PlagaScan + TFLite)
 
 ---
 
-### Fase 8 — Analítica personal y recomendaciones ✅ COMPLETADA (MVP)
+### Fase 8 — Analítica personal, recomendaciones y Cuaderno de Campo (CEX) ✅ MVP v1 · 🔄 Expansión CEX (v1.7)
+
 - [x] Gráficas cronológicas por finca/cultivo (`/api/v1/analytics/me`)
 - [x] Motor de recomendaciones (plaga + cultivo + severidad)
 - [x] Historial avanzado con badges de severidad y fechas
 - [x] Stats endpoints para usuario y zona (`/analytics/zones/{id}`)
 - [x] Pantalla Flutter "Mi analítica" + recomendaciones en resultado
 - [x] Selector de finca opcional al guardar escaneo (`farm_id` en scans)
+- [ ] **[CEX v1.7]** Crear modelo `FarmTreatment` (materia activa, n.º registro Ministerio, dosis, plazo de seguridad, fecha aplicación, producto fitosanitario).
+- [ ] **[CEX v1.7]** Flujo en app: tras la inferencia IA, opción **«Registrar tratamiento»** (opt-in del agricultor) que pre-rellena datos fitosanitarios a partir del escaneo y la recomendación.
+- [ ] **[CEX v1.7]** Alertas en UI: aviso/bloqueo visual si el cultivo está dentro del **plazo de seguridad** obligatorio para recolección.
+- [ ] **[CEX v1.7]** Vista tiempo real en panel cooperativa/perito: apuntes de tratamiento por agricultor/finca (solo los compartidos explícitamente).
+- [ ] **[CEX v1.7]** Módulo de exportación de borrador CEX (PDF/CSV) desde perfil del agricultor y panel de la cooperativa.
 
-**Entregable:** valor agronómico personalizado.
+**Entregable MVP v1:** valor agronómico personalizado.  
+**Entregable v1.7 (CEX):** cuaderno de campo digital vinculado al flujo de escaneo → tratamiento → exportación para cumplimiento y asesoramiento técnico.
 
 ---
 
@@ -281,17 +292,18 @@ Datos acumulados + feedback IA + v1.6 en producción
 
 ## Stack por capa
 
-| Capa | Tecnología |
-|------|------------|
-| Móvil | Flutter, TFLite, flutter_map, FCM |
-| Web cooperativas | React + TypeScript, Leaflet |
-| API | FastAPI, Pydantic, SQLAlchemy, GeoAlchemy2 |
-| BD | PostgreSQL 16 + PostGIS |
-| Cache | Redis (fase 4+) |
-| Jobs | APScheduler / Celery (fase 5+) |
-| IA entrenamiento | TensorFlow/Keras, Colab |
-| IA inferencia | TFLite en dispositivo |
-| Infra | Docker Compose → VPS, S3, TLS |
+| Capa | Tecnología | Rol / notas |
+|------|------------|-------------|
+| Móvil | Flutter, TFLite, flutter_map, FCM | Inferencia offline + flujos campo |
+| Web cooperativas | React + TypeScript, Leaflet | Panel B2B, validación, dashboard |
+| API | FastAPI, Pydantic, SQLAlchemy, GeoAlchemy2 | REST + PostGIS |
+| **Exportación CEX** | ReportLab + Pandas (Python) | Borrador estructurado del Cuaderno de Campo (PDF/CSV) para perito y cooperativa *(v1.7)* |
+| BD | PostgreSQL 16 + PostGIS | Datos transaccionales + geo |
+| Cache | Redis (fase 4+) | Heatmap / alertas |
+| Jobs | APScheduler / Celery (fase 5+) | Precomputación |
+| IA entrenamiento | TensorFlow/Keras, Colab | Reentrenamiento v1.5 |
+| IA inferencia | TFLite en dispositivo | PlagaScan offline |
+| Infra | Docker Compose → VPS, S3, TLS | Piloto y producción |
 
 ---
 
@@ -323,19 +335,19 @@ APK: `frontend/build/app/outputs/flutter-apk/app-release.apk`
 
 ---
 
-## Próximo hito — v1.6-core 🎯
+## v1.6-core ✅ (completado)
 
-**Decisión 15 jun 2026:** adelantar validación perito con foto **antes** de demos B2B. La validación del mapa anónimo actual no permite probar H4 (valor cooperativa/técnico).
+**Decisión 15 jun 2026:** adelantar validación perito con foto **antes** de demos B2B.
 
-**Spec de implementación:** [PROXIMO_HITO_V16_CORE.md](PROXIMO_HITO_V16_CORE.md)
+Checklist, despliegue y estado del piloto: [ROADMAP_LEAN.md](ROADMAP_LEAN.md) → Fase 3b.
 
 | Orden | Fase | Objetivo |
 |-------|------|----------|
-| **1 (ahora)** | **v1.6-core** | Foto opt-in, cola panel, corregir plaga, semáforo agricultores piloto |
-| 2 | Piloto H4 | Entrevistas técnicos/cooperativa **tras** desplegar v1.6-core |
+| ~~1~~ | ~~**v1.6-core**~~ | ✅ Foto opt-in, cola panel, corregir plaga, semáforo agricultores |
+| **2 (ahora)** | Piloto H4 | Entrevistas técnicos/cooperativa con panel v1.6-core |
 | 3 | **v1.6 completo** (Fase 11) | Centro de mando móvil, mapa capas, informes PDF |
 | 4 | **v1.5 IA** | Reentrenamiento con fotos validadas por perito |
-| 5 | **Fase 10 / v2** | Hardening + predicción |
+| 5 | **v1.7 CEX** | Cuaderno de campo: `farm_treatments`, plazos seguridad, export perito/cooperativa |
+| 6 | **Fase 10 / v2** | Hardening + predicción |
 
-**Piloto agricultor (H1–H3):** puede continuar con APK actual; idealmente con APK v1.6-core cuando esté lista.  
 **Explícitamente fuera del MVP cerrado:** Fase 9 (predicción) hasta decidir v2.

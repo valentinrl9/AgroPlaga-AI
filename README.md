@@ -6,7 +6,7 @@ Plataforma de diagnóstico fitosanitario con IA local y red colaborativa comunit
 
 - `backend/`: FastAPI + PostgreSQL/PostGIS + JWT.
 - `frontend/`: Flutter (móvil).
-- `docs/`: Guía del proyecto, [ROADMAP.md](docs/ROADMAP.md) y **próximo hito:** [PROXIMO_HITO_V16_CORE.md](docs/PROXIMO_HITO_V16_CORE.md).
+- `docs/`: [Índice de documentación](docs/README.md), [roadmap Lean](docs/ROADMAP_LEAN.md), [guía por roles](docs/GUIA_ROLES.md).
 
 ## Módulo colaborativo (API)
 

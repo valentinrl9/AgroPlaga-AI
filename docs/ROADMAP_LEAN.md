@@ -1,9 +1,8 @@
 # AgroPlaga AI — Roadmap de Desarrollo (Edición Lean Startup)
 
 **Autor:** Valentín Ruiz León  
-**Actualizado:** 15 jun 2026  
-**Estado:** ✅ **v1.6-core implementado** — pendiente deploy VPS + APK nueva  
-**Documento del hito:** [PROXIMO_HITO_V16_CORE.md](PROXIMO_HITO_V16_CORE.md)
+**Actualizado:** 26 jun 2026  
+**Estado:** ✅ **v1.6-core desplegado en VPS** — piloto en campo (APK con opt-in foto pendiente en móviles)
 
 ---
 
@@ -15,6 +14,7 @@
 | **v1.5 (Refinamiento)** | Escalar robustez y feedback | Panel B2B completo, analítica personal, reentrenamiento IA con fotos reales de campo. | *Pausado hasta aprendizaje* |
 | **v1.6-core** | Validación perito vendible | Foto opt-in, cola panel, corregir plaga, semáforo agricultores piloto | **✅ Implementado** |
 | **v1.6 (completo)** | Diferenciar rol técnico en app | Centro de mando móvil, mapa capas, informes PDF, modo cooperativa | *Tras v1.6-core* |
+| **v1.7 (CEX)** | Cuaderno de campo digital | Tratamientos opt-in, plazos seguridad, export PDF/CSV perito/cooperativa | *Post-piloto* |
 | **v2 (Escalabilidad)** | Previsión y hardening comercial | Modelos ARIMA/Prophet, k-anonymity masivo, Redis, FCM Push, subida a tiendas. | *Diferido* |
 
 **Decisión estratégica (jun 2026):** Se congela el desarrollo de nuevas funciones (predicción, optimización de infraestructura) para evitar el desperdicio (*waste*). Todo el foco se desplaza a conseguir aprendizaje validado con un grupo piloto de 5-6 agricultores.
@@ -61,7 +61,41 @@ AgroPlaga AI combina **diagnóstico fitosanitario offline** con una **red colabo
 - [ ] **Validación cualitativa:** Entrevistas de campo para analizar la calidad de las fotos y usabilidad bajo el plástico del invernadero.
 
 ### Fase 3b — v1.6-core (validación perito) ✅ **COMPLETADA**
-> **Spec:** [PROXIMO_HITO_V16_CORE.md](PROXIMO_HITO_V16_CORE.md) — pendiente deploy VPS + APK.
+
+La validación anterior del perito (botón ✓ sobre eventos anónimos del mapa, sin foto) era testimonial. v1.6-core añade **escaneos con foto opt-in** y **cola de validación B2B** en el panel.
+
+**Backend**
+- [x] Migración `0008_scan_tech_validation`
+- [x] `POST /api/v1/scans/with-image` (multipart)
+- [x] `GET /api/v1/scans/{id}/image`
+- [x] `GET /api/v1/tech/pending-scans`
+- [x] `PATCH /api/v1/scans/{id}/validate` (confirm / correct / reject)
+- [x] `GET /api/v1/tech/farmers` (semáforo piloto)
+- [x] Almacenamiento local `SCAN_IMAGES_DIR` (volumen Docker en piloto)
+
+**Panel web** (`/panel`)
+- [x] Validación de escaneos con foto
+- [x] Vista Agricultores del piloto
+
+**App Flutter**
+- [x] Checkbox opt-in al guardar
+- [x] Subida multipart con foto
+
+**Despliegue**
+- [x] VPS + backend + panel (`docker compose … up -d --build`)
+- [ ] APK release en móviles del piloto (`flutter build apk --release --dart-define=API_BASE_URL=https://agroplaga-ai.farm`)
+
+```bash
+# VPS (desde ~/AgroPlaga-AI)
+git pull origin main
+docker compose -f docker-compose.pilot.yml --env-file deploy/pilot.env -p agroplaga up -d --build
+```
+
+```powershell
+# APK local
+cd frontend
+flutter build apk --release --dart-define=API_BASE_URL=https://agroplaga-ai.farm
+```
 
 ### Fase 4 — v1.6 completo (post v1.6-core) ⏳
 > **Detalle:** `docs/ROADMAP.md` → **Fase 11**.
@@ -79,16 +113,16 @@ Centro de mando móvil, mapa capas, informes PDF, bitácora de voz, etc.
 
 **Ahora (orden acordado):**
 ```
-v1.6-core (foto + cola perito en panel)  ← PRÓXIMO HITO
-    → APK agricultor con opt-in foto
-        → Piloto agricultores (H1–H3) en paralelo si aplica
-            → Onboarding técnicos/cooperativa (H4) solo tras v1.6-core
-                → Entrevistas + métricas → ¿Pivotar o perseverar?
+v1.6-core desplegado en VPS
+    → APK agricultor con opt-in foto en móviles piloto
+        → Piloto H1–H3 (agricultores) + H4 (técnicos/cooperativa en panel)
+            → Entrevistas + métricas → ¿Pivotar o perseverar?
 ```
 
 **Después (si perseveramos):**
 ```
 v1.6 completo (móvil perito, mapa capas, informes)
     → v1.5 reentrenamiento IA con fotos validadas por perito
-        → v2 predicción + hardening comercial
+        → v1.7 Cuaderno de Campo (CEX): tratamientos opt-in + export perito/cooperativa
+            → v2 predicción + hardening comercial
 ```
