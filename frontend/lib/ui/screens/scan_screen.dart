@@ -9,6 +9,7 @@ import "../../data/repositories/scan_repository.dart";
 import "../../models/farm.dart";
 import "../../models/scan.dart";
 import "../../ml/plaga_classifier.dart";
+import "../widgets/app_logo.dart";
 import "../widgets/primary_button.dart";
 import "../widgets/severity_badge.dart";
 
@@ -388,7 +389,7 @@ class _ImagePreview extends StatelessWidget {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      Icon(Icons.eco, size: 48, color: Color(0xFF2E7D32)),
+                      AppLogo(size: 56, borderRadius: 12),
                       SizedBox(height: 8),
                       Text("Sin imagen", style: TextStyle(color: Color(0xFF757575))),
                     ],

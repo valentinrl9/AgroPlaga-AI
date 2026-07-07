@@ -3,6 +3,7 @@ import "package:flutter/material.dart";
 import "../../core/api_config.dart";
 import "../../core/routes.dart";
 import "../../data/repositories/auth_repository.dart";
+import "../widgets/app_logo.dart";
 import "../widgets/primary_button.dart";
 
 class LoginScreen extends StatefulWidget {
@@ -75,7 +76,9 @@ class _LoginScreenState extends State<LoginScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const SizedBox(height: 32),
+            const SizedBox(height: 16),
+            const Center(child: AppLogo(size: 88, borderRadius: 18)),
+            const SizedBox(height: 20),
             const Text("Bienvenido a AgroPlaga AI", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
             const SizedBox(height: 24),
             TextField(

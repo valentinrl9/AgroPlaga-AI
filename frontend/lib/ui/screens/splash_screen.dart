@@ -3,6 +3,7 @@ import "package:flutter/material.dart";
 import "../../core/routes.dart";
 import "../../core/session.dart";
 import "../../data/repositories/user_repository.dart";
+import "../widgets/app_logo.dart";
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -42,7 +43,7 @@ class _SplashScreenState extends State<SplashScreen> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(Icons.eco, size: 64, color: Color(0xFF2E7D32)),
+            AppLogo(size: 96, borderRadius: 20),
             SizedBox(height: 16),
             Text(
               "AgroPlaga AI",
