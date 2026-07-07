@@ -150,8 +150,12 @@ docker compose -f docker-compose.pilot.yml --env-file deploy/pilot.env \
 
 ```bash
 git pull
-./deploy/setup-pilot.sh
+docker compose -f docker-compose.pilot.yml --env-file deploy/pilot.env -p agroplaga up -d --build
 ```
+
+La landing pública queda en **`https://TU_DOMINIO/`** (raíz). Panel en `/panel/`.
+
+Mensajes del formulario de contacto: `GET /api/v1/admin/contact-inquiries` (admin).
 
 ---
 

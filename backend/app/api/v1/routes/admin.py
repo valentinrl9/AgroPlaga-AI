@@ -3,8 +3,10 @@ from sqlalchemy.orm import Session
 
 from app.api.deps import get_db
 from app.core.security import get_current_active_admin
+from app.models.contact_inquiry import ContactInquiry
 from app.models.pilot_invite import PilotInvite
 from app.models.user import User
+from app.schemas.contact import ContactRead
 from app.schemas.invite import AdminUserRead, PilotInviteCreate, PilotInviteRead
 from app.services.invite_service import create_invite
 
@@ -60,3 +62,16 @@ def list_users(
     db: Session = Depends(get_db),
 ):
     return db.query(User).order_by(User.id.asc()).all()
+
+
+@router.get("/contact-inquiries", response_model=list[ContactRead])
+def list_contact_inquiries(
+    _admin: User = Depends(get_current_active_admin),
+    db: Session = Depends(get_db),
+):
+    return (
+        db.query(ContactInquiry)
+        .order_by(ContactInquiry.created_at.desc())
+        .limit(200)
+        .all()
+    )

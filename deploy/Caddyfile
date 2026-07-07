@@ -23,7 +23,10 @@
 		reverse_proxy backend:8000
 	}
 
+	# Landing pública (raíz del dominio)
 	handle {
-		reverse_proxy backend:8000
+		root * /srv/landing
+		try_files {path} /index.html
+		file_server
 	}
 }
