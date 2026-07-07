@@ -19,8 +19,8 @@
     "fusarium",
     "clorosis viral"
   ],
-  "val_accuracy": 0.1619,
-  "train_samples": 984,
+  "val_accuracy": 0.1058,
+  "train_samples": 1432,
   "plant_village_mapping": {
     "Apple___healthy": "sana",
     "Blueberry___healthy": "sana",

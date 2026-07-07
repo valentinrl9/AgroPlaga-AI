@@ -1,7 +1,7 @@
 # AgroPlaga AI — Roadmap de Desarrollo
 
 **Autor:** Valentín Ruiz León  
-**Actualizado:** 26 jun 2026  
+**Actualizado:** 4 jul 2026  
 **Estado:** ✅ **v1 MVP + v1.6-core** — piloto Lean en campo
 
 ---
@@ -14,7 +14,8 @@
 | **v1.6-core** | Validación perito con foto | Cola panel, corregir plaga, opt-in agricultor ✅ |
 | **v1.6 (completo)** | Experiencia móvil perito/técnico | Centro de mando, mapa capas, informes, modo cooperativa |
 | **v1.7 (CEX)** | Cuaderno de campo digital | `farm_treatments`, plazos de seguridad, export PDF/CSV perito/cooperativa |
-| **v1.5 IA** | Reentrenamiento con campo real | Fotos validadas por perito → nuevo TFLite |
+| **v1.8 (Biocidas)** | Recomendaciones con validez normativa | Catálogo local productos autorizados (Ministerio), cruce plaga → TP18 |
+| **v1.5 IA** | Reentrenamiento con campo real | Fotos validadas por perito → nuevo TFLite *(pausado hasta fotos piloto)* |
 | **v2** | Previsión y refinamiento avanzado | Predicción climática, ARIMA/Prophet, KDE/Redis, FCM, hardening producción |
 
 **Decisión (jun 2026):** la predicción queda **fuera del MVP**. Primero cerrar v1 redondo; estudiar previsión cuando haya datos y uso real.
@@ -41,6 +42,7 @@ AgroPlaga AI combina **diagnóstico fitosanitario offline** (PlagaScan + TFLite)
 | Web cooperativas | API REST compartida. Panel web separado (React) en fase posterior; misma API que el móvil. | |
 | Heatmap / alertas | Servicios desacoplados (`heatmap_service`, `alert_engine`) con precomputación y cache (Redis en producción). | |
 | **Cuaderno de Campo (CEX)** | Integrar tabla `farm_treatments` vinculada a `scans`, `farms` y `agri_zones`. Exportación estructurada (PDF/CSV) para perito y cooperativa. Registro **opt-in** del agricultor tras decidir aplicar tratamiento. | Transforma una obligación burocrática tediosa en un automatismo derivado del propio escaneo con IA offline. El perito y la cooperativa reciben borrador en tiempo casi real. |
+| **Registro Oficial de Biocidas** | Réplica local en PostgreSQL del catálogo del Ministerio de Sanidad; actualización ETL periódica. Consulta offline en app/panel sin depender del portal en tiempo real. | Recomendaciones fitosanitarias alineadas con productos **TP18** (insecticidas/acaricidas) autorizados en España. Complementa CEX y el motor de recomendaciones actual. |
 
 ---
 
@@ -105,7 +107,7 @@ AgroPlaga AI combina **diagnóstico fitosanitario offline** (PlagaScan + TFLite)
 - [x] Inferencia TFLite en Android/iOS + heurística web
 - [x] Catálogo ampliado a 15 plagas Poniente (`docs/PLAGAS_PONIENTE.md`)
 - [x] API `GET /api/v1/plagues` + recomendaciones para las 15 clases
-- [ ] Reentrenamiento con `ml/extra_data/` (insectos de invernadero) — **pausado post-MVP**
+- [ ] Reentrenamiento con `ml/extra_data/` (insectos de invernadero) — **⏸️ pausado** hasta fotos verificadas de perito/piloto
 
 #### v1.5 — Feedback IA y roles (decisión post-piloto, jun 2026)
 > **Decisión de producto:** el agricultor **no corrige** la plaga detectada (no es experto; genera desconfianza si la IA falla a menudo).  
@@ -198,6 +200,34 @@ AgroPlaga AI combina **diagnóstico fitosanitario offline** (PlagaScan + TFLite)
 
 ---
 
+### Fase 12 — Integración con Registro Oficial de Biocidas (Ministerio de Sanidad) ⏳ PENDIENTE (v1.8)
+
+> **Estado:** PENDIENTE — retomar tras v1.7 CEX y/o cuando el motor de recomendaciones deba ofrecer productos con **validez normativa** en España.  
+> **Objetivo:** Cruzar los diagnósticos visuales del motor de IA (y las correcciones del perito) con el catálogo legal de productos autorizados, para recomendaciones fitosanitarias/biocidas útiles a técnicos y cooperativas.
+
+#### Especificaciones técnicas
+
+- [ ] **Módulo ETL (Python / FastAPI backend):** *cron job* mensual (o flujo automatizado) que ejecute scraping programático sobre el portal de Sanidad:  
+  `https://www.sanidad.gob.es/ciudadanos/productos.do?tipo=biocidas`
+- [ ] **Estrategia de extracción:** Sin API pública — interceptar el formulario dinámico mediante peticiones HTTP (`POST`/`GET` al método `realizarBusqueda`) y parsear el árbol HTML con **BeautifulSoup** o **Selectolax**.
+- [ ] **Data warehouse local (PostgreSQL):** Tabla(s) dedicada(s), p. ej. `biocide_products`, con al menos:
+  - Nombre comercial y **número de registro oficial**
+  - Clasificación de usuarios (profesional, especializado, público)
+  - Composición química (sustancias activas y porcentajes)
+  - Tipo de producto — foco **TP18** (insecticidas y acaricidas)
+  - Metadatos de sincronización (`synced_at`, hash de versión del catálogo)
+- [ ] **Mapeo plaga → producto:** Tabla de relación `plague_biocide` (EPPO / etiqueta AgroPlaga ↔ materias activas / registros TP18), mantenida por perito o seed inicial + revisión técnica.
+- [ ] **API interna:** `GET /api/v1/biocides?plague=…` (y variantes panel B2B) sirviendo **solo datos locales** — latencia mínima, disponibilidad 100 % sin depender de servidores externos en tiempo real.
+- [ ] **Consumo en app:** Enriquecer pantalla de resultado y flujo CEX v1.7 con productos TP18 autorizados sugeridos (siempre como **orientación**; decisión final del técnico).
+- [ ] **Panel B2B:** Vista de catálogo local, fecha última sync y alerta si el ETL falla o el catálogo lleva >30 días sin actualizar.
+- [ ] **Cumplimiento legal:** Atribución fuente Ministerio; disclaimer en UI («consulte ficha oficial y legislación vigente»).
+
+**Dependencias:** v1.7 CEX (`farm_treatments` con n.º registro) · catálogo 15 plagas (`shared/plague_catalog.json`) · recomendaciones actuales (Fase 8 MVP).
+
+**Entregable v1.8:** recomendaciones fitosanitarias cruzadas con biocidas autorizados en España, consultables offline desde la app y el panel.
+
+---
+
 ### Fase 9 — Predicción y clima ⏸️ DIFERIDA (v2)
 > No forma parte del MVP. Requiere volumen de datos históricos y v1 estable.
 
@@ -280,6 +310,13 @@ Piloto Lean cerrado + métricas cualitativas
                     → Modo cooperativa + bitácora voz + informe PDF
 ```
 
+**Post-piloto — v1.7 CEX + v1.8 Biocidas:**
+```
+v1.7 farm_treatments + plazos seguridad + export CEX
+    → v1.8 ETL catálogo Ministerio (biocidas TP18) en PostgreSQL
+        → Cruce plaga AgroPlaga ↔ productos autorizados (app + panel, consulta local)
+```
+
 **v2 (siguiente horizonte):**
 ```
 Datos acumulados + feedback IA + v1.6 en producción
@@ -298,9 +335,10 @@ Datos acumulados + feedback IA + v1.6 en producción
 | Web cooperativas | React + TypeScript, Leaflet | Panel B2B, validación, dashboard |
 | API | FastAPI, Pydantic, SQLAlchemy, GeoAlchemy2 | REST + PostGIS |
 | **Exportación CEX** | ReportLab + Pandas (Python) | Borrador estructurado del Cuaderno de Campo (PDF/CSV) para perito y cooperativa *(v1.7)* |
-| BD | PostgreSQL 16 + PostGIS | Datos transaccionales + geo |
+| **ETL Biocidas** | BeautifulSoup / Selectolax + APScheduler | Sincronización mensual catálogo Ministerio → PostgreSQL *(v1.8)* |
+| BD | PostgreSQL 16 + PostGIS | Datos transaccionales + geo + catálogo biocidas local |
 | Cache | Redis (fase 4+) | Heatmap / alertas |
-| Jobs | APScheduler / Celery (fase 5+) | Precomputación |
+| Jobs | APScheduler / Celery (fase 5+) | Precomputación + cron ETL biocidas |
 | IA entrenamiento | TensorFlow/Keras, Colab | Reentrenamiento v1.5 |
 | IA inferencia | TFLite en dispositivo | PlagaScan offline |
 | Infra | Docker Compose → VPS, S3, TLS | Piloto y producción |
@@ -348,6 +386,7 @@ Checklist, despliegue y estado del piloto: [ROADMAP_LEAN.md](ROADMAP_LEAN.md) �
 | 3 | **v1.6 completo** (Fase 11) | Centro de mando móvil, mapa capas, informes PDF |
 | 4 | **v1.5 IA** | Reentrenamiento con fotos validadas por perito |
 | 5 | **v1.7 CEX** | Cuaderno de campo: `farm_treatments`, plazos seguridad, export perito/cooperativa |
-| 6 | **Fase 10 / v2** | Hardening + predicción |
+| 6 | **v1.8 Biocidas** | ETL catálogo Ministerio + recomendaciones TP18 con validez normativa |
+| 7 | **Fase 10 / v2** | Hardening + predicción |
 
 **Explícitamente fuera del MVP cerrado:** Fase 9 (predicción) hasta decidir v2.

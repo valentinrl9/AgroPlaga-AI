@@ -10,6 +10,7 @@
 
 | Situación | Lee primero |
 |-----------|-------------|
+| **Hacer un vídeo pitch (~1 min)** | [GUION_VIDEO_1MIN.md](GUION_VIDEO_1MIN.md) |
 | **Usar la app o explicarla en campo** | [GUIA_ROLES.md](GUIA_ROLES.md) |
 | **Organizar el piloto (métricas, hipótesis)** | [PILOTO_EXPERIMENTO.md](PILOTO_EXPERIMENTO.md) |
 | **Entrevistar participantes** | [PILOTO_ENTREVISTAS.md](PILOTO_ENTREVISTAS.md) |
@@ -75,9 +76,11 @@
 
 ---
 
-## Estado actual (jun 2026)
+## Estado actual (jul 2026)
 
 - **v1 MVP + piloto Lean:** desplegado en VPS con HTTPS.
 - **v1.6-core:** validación perito con foto en panel — implementado y desplegado.
-- **Próximo:** APK en móviles piloto, entrevistas H4, v1.6 completo / v1.5 IA.
+- **v1.5 IA:** pausada hasta fotos verificadas de perito/piloto.
+- **Próximo:** piloto H4, v1.6 completo / CEX v1.7.
+- **Pendiente (v1.8):** [Registro Oficial de Biocidas](ROADMAP.md#fase-12--integración-con-registro-oficial-de-biocidas-ministerio-de-sanidad--pendiente-v18) — ETL Ministerio + recomendaciones TP18.
 - **Futuro (v1.7):** Cuaderno de Campo (CEX) — registro opt-in de tratamientos tras escaneo, plazos de seguridad, export para perito/cooperativa. Ver [ROADMAP.md](ROADMAP.md) → Fase 8.

@@ -1,8 +1,8 @@
 # AgroPlaga AI — Roadmap de Desarrollo (Edición Lean Startup)
 
 **Autor:** Valentín Ruiz León  
-**Actualizado:** 26 jun 2026  
-**Estado:** ✅ **v1.6-core desplegado en VPS** — piloto en campo (APK con opt-in foto pendiente en móviles)
+**Actualizado:** 4 jul 2026  
+**Estado:** ✅ **v1.6-core desplegado en VPS** — piloto en campo · IA v1.5 **pausada** hasta fotos verificadas
 
 ---
 
@@ -11,10 +11,11 @@
 | Versión | Objetivo | Incluye | Estado |
 |---------|----------|---------|--------|
 | **v1 (MVP-Lean)** | Validar valor central en campo | PlagaScan (offline), consentimiento SIGPAC, agregación anónima, trazabilidad por UUID de dispositivo. | **Listo para despliegue** |
-| **v1.5 (Refinamiento)** | Escalar robustez y feedback | Panel B2B completo, analítica personal, reentrenamiento IA con fotos reales de campo. | *Pausado hasta aprendizaje* |
+| **v1.5 (Refinamiento)** | Escalar robustez y feedback | Panel B2B completo, analítica personal, reentrenamiento IA con fotos reales de campo. | *⏸️ Pausado — fotos verificadas* |
 | **v1.6-core** | Validación perito vendible | Foto opt-in, cola panel, corregir plaga, semáforo agricultores piloto | **✅ Implementado** |
 | **v1.6 (completo)** | Diferenciar rol técnico en app | Centro de mando móvil, mapa capas, informes PDF, modo cooperativa | *Tras v1.6-core* |
 | **v1.7 (CEX)** | Cuaderno de campo digital | Tratamientos opt-in, plazos seguridad, export PDF/CSV perito/cooperativa | *Post-piloto* |
+| **v1.8 (Biocidas)** | Recomendaciones normativas | Catálogo local Ministerio (TP18), cruce plaga → producto autorizado | *Pendiente* |
 | **v2 (Escalabilidad)** | Previsión y hardening comercial | Modelos ARIMA/Prophet, k-anonymity masivo, Redis, FCM Push, subida a tiendas. | *Diferido* |
 
 **Decisión estratégica (jun 2026):** Se congela el desarrollo de nuevas funciones (predicción, optimización de infraestructura) para evitar el desperdicio (*waste*). Todo el foco se desplaza a conseguir aprendizaje validado con un grupo piloto de 5-6 agricultores.
@@ -103,9 +104,23 @@ flutter build apk --release --dart-define=API_BASE_URL=https://agroplaga-ai.farm
 Centro de mando móvil, mapa capas, informes PDF, bitácora de voz, etc.
 
 ### Fases en Pausa (Fases 6, 7, 8, 9 y 10 del plan original) ⏸️
-- Modificaciones avanzadas de la IA y reentrenamiento masivo (Pausado post-MVP).
+- Modificaciones avanzadas de la IA y reentrenamiento masivo (**pausado** hasta fotos verificadas de perito/piloto).
 - Exportación pesada de PDFs y hardening de seguridad comercial (Cifrados AES-256, k-anonymity estricto).
 - Modelos predictivos ARIMA e integración con Open-Meteo (Diferidos explícitamente a la v2).
+
+### Próximas funcionalidades pendientes ⏳
+
+#### Integración automatizada con el Registro Oficial de Biocidas (Ministerio de Sanidad) — v1.8
+
+**Estado:** PENDIENTE — retomar tras v1.7 CEX o cuando las recomendaciones deban alinearse con productos **legalmente autorizados** en España.
+
+**Objetivo:** Cruzar diagnósticos visuales (IA + validación perito) con el catálogo oficial de biocidas para orientar a técnicos y cooperativas con productos **TP18** (insecticidas/acaricidas) registrados.
+
+**Tareas clave (resumen):**
+- ETL mensual (Python) sobre `sanidad.gob.es` — scraping formulario `realizarBusqueda` (BeautifulSoup / Selectolax).
+- Almacén local PostgreSQL: nombre comercial, n.º registro, tipo usuario, composición, TP18.
+- API y app consultan **solo BD local** (100 % disponible, sin depender del portal en tiempo real).
+- Detalle técnico completo: [ROADMAP.md](ROADMAP.md) → **Fase 12**.
 
 ---
 
@@ -124,5 +139,6 @@ v1.6-core desplegado en VPS
 v1.6 completo (móvil perito, mapa capas, informes)
     → v1.5 reentrenamiento IA con fotos validadas por perito
         → v1.7 Cuaderno de Campo (CEX): tratamientos opt-in + export perito/cooperativa
+            → v1.8 Registro Biocidas (ETL Ministerio + recomendaciones TP18 normativas)
             → v2 predicción + hardening comercial
 ```
