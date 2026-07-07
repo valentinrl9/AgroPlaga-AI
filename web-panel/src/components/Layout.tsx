@@ -31,9 +31,12 @@ export default function Layout() {
   return (
     <div className="app-shell">
       <header className="topbar">
-        <div>
-          <h1>AgroPlaga AI</h1>
-          <p className="muted">Panel cooperativas — vista agregada SIGPAC</p>
+        <div className="topbar-brand">
+          <img src={`${import.meta.env.BASE_URL}app_logo.png`} alt="AgroPlaga AI" className="brand-logo" />
+          <div>
+            <h1>AgroPlaga AI</h1>
+            <p className="muted">Panel cooperativas — vista agregada SIGPAC</p>
+          </div>
         </div>
         <div className="topbar-right">
           {profile && <span>{profile.name} ({profile.role})</span>}

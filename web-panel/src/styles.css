@@ -20,6 +20,14 @@ body { margin: 0; }
 }
 
 .topbar h1 { margin: 0; font-size: 1.4rem; }
+.topbar-brand { display: flex; gap: 0.85rem; align-items: center; }
+.brand-logo {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  object-fit: cover;
+  flex-shrink: 0;
+}
 .topbar .muted { margin: 0.2rem 0 0; opacity: 0.9; font-size: 0.85rem; }
 .topbar-right { display: flex; gap: 1rem; align-items: center; }
 .topbar button { background: white; color: #2e7d32; border: none; padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; }
@@ -56,6 +64,14 @@ body { margin: 0; }
   box-shadow: 0 8px 24px rgba(0,0,0,0.08);
   display: grid;
   gap: 0.75rem;
+  justify-items: center;
+}
+
+.login-logo {
+  width: 88px;
+  height: 88px;
+  border-radius: 16px;
+  object-fit: cover;
 }
 
 .login-card label { display: grid; gap: 0.3rem; font-size: 0.9rem; }

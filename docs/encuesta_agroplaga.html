@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Encuesta de Validación - AgroPlaga AI</title>
+    <link rel="icon" type="image/png" href="assets/app_logo.png">
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            color: #2c3e50;
+            line-height: 1.4;
+            margin: 0;
+            padding: 20px;
+            font-size: 11pt;
+        }
+        .header {
+            border-bottom: 3px solid #27ae60;
+            padding-bottom: 10px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo-title h1 {
+            color: #27ae60;
+            margin: 0;
+            font-size: 22pt;
+            letter-spacing: -0.5px;
+        }
+        .logo-title p {
+            margin: 3px 0 0 0;
+            color: #7f8c8d;
+            font-size: 10pt;
+        }
+        .meta-box {
+            background-color: #f8f9fa;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 10px;
+            margin-bottom: 15px;
+            font-size: 9.5pt;
+        }
+        .meta-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+        }
+        .meta-item span {
+            font-weight: bold;
+            color: #34495e;
+        }
+        h2 {
+            color: #2c3e50;
+            font-size: 12pt;
+            background-color: #ebf5fb;
+            padding: 6px 10px;
+            margin-top: 15px;
+            margin-bottom: 8px;
+            border-left: 4px solid #2980b9;
+            border-radius: 0 4px 4px 0;
+        }
+        .question {
+            margin-bottom: 10px;
+            page-break-inside: avoid;
+        }
+        .question-text {
+            font-weight: 600;
+            margin-bottom: 4px;
+            color: #2c3e50;
+        }
+        .scale {
+            display: flex;
+            margin-top: 4px;
+            margin-bottom: 4px;
+        }
+        .scale-label {
+            font-size: 8.5pt;
+            color: #7f8c8d;
+            align-self: center;
+        }
+        .scale-options {
+            display: flex;
+            margin: 0 10px;
+        }
+        .scale-box {
+            border: 1px solid #cbd5e1;
+            width: 26px;
+            height: 20px;
+            text-align: center;
+            line-height: 20px;
+            margin-right: 4px;
+            font-size: 9pt;
+            font-weight: bold;
+            color: #475569;
+            border-radius: 3px;
+        }
+        .options-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 4px;
+            font-size: 9.5pt;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+        }
+        .checkbox-box {
+            border: 1px solid #cbd5e1;
+            width: 12px;
+            height: 12px;
+            margin-right: 6px;
+            border-radius: 2px;
+        }
+        .open-line {
+            border-bottom: 1px dotted #94a3b8;
+            height: 22px;
+            margin-top: 4px;
+        }
+        .open-lines {
+            border-bottom: 1px dotted #94a3b8;
+            height: 20px;
+            margin-top: 4px;
+        }
+        .footer-note {
+            text-align: center;
+            color: #94a3b8;
+            font-size: 8pt;
+            margin-top: 20px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 8px;
+        }
+        @media print {
+            body { padding: 0; }
+            .page-break { page-break-before: always; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CABECERA -->
+    <div class="header">
+        <div class="logo-title">
+            <img src="assets/app_logo.png" alt="AgroPlaga AI" style="width:56px;height:56px;border-radius:12px;vertical-align:middle;margin-right:12px;">
+            <div style="display:inline-block;vertical-align:middle;">
+            <h1>AgroPlaga AI</h1>
+            <p>Formulario de Validación Técnica y de Mercado — MVP v1</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- DATOS DE CONTROL Y SEGMENTACIÓN (Para análisis de sesgos) -->
+    <div class="meta-box">
+        <strong style="color: #27ae60; display: block; margin-bottom: 8px; font-size: 10pt;">PERFIL DEMOGRÁFICO Y OPERATIVO DEL AGRICULTOR</strong>
+        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; font-size: 9pt;">
+            
+            <!-- Fila 1: Identificación y Edad -->
+            <div class="meta-item"><span>Nombre / Finca:</span> ______________________</div>
+            <div class="meta-item"><span>Edad del agricultor:</span> ______ años</div>
+            <div class="meta-item"><span>Relevo generacional en la finca:</span> <span style="font-weight: normal;">[ ] Sí [ ] No</span></div>
+            
+            <!-- Fila 2: Datos SIGPAC y Magnitud -->
+            <div class="meta-item"><span>Zona SIGPAC (Municipio/Recinto):</span> _________</div>
+            <div class="meta-item"><span>Nº total de fincas/invernaderos:</span> ______</div>
+            <div class="meta-item"><span>Superficie total cultivada:</span> ______ Metros/Hectáreas</div>
+            
+            <!-- Fila 3: Tipo de Cultivo y Campaña -->
+            <div class="meta-item"><span>Cultivo principal actual:</span> _________________</div>
+            <div class="meta-item"><span>Variedad / Tipo (ej. Pimiento Palermo):</span> _________</div>
+            <div class="meta-item"><span>Ciclo de cultivo:</span> <span style="font-weight: normal;">[ ] Otoño [ ] Primavera [ ] Todo el año</span></div>
+            
+            <!-- Fila 4: Variables Críticas de Infraestructura y Filosofía Agrícola -->
+            <div class="meta-item">
+                <span>Tipo de estructura:</span><br>
+                <span style="font-weight: normal;">[ ] Parral / Raspa y amagado<br>[ ] Multitúnel / Cristal</span>
+            </div>
+            <div class="meta-item">
+                <span>Método principal de control:</span><br>
+                <span style="font-weight: normal;">[ ] 100% Control Biológico (Bichos)<br>[ ] Producción Integrada / Mixto<br>[ ] Químico Tradicional</span>
+            </div>
+            <div class="meta-item">
+                <span>Uso actual de tecnología móvil:</span><br>
+                <span style="font-weight: normal;">[ ] Solo WhatsApp / Llamadas<br>[ ] Consulta APPs de clima/precios<br>[ ] Maneja software de riego/cooperativa</span>
+            </div>
+            
+        </div>
+    </div>
+
+    <!-- BLOQUE 1 -->
+    <h2>Bloque 1: Comprensión de la Propuesta de Valor (Vídeo Informativo)</h2>
+    
+    <div class="question">
+        <div class="question-text">1. Tras ver el vídeo de presentación, ¿dirías que te queda claro qué problema resuelve la aplicación?</div>
+        <div class="scale">
+            <div class="scale-label">No queda claro (1)</div>
+            <div class="scale-options">
+                <div class="scale-box">1</div><div class="scale-box">2</div><div class="scale-box">3</div><div class="scale-box">4</div><div class="scale-box">5</div>
+            </div>
+            <div class="scale-label">(5) Totalmente claro</div>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-text">2. En tus propias palabras, ¿cuál dirías que es la función o ventaja principal de AgroPlaga AI?</div>
+        <div class="open-line"></div>
+    </div>
+
+    <div class="question">
+        <div class="question-text">3. El vídeo menciona que el diagnóstico fitosanitario se hace "100% offline" (sin internet dentro del invernadero). ¿Entendiste esta característica?</div>
+        <div class="options-list">
+            <div class="checkbox-item"><div class="checkbox-box"></div> Sí, lo entiendo perfectamente</div>
+            <div class="checkbox-item"><div class="checkbox-box"></div> No me ha quedado claro cómo es posible</div>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-text">4. ¿Qué elemento, imagen o frase explicada en el vídeo te ha llamado más la atención?</div>
+        <div class="open-line"></div>
+    </div>
+
+    <!-- BLOQUE 2 -->
+    <h2>Bloque 2: Dolor Real y Ajuste de Mercado</h2>
+    
+    <div class="question">
+        <div class="question-text">5. ¿Con qué frecuencia sufres mermas de producción o pérdidas debido a una detección tardía de plagas?</div>
+        <div class="options-list">
+            <div class="checkbox-item"><div class="checkbox-box"></div> Nunca</div>
+            <div class="checkbox-item"><div class="checkbox-box"></div> Raras veces</div>
+            <div class="checkbox-item"><div class="checkbox-box"></div> A menudo</div>
+            <div class="checkbox-item"><div class="checkbox-box"></div> En cada campaña</div>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-text">6. Cuando estás bajo el plástico y te surge una duda fitosanitaria, ¿cuánta molestia te supone no tener cobertura móvil para consultar o enviar fotos?</div>
+        <div class="scale">
+            <div class="scale-label">Ninguna molestia (1)</div>
+            <div class="scale-options">
+                <div class="scale-box">1</div><div class="scale-box">2</div><div class="scale-box">3</div><div class="scale-box">4</div><div class="scale-box">5</div>
+            </div>
+            <div class="scale-label">(5) Mucha molestia</div>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-text">7. ¿Cuánto sueles tardar en aplicar un tratamiento desde que sospechas de un foco hasta que consigues un diagnóstico totalmente seguro?</div>
+        <div class="options-list">
+            <div class="checkbox-item"><div class="checkbox-box"></div> Menos de 24 horas</div>
+            <div class="checkbox-item"><div class="checkbox-box"></div> Entre 2 y 4 días</div>
+            <div class="checkbox-item"><div class="checkbox-box"></div> Más de una semana</div>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-text">8. ¿Qué nivel de preocupación te genera la posibilidad de que una plaga de las fincas vecinas termine saltando a tu invernadero sin enterarte a tiempo?</div>
+        <div class="scale">
+            <div class="scale-label">No me preocupa (1)</div>
+            <div class="scale-options">
+                <div class="scale-box">1</div><div class="scale-box">2</div><div class="scale-box">3</div><div class="scale-box">4</div><div class="scale-box">5</div>
+            </div>
+            <div class="scale-label">(5) Me preocupa mucho</div>
+        </div>
+    </div>
+
+    <!-- SALTO DE PÁGINA FORZADO PARA IMPRESIÓN LIMPIA -->
+    <div class="page-break"></div>
+
+    <!-- BLOQUE 3 -->
+    <h2>Bloque 3: Validación de la Solución (PlagaScan e Inteligencia Local)</h2>
+    
+    <div class="question">
+        <div class="question-text">9. ¿Cómo de útil te resultaría poder identificar una plaga en segundos usando la cámara del móvil de forma autónoma y sin conexión a internet?</div>
+        <div class="scale">
+            <div class="scale-label">Inútil (1)</div>
+            <div class="scale-options">
+                <div class="scale-box">1</div><div class="scale-box">2</div><div class="scale-box">3</div><div class="scale-box">4</div><div class="scale-box">5</div>
+            </div>
+            <div class="scale-label">(5) Imprescindible</div>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-text">10. La app ofrece recomendaciones inmediatas de tratamiento tras el escaneo. ¿Confiarías en las sugerencias de una IA especializada en nuestra comarca?</div>
+        <div class="scale">
+            <div class="scale-label">No confiaría (1)</div>
+            <div class="scale-options">
+                <div class="scale-box">1</div><div class="scale-box">2</div><div class="scale-box">3</div><div class="scale-box">4</div><div class="scale-box">5</div>
+            </div>
+            <div class="scale-label">(5) Confiaría plenamente</div>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-text">11. Saber en tiempo real qué plagas se están detectando en tu entorno mediante un mapa de calor vivo, ¿te ayudaría a proteger mejor tu explotación?</div>
+        <div class="scale">
+            <div class="scale-label">No ayudaría (1)</div>
+            <div class="scale-options">
+                <div class="scale-box">1</div><div class="scale-box">2</div><div class="scale-box">3</div><div class="scale-box">4</div><div class="scale-box">5</div>
+            </div>
+            <div class="scale-label">(5) Ayudaría mucho</div>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-text">12. El sistema permite que los peritos de las cooperativas validen oficialmente los focos del mapa. ¿Te daría más tranquilidad esta supervisión técnica?</div>
+        <div class="scale">
+            <div class="scale-label">Ninguna (1)</div>
+            <div class="scale-options">
+                <div class="scale-box">1</div><div class="scale-box">2</div><div class="scale-box">3</div><div class="scale-box">4</div><div class="scale-box">5</div>
+            </div>
+            <div class="scale-label">(5) Mucha tranquilidad</div>
+        </div>
+    </div>
+
+    <!-- BLOQUE 4 -->
+    <h2>Bloque 4: Barreras Críticas: Privacidad y Confianza Comunitaria</h2>
+    
+    <div class="question">
+        <div class="question-text">13. Muchos agricultores evitan compartir datos por miedo a que se sepa qué plaga hay en su linde exacta. ¿Te preocupa este punto?</div>
+        <div class="scale">
+            <div class="scale-label">No me preocupa (1)</div>
+            <div class="scale-options">
+                <div class="scale-box">1</div><div class="scale-box">2</div><div class="scale-box">3</div><div class="scale-box">4</div><div class="scale-box">5</div>
+            </div>
+            <div class="scale-label">(5) Me preocupa bastante</div>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-text">14. AgroPlaga AI oculta tu linde real y solo agrupa las alertas de forma anónima por municipios o zonas SIGPAC. Sabiendo esto, ¿aportarías tus datos al mapa?</div>
+        <div class="options-list">
+            <div class="checkbox-item"><div class="checkbox-box"></div> Sí, con total seguridad</div>
+            <div class="checkbox-item"><div class="checkbox-box"></div> Seguiría teniendo dudas</div>
+            <div class="checkbox-item"><div class="checkbox-box"></div> No compartiría nada</div>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-text">15. Si vieses en el mapa un aviso de riesgo alto en tu zona agraria, ¿tomarías medidas preventivas aunque no conozcas la finca exacta del brote?</div>
+        <div class="options-list">
+            <div class="checkbox-item"><div class="checkbox-box"></div> Sí, de inmediato</div>
+            <div class="checkbox-item"><div class="checkbox-box"></div> Solo si lo confirma mi técnico</div>
+            <div class="checkbox-item"><div class="checkbox-box"></div> No haría nada</div>
+        </div>
+    </div>
+
+    <!-- BLOQUE 5 -->
+    <h2>Bloque 5: Intención de Adopción y Futuro del Producto</h2>
+    
+    <div class="question">
+        <div class="question-text">16. Si la aplicación estuviera disponible de forma gratuita hoy mismo, ¿te la descargarías para probar su escáner offline?</div>
+        <div class="options-list">
+            <div class="checkbox-item"><div class="checkbox-box"></div> Totalmente seguro</div>
+            <div class="checkbox-item"><div class="checkbox-box"></div> Probablemente</div>
+            <div class="checkbox-item"><div class="checkbox-box"></div> Lo dudo mucho</div>
+            <div class="checkbox-item"><div class="checkbox-box"></div> No me interesa</div>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-text">17. ¿Estarías dispuesto a participar en un grupo cerrado de pruebas piloto de 10 días para usar la app en tu propio invernadero?</div>
+        <div class="options-list">
+            <div class="checkbox-item"><div class="checkbox-box"></div> Sí (Teléfono/Contacto: ________________________ )</div>
+            <div class="checkbox-item"><div class="checkbox-box"></div> No de momento</div>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-text">18.1. Pensando en el beneficio de tener diagnósticos IA al instante sin cobertura y un mapa para anticiparte a las plagas de la zona, ¿qué precio te parecería justo pagar por esta aplicación?</div>
+        <div class="options-list">
+            <div class="checkbox-item"><div class="checkbox-box"></div> Nada, considero que debería ser un servicio gratuito o pagado por mi cooperativa.</div>
+            <div class="checkbox-item"><div class="checkbox-box"></div> Entre 5€ y 10€ al mes (Precio accesible por comodidad).</div>
+            <div class="checkbox-item"><div class="checkbox-box"></div> Entre 11€ y 25€ al mes (Precio razonable si me ahorra una sola pérdida de cultivo).</div>
+            <div class="checkbox-item"><div class="checkbox-box"></div> Más de 25€ al mes (Herramienta profesional de alto valor).</div>
+        </div>
+    </div>
+
+    <div class="question">
+        <div class="question-text">19. ¿Cuál dirías que es el beneficio principal que aporta AgroPlaga AI que te haría elegirla frente a buscar información en internet?</div>
+        <div class="open-lines"></div>
+    </div>
+
+    <div class="question">
+        <div class="question-text">20. ¿Qué otra función o visualización del mapa consideras indispensable para que esta app sea parte de tu rutina de trabajo?</div>
+        <div class="open-lines"></div>
+    </div>
+
+    <!-- PIE DE PÁGINA -->
+    <div class="footer-note">
+        Muchas gracias por tu tiempo. Tus respuestas nos ayudan a blindar la sanidad vegetal de nuestra comarca de forma segura y privada.
+    </div>
+
+</body>
+</html>

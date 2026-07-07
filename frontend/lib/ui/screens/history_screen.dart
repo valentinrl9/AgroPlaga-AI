@@ -5,6 +5,7 @@ import "../../core/routes.dart";
 import "../../core/session.dart";
 import "../../data/repositories/scan_repository.dart";
 import "../../models/scan.dart";
+import "../widgets/app_logo.dart";
 import "../widgets/primary_button.dart";
 import "../widgets/severity_badge.dart";
 
@@ -87,7 +88,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          const Icon(Icons.eco_outlined, size: 48, color: Color(0xFF2E7D32)),
+                          const AppLogo(size: 48, borderRadius: 10),
                           const SizedBox(height: 12),
                           const Text("Aún no tienes escaneos."),
                           const SizedBox(height: 16),

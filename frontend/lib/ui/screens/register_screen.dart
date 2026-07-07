@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 
 import "../../core/routes.dart";
 import "../../data/repositories/auth_repository.dart";
+import "../widgets/app_logo.dart";
 import "../widgets/primary_button.dart";
 
 class RegisterScreen extends StatefulWidget {
@@ -94,7 +95,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              const SizedBox(height: 24),
+              const SizedBox(height: 16),
+              const Center(child: AppLogo(size: 88, borderRadius: 18)),
+              const SizedBox(height: 20),
               const Text(
                 "Crear cuenta AgroPlaga AI",
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),

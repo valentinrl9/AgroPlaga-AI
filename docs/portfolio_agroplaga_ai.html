@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Catálogo Tecnológico - AgroPlaga AI</title>
+    <link rel="icon" type="image/png" href="assets/app_logo.png">
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #2c3e50;
+            line-height: 1.6;
+            margin: 0;
+            padding: 40px;
+            font-size: 11pt;
+            background-color: #fdfefe;
+        }
+        .header {
+            text-align: center;
+            border-bottom: 3px solid #27ae60;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        .header h1 {
+            color: #1e375a;
+            margin: 0;
+            font-size: 26pt;
+            font-weight: 800;
+        }
+        .header p {
+            color: #27ae60;
+            margin: 5px 0 0 0;
+            font-size: 12pt;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+        }
+        .intro-text {
+            text-align: center;
+            font-size: 12pt;
+            max-width: 720px;
+            margin: 0 auto 35px auto;
+            color: #566573;
+        }
+        h2 {
+            color: #1e375a;
+            font-size: 15pt;
+            border-left: 5px solid #27ae60;
+            padding-left: 12px;
+            margin-top: 30px;
+            margin-bottom: 15px;
+        }
+        .service-block {
+            background: #fff;
+            border: 1px solid #e5e8e8;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            page-break-inside: avoid;
+        }
+        .service-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #f2f4f4;
+            padding-bottom: 8px;
+            margin-bottom: 12px;
+        }
+        .service-title {
+            color: #27ae60;
+            font-size: 13pt;
+            font-weight: bold;
+            margin: 0;
+        }
+        .service-tag {
+            background-color: #e8f8f5;
+            color: #117a65;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 8.5pt;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        ul {
+            margin: 8px 0;
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 6px;
+        }
+        .benefit-box {
+            background-color: #eaf2f8;
+            border-radius: 6px;
+            padding: 12px 18px;
+            margin-top: 12px;
+            font-size: 10pt;
+            color: #2980b9;
+            border-left: 3px solid #2980b9;
+        }
+        .footer-commercial {
+            text-align: center;
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #27ae60;
+            font-size: 10pt;
+        }
+        .footer-commercial strong {
+            color: #1e375a;
+        }
+        @media print {
+            body { padding: 0; background-color: #fff; }
+            .service-block { box-shadow: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- CABECERA COMERCIAL -->
+    <div class="header">
+        <img src="assets/app_logo.png" alt="AgroPlaga AI" style="width:72px;height:72px;border-radius:16px;margin-bottom:12px;">
+        <h1>AgroPlaga AI</h1>
+        <p>Ecosistema de Diagnóstico Inmediato Offline y Alertas Comarcales</p>
+    </div>
+
+    <div class="intro-text">
+        La solución tecnológica móvil que dota a los agricultores y técnicos agrícolas de un ojo clínico digital. Identifique plagas en segundos sin necesidad de cobertura de internet bajo el plástico y colabore en una red de vigilancia comarcal 100% privada.
+    </div>
+
+    <h2>Catálogo de Soluciones de Software (MVP v1)</h2>
+
+    <!-- MÓDULO 1 -->
+    <div class="service-block">
+        <div class="service-header">
+            <div class="service-title">1. PlagaScan: Diagnóstico Avanzado por IA (100% Offline)</div>
+            <div class="service-tag">Aplicación Móvil</div>
+        </div>
+        <p style="margin-top: 0;">Un motor de reconocimiento visual inteligente que se ejecuta directamente en el teléfono del agricultor, garantizando autonomía total dentro del invernadero.</p>
+        <ul>
+            <li><strong>Inferencia local sin cobertura:</strong> Capacidad de fotografiar e identificar plagas, insectos dañinos y niveles de severidad en zonas de nula señal móvil gracias al procesamiento en el dispositivo.</li>
+            <li><strong>Sugerencias inmediatas de actuación:</strong> Guía de recomendaciones técnicas (fauna auxiliar/bichos y tratamientos fitosanitarios) adaptadas a las plagas hortícolas del Poniente Almeriense.</li>
+            <li><strong>Filtros por severidad:</strong> Clasificación instantánea de los focos en niveles (Leve, Moderado, Crítico) para priorizar las acciones de control biológico.</li>
+        </ul>
+        <div class="benefit-box">
+            <strong>🎯 Impacto en el invernadero:</strong> Reduce el tiempo de respuesta de días a solo segundos, permitiendo atajar los focos antes de que la plaga se disperse y arruine la línea de cultivo.
+        </div>
+    </div>
+
+    <!-- MÓDULO 2 -->
+    <div class="service-block">
+        <div class="service-header">
+            <div class="service-title">2. PlagaHub: Mapa Colaborativo con Privacidad Blindada</div>
+            <div class="service-tag">Red de Alertas Comarcal</div>
+        </div>
+        <p style="margin-top: 0;">Un sistema inteligente de alertas geográficas que permite a los agricultores de una misma zona anticiparse a las amenazas compartiendo información anónima.</p>
+        <ul>
+            <li><strong>Anonimización por zonas SIGPAC:</strong> El sistema oculta por completo la ubicación exacta o linde de la finca que reporta la plaga. Las alertas se agrupan por recintos municipales para proteger la privacidad.</li>
+            <li><strong>Mapa de calor en tiempo real:</strong> Visualización dinámica de los focos sanitarios activos en el entorno, permitiendo a los agricultores vecinos reforzar sus cerramientos y tratamientos preventivos.</li>
+            <li><strong>Gamificación comunitaria:</strong> Sistema integrado de puntos y reconocimientos para incentivar que el campo mantenga el mapa de vigilancia sanitaria actualizado semanalmente.</li>
+        </ul>
+        <div class="benefit-box">
+            <strong>🎯 Impacto en el invernadero:</strong> Transforma el aislamiento tradicional del agricultor en un escudo sanitario colectivo para blindar municipios enteros (como El Ejido o Dalías) contra plagas migratorias.
+        </div>
+    </div>
+
+    <!-- MÓDULO 3 -->
+    <div class="service-block">
+        <div class="service-header">
+            <div class="service-title">3. Panel Web Técnico para Cooperativas y Almacenes de Suministros</div>
+            <div class="service-tag">Gestión B2B</div>
+        </div>
+        <p style="margin-top: 0;">Consola web centralizada optimizada para que los peritos e ingenieros agrónomos de la cooperativa supervisen y validen la salud vegetal de sus socios.</p>
+        <ul>
+            <li><strong>Validación oficial de alertas:</strong> Los técnicos pueden revisar los reportes de la IA y marcarlos como "Verificados", dando una fiabilidad institucional absoluta al mapa regional.</li>
+            <li><strong>Exportación de informes técnicos:</strong> Descarga de analíticas avanzadas e históricos de focos en formatos estructurados para la planificación de campañas de control masivo.</li>
+            <li><strong>Gestión de accesos y perfiles:</strong> Control estricto de agricultores autorizados mediante el flujo de códigos de invitación privada para el testeo piloto del software.</li>
+        </ul>
+        <div class="benefit-box">
+            <strong>🎯 Impacto en la empresa:</strong> Optimiza el trabajo de los peritos en un 50% al permitirles saber de forma remota dónde se concentran los problemas graves de la cooperativa para dirigir sus visitas presenciales.
+        </div>
+    </div>
+
+<!-- SECCIÓN DE INNOVACIÓN Y ROADMAP FUTURO -->
+    <h2 style="border-left-color: #2980b9; margin-top: 40px;">Próximas Versiones y Línea de Innovación</h2>
+    <p style="margin-top: 0; color: #566573;">Aunque AgroPlaga AI se encuentra en su fase inicial de lanzamiento piloto, el ecosistema está diseñado para integrar a corto plazo funcionalidades avanzadas de alto valor añadido:</p>
+
+    <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 30px; page-break-inside: avoid;">
+        
+        <!-- Futuro para el Agricultor -->
+        <div style="border: 1px dashed #3498db; border-radius: 6px; padding: 15px; background-color: #f4f6f7;">
+            <strong style="color: #2980b9; display: block; margin-bottom: 8px; font-size: 11pt;">👨‍🌾 Para el Agricultor</strong>
+            <ul style="padding-left: 15px; margin: 0; font-size: 9.5pt; color: #34495e;">
+                <li style="margin-bottom: 8px;"><strong>Asistente Virtual (Chatbot Perito):</strong> Un chat inteligente disponible 24/7 para resolver de forma instantánea cualquier duda fitosanitaria o de manejo del cultivo.</li>
+                <li style="margin-bottom: 8px;"><strong>Cuaderno de Campo Digital (CEX):</strong> Automatización y pre-rellenado de los registros oficiales exigidos por ley a partir de los propios escaneos de la IA.</li>
+                <li style="margin-bottom: 8px;"><strong>Ciclo Completo de Incidencias:</strong> Registro integral desde el surco: detección, aplicación del tratamiento, monitorización del resultado y confirmación de eficacia.</li>
+            </ul>
+        </div>
+
+        <!-- Futuro para el Perito / Técnico -->
+        <div style="border: 1px dashed #27ae60; border-radius: 6px; padding: 15px; background-color: #f4f6f7;">
+            <strong style="color: #27ae60; display: block; margin-bottom: 8px; font-size: 11pt;">📋 Para el Perito Agrícola</strong>
+            <ul style="padding-left: 15px; margin: 0; font-size: 9.5pt; color: #34495e;">
+                <li style="margin-bottom: 8px;"><strong>Módulo de Validación Oficial:</strong> Herramienta ágil para firmar y validar digitalmente las incidencias reportadas por los agricultores asignados.</li>
+                <li style="margin-bottom: 8px;"><strong>Auditoría de Tratamientos:</strong> Historial supervisado de qué productos y dosis aplica cada finca, asegurando el cumplimiento estricto de las prescripciones técnicas.</li>
+            </ul>
+        </div>
+
+        <!-- Futuro para la Cooperativa -->
+        <div style="border: 1px dashed #8e44ad; border-radius: 6px; padding: 15px; background-color: #f4f6f7;">
+            <strong style="color: #8e44ad; display: block; margin-bottom: 8px; font-size: 11pt;">🏢 Para la Cooperativa / SAT</strong>
+            <ul style="padding-left: 15px; margin: 0; font-size: 9.5pt; color: #34495e;">
+                <li style="margin-bottom: 8px;"><strong>Dashboard Corporativo Exclusivo:</strong> Panel de control centralizado y personalizado con la marca de la cooperativa.</li>
+                <li style="margin-bottom: 8px;"><strong>Canal de Soporte Técnico Directo:</strong> Plataforma de comunicación interna y prioritaria entre el Consejo Rector, los peritos y los socios.</li>
+                <li style="margin-bottom: 8px;"><strong>Registro Histórico Integral:</strong> Auditoría completa y centralizada de toda la actividad sanitaria de la masa social de la cooperativa.</li>
+            </ul>
+        </div>
+
+    </div>
+
+    <!-- PIE COMERCIAL -->
+    <div class="footer-commercial">
+        <p><strong>¿Quiere implantar AgroPlaga AI en su zona o cooperativa?</strong> Solicite acceso a nuestro programa de pruebas piloto exclusivas.</p>
+        <p style="color: #7f8c8d; font-size: 9.5pt; margin-top: 15px;">
+            AgroPlaga AI — Tecnología Móvil Inteligente para la Sanidad Vegetal<br>
+            Director de Producto: <strong>Valentín Ruiz León</strong> | Almería, España (2026)
+        </p>
+    </div>
+
+</body>
+</html>
