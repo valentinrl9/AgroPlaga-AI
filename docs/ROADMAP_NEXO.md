@@ -75,11 +75,17 @@
 - [ ] Actualizar `GUIA_ROLES.md` con módulos Nexo
 
 ### Validación local (checklist)
-- [ ] Login → 3 pestañas visibles
+- [x] Login → 3 pestañas visibles *(confirmado en `flutter run` Chrome)*
 - [ ] Field: PlagaScan, mapa, alertas sin regresiones
-- [ ] Climate: métricas y gráficos con Docker local
+- [x] Climate: métricas y gráficos con Docker local *(confirmado en `flutter run`)*
 - [ ] SIEX: lock screen correcto
 - [ ] Panel `/panel`: login operativo
+
+### Validación automatizada (11 jul 2026)
+- [x] `flutter analyze lib/` — 0 errores (2 warnings menores)
+- [x] Docker backend + PostgreSQL activos (`localhost:8000`)
+- [x] OpenAPI `/docs` — rutas `/api/v1/climate/*` registradas
+- [x] `pytest` backend — 25 tests passed
 
 **Criterio de done Fase 0:** checklist validado + commit en `nexoagro` + sin tocar producción VPS.
 
