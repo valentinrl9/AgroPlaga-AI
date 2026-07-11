@@ -12,7 +12,13 @@ class AuthRepository {
   Future<void> _storeProfile() async {
     try {
       final profile = await _users.fetchProfile();
-      await Session.saveUserInfo(role: profile.role, name: profile.name);
+      await Session.saveUserInfo(
+        role: profile.role,
+        name: profile.name,
+        hasFieldPremium: profile.hasFieldPremium,
+        hasClimateModule: profile.hasClimateModule,
+        hasSiexEnterprise: profile.hasSiexEnterprise,
+      );
     } catch (_) {}
   }
 

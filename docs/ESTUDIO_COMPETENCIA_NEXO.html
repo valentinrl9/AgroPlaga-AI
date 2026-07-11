@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estudio de Competencia y Estrategia Comercial — NEXO Agro</title>
+    <style>
+        :root {
+            --primary-deep: #0B192C;
+            --primary-green: #00A86B;
+            --secondary-cyan: #00D2C4;
+            --warning-amber: #FFB200;
+            --slate-gray: #F4F6F9;
+            --dark-text: #1E293B;
+            --light-text: #64748B;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--dark-text);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: var(--slate-gray);
+        }
+
+        .page {
+            background: #ffffff;
+            max-width: 850px;
+            margin: 40px auto;
+            padding: 50px 60px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            border-radius: 8px;
+        }
+
+        /* Encabezado Corporativo */
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+            border-bottom: 3px solid var(--primary-deep);
+        }
+
+        .header-table td {
+            padding-bottom: 20px;
+            vertical-align: middle;
+        }
+
+        .logo-text {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--primary-deep);
+            letter-spacing: -0.5px;
+        }
+
+        .logo-text span {
+            color: var(--primary-green);
+            font-weight: 300;
+        }
+
+        .doc-meta {
+            text-align: right;
+            font-size: 12px;
+            color: var(--light-text);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: var(--primary-deep);
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: var(--light-text);
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        h2 {
+            font-size: 18px;
+            color: var(--primary-deep);
+            border-left: 4px solid var(--primary-green);
+            padding-left: 12px;
+            margin-top: 35px;
+            margin-bottom: 15px;
+        }
+
+        h3 {
+            font-size: 15px;
+            color: var(--primary-deep);
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-top: 0;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        /* Listas y viñetas */
+        ul {
+            margin: 0 0 20px 0;
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .feature-title {
+            font-weight: 700;
+            color: var(--primary-deep);
+        }
+
+        .price-badge {
+            background-color: rgba(0, 168, 107, 0.1);
+            color: var(--primary-green);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 700;
+            display: inline-block;
+            margin-left: 5px;
+        }
+
+        .price-badge.high {
+            background-color: rgba(11, 25, 44, 0.1);
+            color: var(--primary-deep);
+        }
+
+        /* Bloques de Estrategia */
+        .strategy-box {
+            background-color: var(--slate-gray);
+            border-radius: 6px;
+            padding: 20px;
+            margin-top: 20px;
+            border-top: 4px solid var(--secondary-cyan);
+        }
+
+        .alert-box {
+            background-color: rgba(255, 178, 0, 0.1);
+            border-left: 4px solid var(--warning-amber);
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 6px 6px 0;
+        }
+
+        .alert-box strong {
+            color: var(--primary-deep);
+        }
+
+        footer {
+            margin-top: 50px;
+            border-top: 1px solid #E2E8F0;
+            padding-top: 15px;
+            font-size: 11px;
+            color: var(--light-text);
+            text-align: center;
+        }
+
+        /* Configuración de Impresión PDF */
+        @media print {
+            body {
+                background-color: #ffffff;
+                font-size: 12pt;
+            }
+            .page {
+                box-shadow: none;
+                padding: 0;
+                margin: 0;
+                max-width: 100%;
+            }
+            .page-break {
+                page-break-before: always;
+            }
+            .strategy-box {
+                background-color: #f8fafc !important;
+                print-color-adjust: exact;
+            }
+            .alert-box {
+                background-color: #fffbeb !important;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="page">
+    <!-- Encabezado -->
+    <table class="header-table">
+        <tr>
+            <td class="logo-text">NEXO<span>Agro</span></td>
+            <td class="doc-meta">
+                Informe de Inteligencia de Mercado<br>
+                <strong>Fecha: Julio 2026</strong>
+            </td>
+        </tr>
+    </table>
+
+    <h1>Estudio de Competencia por Funcionalidad y Estrategia de Portfolio</h1>
+    <div class="subtitle">Análisis Técnico-Comercial Orientado al Poniente Almeriense</div>
+
+    <p>El presente informe detalla el análisis de costes y precios del mercado de software agrícola estructurado por bloques funcionales específicos, mapeando las capacidades de la plataforma <strong>NEXO Agro</strong> frente a los actores dominantes del sector europeo y nacional. Con este análisis se define la estrategia óptima de monetización asimétrica.</p>
+
+    <h2>1. Módulo Operativo: NEXO Field (AgroPlaga AI)</h2>
+    <p>Análisis de soluciones móviles nativas orientadas a la operación directa a pie de campo.</p>
+    
+    <ul>
+        <li>
+            <span class="feature-title">Scanner IA Offline (Visión Artificial Local):</span>
+            <span class="price-badge">0€ — Commodity de Entrada</span>
+            <br><em>Competidores directos:</em> Plantix, xarvio® Field Manager. 
+            <br>El mercado ofrece la identificación básica de plagas por imagen de forma gratuita como estrategia de captación masiva (Plantix monetiza mediante venta cruzada de insumos de partners). Tu ventaja crítica radica en la ejecución 100% offline bajo plástico.
+        </li>
+        <li>
+            <span class="feature-title">Vademécum Oficial del MAPA Automatizado:</span>
+            <span class="price-badge">99€ a 180€ / año</span>
+            <br><em>Competidores directos:</em> Agroptima, aCCeSe.
+            <br>Se comercializa empaquetado de forma indivisible dentro de los planes de gestión y registro de aplicaciones fitosanitarias de software de diario de campo tradicionales.
+        </li>
+        <li>
+            <span class="feature-title">Motor de Cálculo Automático de Dosis:</span>
+            <span class="price-badge">0€ a 50€ / año</span>
+            <br><em>Competidores directos:</em> Apps nativas de fabricantes (Bayer, Syngenta).
+            <br>Herramientas rudimentarias e inconexas distribuidas de forma gratuita por las químicas para evitar fitotoxicidad. El valor de NEXO es la automatización nativa ligada a la geometría catastral del invernadero del agricultor.
+        </li>
+        <li>
+            <span class="feature-title">Contador de Plazo de Carencia y Alerta de Corte:</span>
+            <span class="price-badge">250€ a 390€ / año</span>
+            <br><em>Competidores directos:</em> Agroptima (Plan Premium), Hispatec (Efemis).
+            <br>Se cobra como "Gestión Avanzada de Calidad y Recolección". Las plataformas tradicionales lo consideran un extra empresarial de alta gama debido a la seguridad jurídica que otorga ante auditorías GlobalGAP.
+        </li>
+        <li>
+            <span class="feature-title">Nexo Community (Mapa de Calor de Plagas):</span>
+            <span class="price-badge">Incluido en packs de 400€/año</span>
+            <br><em>Competidores directos:</em> xarvio® (Alertas de riesgo regional).
+            <br>No se comercializa como módulo independiente. Actúa como característica de retención de usuarios dentro de los ecosistemas corporativos cerrados.
+        </li>
+    </ul>
+
+    <h2>2. Módulo Avanzado: NEXO Climate (AgroData Consulting)</h2>
+    <p>Análisis de plataformas de ingesta analítica, procesamiento microclimático e IoT.</p>
+
+    <ul>
+        <li>
+            <span class="feature-title">Ingesta y Dashboard de Sensores IoT de Interior:</span>
+            <span class="price-badge">15€ a 35€ / mes por nodo</span>
+            <br><em>Competidores directos:</em> Qampo, Metos (Pessl), Prisma.
+            <br>Coste recurrente en concepto de mantenimiento de infraestructura cloud y transmisión de datos, desvinculado por completo del coste inicial de adquisición del hardware físico.
+        </li>
+        <li>
+            <span class="feature-title">Motor de Alertas DPV y Punto de Rocío:</span>
+            <span class="price-badge">200€ a 450€ / año</span>
+            <br><em>Competidores directos:</em> Sencrop, 30Mhz.
+            <br>La algoritmia de correlación predictiva de esporas fúngicas basada en microclima acumulado se tasa como un módulo de protección avanzada de cultivos de alto valor añadido.
+        </li>
+        <li>
+            <span class="feature-title">Simulador de Costes e Insumos (Finanzas del Kilo):</span>
+            <span class="price-badge">350€ a 500€ / año</span>
+            <br><em>Competidores directos:</em> Agroptima (Plan Pro), Visual Green (Enterprise).
+            <br>Métricas puramente financieras para la toma de decisiones gerenciales del agricultor profesional. Es una funcionalidad de alta disposición de pago.
+        </li>
+    </ul>
+
+    <!-- Salto de página para el PDF -->
+    <div class="page-break"></div>
+
+    <h2>3. Módulo B2B: NEXO Enterprise (Panel Cooperativas y SATs)</h2>
+    <p>Infraestructura de control agregada orientada a peritos y consejos rectores.</p>
+
+    <ul>
+        <li>
+            <span class="feature-title">Cuadro de Mando Multivista de Socios (Monitoreo Masivo):</span>
+            <span class="price-badge high">3€ a 6€ / socio / año</span>
+            <br><em>Competidores directos:</em> Hispatec (Campogest), Visual Green B2B.
+            <br>Tarificación por volumen de uso. Las cooperativas asumen un coste de entrada de infraestructura base que oscila entre los 1.200€ y los 2.500€ anuales, al que se le suma el tramo variable por agricultor activo.
+        </li>
+        <li>
+            <span class="feature-title">Exportador Masivo SIEX en un Clic (JSON Ministerial):</span>
+            <span class="price-badge high">800€ a 1.500€ / año (Tarifa plana)</span>
+            <br><em>Competidores directos:</em> ERPs agrícolas tradicionales.
+            <br>Dado el carácter crítico y obligatorio del volcado ministerial, las empresas de software cobran este conector como una extensión premium obligatoria o aplican recargos del 20% sobre las cuotas de mantenimiento existentes.
+        </li>
+        <li>
+            <span class="feature-title">Previsión de Entrada de Género (Predictive Supply Chain):</span>
+            <span class="price-badge high">5.000€ a 15.000€ / año</span>
+            <br><em>Competidores directos:</em> Hispatec (Modelos Big Data personalizados).
+            <br>Considerado software de Inteligencia de Negocio (BI). Permite a la directiva comercial coordinar la logística de subastas y contratos europeos de forma anticipada. Es el producto de mayor margen bruto.
+        </li>
+    </ul>
+
+    <div class="alert-box">
+        <strong>⚠️ CRONOGRAMA LEGAL CRÍTICO (HITO SIEX 2027):</strong><br>
+        A partir del <strong>1 de enero de 2027</strong>, la entrada en vigor de la obligatoriedad del Cuaderno Digital de Explotación Agrícola en España genera una ventana de oportunidad regulatoria insustituible. Las cooperativas del Poniente Almeriense se enfrentan a un colapso administrativo para tramitar los cuadernos de miles de socios de forma manual. **El software que solucione esto de manera automatizada antes del cuarto trimestre de 2026 capturará el mercado por necesidad legal ineludible.**
+    </div>
+
+    <h2>4. Planteamiento de Venta Estratégico y Rentabilización Rápida</h2>
+    <p>Para maximizar los ingresos recurrentes (ARR) en el menor tiempo posible y dotar al proyecto de una estructura financiera robusta, se descarta la venta atomizada por funciones sueltas (que genera fricción en la compra) y se adopta una **Estrategia Híbrida de Empaquetamiento Asimétrico (B2C Freemium + B2B Enterprise)**.</p>
+
+    <div class="strategy-box">
+        <h3>Fase 1: Captación Masiva y Tracción Operativa (Estrategia Freemium B2C)</h3>
+        <p>Lanzamiento inmediato de la app móvil enfocada al agricultor independiente para generar base de datos y reputación de marca.</p>
+        <ul>
+            <li><strong>Plan FREE (El Gancho):</strong> Incluye el *Scanner IA Offline*, el *Vademécum MAPA* y la *Calculadora de Dosis*. Satisface la necesidad diaria sin coste, rompiendo la barrera de entrada. El coste de servidor es mínimo ya que la inferencia de la IA es local.</li>
+            <li><strong>Plan PREMIUM (14,99€/mes o 149€/año):</strong> Desbloquea el *Contador de Plazo de Carencia (Alerta de Corte)*, el *Simulador de Costes por Kilo* y el *Borrador Automático de Cuaderno*. **Argumento de venta:** "Por el coste de una caja de abono al mes, evitas que te rechacen un camión entero de género en la comercializadora".</li>
+        </ul>
+    </div>
+
+    <div class="strategy-box">
+        <h3>Fase 2: El Motor de Ingresos Inmediatos y Escalabilidad (Enfoque B2B Enterprise)</h3>
+        <p>Dirigido directamente a los Consejos Rectores de las Cooperativas y SATs del Poniente Almeriense. Esta es la vía para generar ingresos masivos e institucionales antes del hito de enero de 2027.</p>
+        <ul>
+            <li><strong>El Planteamiento de Venta (Caballo de Troya):</strong> No se le vende el software al agricultor; se le vende la **paz administrativa** a la Cooperativa. Se ofrece el *Panel NEXO Enterprise* bajo una licencia anual por volumen (ej. 4.000€/año base + 4€ por socio al año).</li>
+            <li><strong>Activación Automática de Socios:</strong> Al adquirir la cooperativa el panel, todos sus socios reciben un código de activación que desbloquea automáticamente el módulo SIEX en sus teléfonos. El agricultor introduce los datos en el campo, el sistema autocompila los tratamientos y el perito solo tiene que revisar y pulsar el botón **"Firmar y Exportar al SIEX en un Clic"**.</li>
+            <li><strong>Rentabilidad Asimétrica:</strong> Una sola cooperativa mediana media en Almería puede reportar entre 400 y 1.200 socios de golpe. Un solo contrato B2B cierra una facturación anual inmediata de entre 6.000€ y 9.000€ recurrentes, con coste de adquisición de cliente (CAC) bajísimo.</li>
+        </ul>
+    </div>
+
+    <h3>Resumen de la Hoja de Ruta Financiera (Julio — Diciembre 2026):</h3>
+    <ol>
+        <li><strong>Julio - Septiembre:</strong> Estabilización del backend en FastAPI y empaquetado del archivo ONNX para el escáner local.</li>
+        <li><strong>Octubre:</strong> Campaña de preventa dirigida a directores técnicos de cooperativas aprovechando la presión de la campaña hortofrutícola y la cercanía del cambio legal de 2027.</li>
+        <li><strong>Noviembre - Diciembre:</strong> Despliegue de los primeros paneles Enterprise piloto. Los ingresos B2B financian la infraestructura y la consultoría avanzada de *AgroData* (sensores IoT) como un *upselling* de segunda fase.</li>
+    </ol>
+
+    <footer>
+        NEXO Agro Enterprise Document — Propiedad Exclusiva de Valentín Ruiz León. Todos los derechos reservados © 2026.
+    </footer>
+</div>
+
+</body>
+</html>

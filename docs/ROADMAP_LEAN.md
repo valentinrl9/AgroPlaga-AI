@@ -1,5 +1,8 @@
 # AgroPlaga AI — Roadmap de Desarrollo (Edición Lean Startup)
 
+> ⚠️ **ARCHIVADO (jul 2026)** — Documento histórico del piloto Lean AgroPlaga.  
+> **Roadmap activo:** [ROADMAP_NEXO.md](ROADMAP_NEXO.md) · **Especificación:** [NEXO_CONTEXT.md](NEXO_CONTEXT.md)
+
 **Autor:** Valentín Ruiz León  
 **Actualizado:** 4 jul 2026  
 **Estado:** ✅ **v1.6-core desplegado en VPS** — piloto en campo · IA v1.5 **pausada** hasta fotos verificadas

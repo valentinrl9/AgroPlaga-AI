@@ -1,5 +1,8 @@
 # AgroPlaga AI — Roadmap de Desarrollo
 
+> ⚠️ **ARCHIVADO (jul 2026)** — Documento histórico del producto AgroPlaga AI antes de la unificación NEXO.  
+> **Roadmap activo:** [ROADMAP_NEXO.md](ROADMAP_NEXO.md) · **Especificación:** [NEXO_CONTEXT.md](NEXO_CONTEXT.md)
+
 **Autor:** Valentín Ruiz León  
 **Actualizado:** 4 jul 2026  
 **Estado:** ✅ **v1 MVP + v1.6-core** — piloto Lean en campo

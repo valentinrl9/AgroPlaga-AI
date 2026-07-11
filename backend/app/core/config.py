@@ -8,7 +8,7 @@ load_dotenv()
 _DEFAULT_SCAN_DIR = Path(__file__).resolve().parents[2] / "data" / "scans"
 
 class Settings:
-    app_name: str = os.getenv("APP_NAME", "AgroPlaga AI")
+    app_name: str = os.getenv("APP_NAME", "NEXO Agro")
     secret_key: str = os.getenv("SECRET_KEY", "change-me-in-production")
     algorithm: str = os.getenv("ALGORITHM", "HS256")
     access_token_expire_minutes: int = int(os.getenv("ACCESS_TOKEN_EXPIRE_MINUTES", "60"))

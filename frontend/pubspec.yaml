@@ -1,5 +1,5 @@
 name: agro_plaga_ai
-description: Aplicación móvil AgroPlaga AI
+description: Aplicación móvil NEXO Agro (ecosistema agrícola unificado)
 publish_to: "none"
 version: 0.1.0+1
 
@@ -17,6 +17,8 @@ dependencies:
   image_picker: ^1.1.2
   image: ^4.5.4
   tflite_flutter: ^0.12.1
+  fl_chart: ^0.70.2
+  intl: ^0.20.2
 
 dev_dependencies:
   flutter_test:

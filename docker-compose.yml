@@ -18,6 +18,7 @@ services:
     volumes:
       - ./backend:/app
       - ./backend/data/scans:/data/scans
+      - ./backend/data/climate:/data/climate
     environment:
       - DATABASE_URL=postgresql+psycopg://plagaia:plagaia@db:5432/plagaia_db
       - PYTHONUNBUFFERED=1
@@ -25,6 +26,10 @@ services:
       - ADMIN_PASSWORD=admin1234
       - ADMIN_NAME=Admin
       - SCAN_IMAGES_DIR=/data/scans
+      - CLIMATE_DATA_DIR=/data/climate
+      - CLIMATE_PREVIEW_OPEN=true
+      - OPENMETEO_LAT=36.77
+      - OPENMETEO_LON=-2.81
     ports:
       - "8000:8000"
     depends_on:

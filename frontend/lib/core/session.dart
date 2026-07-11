@@ -7,6 +7,9 @@ class Session {
   static const String refreshTokenKey = "refresh_token";
   static const String roleKey = "user_role";
   static const String nameKey = "user_name";
+  static const String fieldPremiumKey = "has_field_premium";
+  static const String climateModuleKey = "has_climate_module";
+  static const String siexEnterpriseKey = "has_siex_enterprise";
   static const String contributedScansKey = "contributed_scan_ids";
 
   static Future<bool> restore() async {
@@ -56,10 +59,19 @@ class Session {
     }
   }
 
-  static Future<void> saveUserInfo({required String role, required String name}) async {
+  static Future<void> saveUserInfo({
+    required String role,
+    required String name,
+    bool hasFieldPremium = false,
+    bool hasClimateModule = false,
+    bool hasSiexEnterprise = false,
+  }) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(roleKey, role);
     await prefs.setString(nameKey, name);
+    await prefs.setBool(fieldPremiumKey, hasFieldPremium);
+    await prefs.setBool(climateModuleKey, hasClimateModule);
+    await prefs.setBool(siexEnterpriseKey, hasSiexEnterprise);
   }
 
   static Future<String?> get role async {
@@ -93,6 +105,21 @@ class Session {
     }
   }
 
+  static Future<bool> get hasFieldPremium async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(fieldPremiumKey) ?? false;
+  }
+
+  static Future<bool> get hasClimateModule async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(climateModuleKey) ?? false;
+  }
+
+  static Future<bool> get hasSiexEnterprise async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(siexEnterpriseKey) ?? false;
+  }
+
   static Future<bool> get isTechOrAdmin async {
     final r = await role;
     return r == "tech" || r == "admin";
@@ -105,6 +132,9 @@ class Session {
     await prefs.remove(refreshTokenKey);
     await prefs.remove(roleKey);
     await prefs.remove(nameKey);
+    await prefs.remove(fieldPremiumKey);
+    await prefs.remove(climateModuleKey);
+    await prefs.remove(siexEnterpriseKey);
   }
 
   static Future<bool> hasToken() async {

@@ -1,12 +1,12 @@
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.v1.routes import auth, users, scans, stats, zones, outbreak_events, alerts, heatmap, community, feedback, farms, tech_dashboard, analytics, plagues, admin, contact
+from app.api.v1.routes import auth, users, scans, stats, zones, outbreak_events, alerts, heatmap, community, feedback, farms, tech_dashboard, analytics, plagues, admin, contact, climate
 from app.core.config import settings
 from app.db.init_db import init_db
 from app.services.scheduler import start_scheduler, stop_scheduler
 
-app = FastAPI(title="AgroPlaga AI API", version="0.1.0", redirect_slashes=False)
+app = FastAPI(title="NEXO Agro API", version="0.2.0", redirect_slashes=False)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
@@ -64,3 +64,4 @@ app.include_router(analytics.router, prefix="/api/v1/analytics", tags=["analytic
 app.include_router(plagues.router, prefix="/api/v1/plagues", tags=["plagues"])
 app.include_router(admin.router, prefix="/api/v1/admin", tags=["admin"])
 app.include_router(contact.router, prefix="/api/v1/contact", tags=["contact"])
+app.include_router(climate.router, prefix="/api/v1/climate", tags=["climate"])

@@ -25,7 +25,13 @@ class _SplashScreenState extends State<SplashScreen> {
     if (await Session.restore()) {
       try {
         final profile = await UserRepository().fetchProfile();
-        await Session.saveUserInfo(role: profile.role, name: profile.name);
+        await Session.saveUserInfo(
+          role: profile.role,
+          name: profile.name,
+          hasFieldPremium: profile.hasFieldPremium,
+          hasClimateModule: profile.hasClimateModule,
+          hasSiexEnterprise: profile.hasSiexEnterprise,
+        );
         goHome = await Session.hasToken();
       } catch (_) {
         await Session.clear();
@@ -46,16 +52,16 @@ class _SplashScreenState extends State<SplashScreen> {
             AppLogo(size: 96, borderRadius: 20),
             SizedBox(height: 16),
             Text(
-              "AgroPlaga AI",
+              "NEXO Agro",
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF424242)),
             ),
             SizedBox(height: 8),
             Text(
-              "Diagnóstico y red colaborativa",
+              "Ecosistema de inteligencia agrícola",
               style: TextStyle(fontSize: 14, color: Color(0xFF757575)),
             ),
             SizedBox(height: 32),
-            CircularProgressIndicator(color: Color(0xFF2E7D32)),
+            CircularProgressIndicator(color: Color(0xFF00A86B)),
           ],
         ),
       ),

@@ -14,7 +14,7 @@ load_dotenv(os.path.join(CURRENT_DIR, "..", ".env"))
 sys.path.append(os.path.abspath(os.path.join(CURRENT_DIR, "..")))
 
 from app.db.base import Base
-from app.models import user, scan, feedback, zone, outbreak_event, alert  # noqa: F401
+from app.models import user, scan, feedback, zone, outbreak_event, alert, climate  # noqa: F401
 
 config = context.config
 fileConfig(config.config_file_name)

@@ -99,7 +99,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const Center(child: AppLogo(size: 88, borderRadius: 18)),
               const SizedBox(height: 20),
               const Text(
-                "Crear cuenta AgroPlaga AI",
+                "Crear cuenta NEXO Agro",
                 style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
               ),
               const Text(

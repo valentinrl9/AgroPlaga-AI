@@ -11,7 +11,12 @@ router = APIRouter()
 
 @router.get("/me", response_model=UserRead)
 def get_profile(current_user: User = Depends(get_current_active_user)):
-    return current_user
+    from app.climate.service import user_has_climate_access
+
+    data = UserRead.model_validate(current_user)
+    if user_has_climate_access(current_user) and not data.has_climate_module:
+        return data.model_copy(update={"has_climate_module": True})
+    return data
 
 
 @router.patch("/{user_id}/role", response_model=UserRead)

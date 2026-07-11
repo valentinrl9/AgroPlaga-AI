@@ -32,8 +32,8 @@ export default function LoginPage() {
   return (
     <div className="login-page">
       <form className="login-card" onSubmit={onSubmit}>
-        <img src={`${import.meta.env.BASE_URL}app_logo.png`} alt="AgroPlaga AI" className="login-logo" />
-        <h2>Panel cooperativas</h2>
+        <img src={`${import.meta.env.BASE_URL}app_logo.png`} alt="NEXO Agro" className="login-logo" />
+        <h2>NEXO Agro — Panel</h2>
         <p className="muted">Acceso para técnicos y administradores</p>
         <label>
           Email

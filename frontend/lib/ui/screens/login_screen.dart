@@ -79,7 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
             const SizedBox(height: 16),
             const Center(child: AppLogo(size: 88, borderRadius: 18)),
             const SizedBox(height: 20),
-            const Text("Bienvenido a AgroPlaga AI", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
+            const Text("Bienvenido a NEXO Agro", style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold)),
             const SizedBox(height: 24),
             TextField(
               controller: _emailController,
@@ -122,7 +122,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: const Text(
                       "Regístrate",
                       style: TextStyle(
-                        color: Color(0xFF2E7D32),
+                        color: Color(0xFF00A86B),
                         fontWeight: FontWeight.bold,
                       ),
                     ),

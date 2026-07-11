@@ -11,7 +11,7 @@ import "ui/screens/community_screen.dart";
 import "ui/screens/contribute_screen.dart";
 import "ui/screens/farms_screen.dart";
 import "ui/screens/history_screen.dart";
-import "ui/screens/home_screen.dart";
+import "ui/screens/nexo_shell_screen.dart";
 import "ui/screens/tech_validation_screen.dart";
 import "ui/screens/login_screen.dart";
 import "ui/screens/map_screen.dart";
@@ -25,16 +25,16 @@ import "ui/screens/splash_screen.dart";
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await ApiConfig.load();
-  runApp(const AgroPlagaApp());
+  runApp(const NexoAgroApp());
 }
 
-class AgroPlagaApp extends StatelessWidget {
-  const AgroPlagaApp({super.key});
+class NexoAgroApp extends StatelessWidget {
+  const NexoAgroApp({super.key});
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "AgroPlaga AI",
+      title: "NEXO Agro",
       theme: appTheme(),
       navigatorKey: AuthRedirect.navigatorKey,
       initialRoute: Routes.splash,
@@ -42,7 +42,7 @@ class AgroPlagaApp extends StatelessWidget {
         Routes.splash: (context) => const SplashScreen(),
         Routes.login: (context) => const LoginScreen(),
         Routes.register: (context) => const RegisterScreen(),
-        Routes.home: (context) => const HomeScreen(),
+        Routes.home: (context) => const NexoShellScreen(),
         Routes.scan: (context) => const ScanScreen(),
         Routes.history: (context) => const HistoryScreen(),
         Routes.alerts: (context) => const AlertsScreen(),

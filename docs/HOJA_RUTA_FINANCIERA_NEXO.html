@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hoja de Ruta y Proyecciones Financieras (2026-2029) — NEXO Agro</title>
+    <style>
+        :root {
+            --primary-deep: #0B192C;
+            --primary-green: #00A86B;
+            --secondary-cyan: #00D2C4;
+            --warning-amber: #FFB200;
+            --slate-gray: #F4F6F9;
+            --dark-text: #1E293B;
+            --light-text: #64748B;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: var(--dark-text);
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background-color: var(--slate-gray);
+        }
+
+        .page {
+            background: #ffffff;
+            max-width: 850px;
+            margin: 40px auto;
+            padding: 50px 60px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            border-radius: 8px;
+        }
+
+        /* Encabezado Corporativo */
+        .header-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 40px;
+            border-bottom: 3px solid var(--primary-deep);
+        }
+
+        .header-table td {
+            padding-bottom: 20px;
+            vertical-align: middle;
+        }
+
+        .logo-text {
+            font-size: 28px;
+            font-weight: 800;
+            color: var(--primary-deep);
+            letter-spacing: -0.5px;
+        }
+
+        .logo-text span {
+            color: var(--primary-green);
+            font-weight: 300;
+        }
+
+        .doc-meta {
+            text-align: right;
+            font-size: 12px;
+            color: var(--light-text);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: var(--primary-deep);
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            color: var(--light-text);
+            margin-bottom: 30px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        h2 {
+            font-size: 18px;
+            color: var(--primary-deep);
+            border-left: 4px solid var(--primary-green);
+            padding-left: 12px;
+            margin-top: 35px;
+            margin-bottom: 15px;
+        }
+
+        h3 {
+            font-size: 15px;
+            color: var(--primary-deep);
+            margin-top: 20px;
+            margin-bottom: 10px;
+        }
+
+        p {
+            margin-top: 0;
+            margin-bottom: 15px;
+            text-align: justify;
+        }
+
+        /* Tablas Financieras */
+        .financial-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 25px 0;
+            font-size: 14px;
+        }
+
+        .financial-table th {
+            background-color: var(--primary-deep);
+            color: #ffffff;
+            font-weight: 600;
+            text-align: left;
+            padding: 12px;
+        }
+
+        .financial-table td {
+            padding: 12px;
+            border-bottom: 1px solid #E2E8F0;
+        }
+
+        .financial-table tr:nth-child(even) {
+            background-color: #F8FAFC;
+        }
+
+        .financial-table .total-row {
+            font-weight: 700;
+            background-color: rgba(0, 168, 107, 0.1) !important;
+            color: var(--primary-deep);
+            border-top: 2px solid var(--primary-green);
+        }
+
+        /* Timeline e Hitos */
+        .timeline-block {
+            background-color: var(--slate-gray);
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--secondary-cyan);
+        }
+
+        .timeline-block.year1 {
+            border-left-color: var(--primary-green);
+        }
+
+        .timeline-block.year3 {
+            border-left-color: var(--primary-deep);
+        }
+
+        .timeline-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--primary-deep);
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        ul {
+            margin: 0 0 10px 0;
+            padding-left: 20px;
+        }
+
+        li {
+            margin-bottom: 6px;
+        }
+
+        footer {
+            margin-top: 50px;
+            border-top: 1px solid #E2E8F0;
+            padding-top: 15px;
+            font-size: 11px;
+            color: var(--light-text);
+            text-align: center;
+        }
+
+        @media print {
+            body {
+                background-color: #ffffff;
+                font-size: 11pt;
+            }
+            .page {
+                box-shadow: none;
+                padding: 0;
+                margin: 0;
+                max-width: 100%;
+            }
+            .page-break {
+                page-break-before: always;
+            }
+            .timeline-block {
+                background-color: #f8fafc !important;
+                print-color-adjust: exact;
+            }
+            .financial-table th {
+                background-color: #0B192C !important;
+                print-color-adjust: exact;
+            }
+            .financial-table .total-row {
+                background-color: #e6f6f0 !important;
+                print-color-adjust: exact;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="page">
+    <!-- Encabezado -->
+    <table class="header-table">
+        <tr>
+            <td class="logo-text">NEXO<span>Agro</span></td>
+            <td class="doc-meta">
+                Planificación Estratégica a 3 Años<br>
+                <strong>Fecha: Julio 2026</strong>
+            </td>
+        </tr>
+    </table>
+
+    <h1>Hoja de Ruta de Producto y Proyecciones Financieras</h1>
+    <div class="subtitle">Ecosistema Modular e Infraestructura de Datos Agrícolas (2026 — 2029)</div>
+
+    <p>Este documento establece el mapa de desarrollo técnico-comercial para <strong>NEXO Agro</strong>. Aprovechando metodologías de desarrollo ágil asistido por IA, la hoja de ruta prioriza la entrega de valor normativo inmediato para capitalizar el hito regulatorio del cuaderno digital de 2027, escalando de manera orgánica hacia la analítica predictiva de alto margen en los años siguientes.</p>
+
+    <h2>1. Cronograma y Hitos Temporales de Desarrollo</h2>
+
+    <div class="timeline-block year1">
+        <div class="timeline-title">
+            <span>🗓️ Año 1: El Cimiento SIEX y Lanzamiento MVP</span>
+            <span>Q3 2026 - Q2 2027</span>
+        </div>
+        <p><strong>Objetivo Técnico Ineludible (Cierre de 2026):</strong> Finalización de los componentes core antes de la entrada en vigor de la obligatoriedad legal del Cuaderno Digital.</p>
+        <ul>
+            <li><strong>Desarrollo Móvil Crítico (NEXO Field):</strong> Implementación final del Scanner IA Offline (pesos ONNX en local)[cite: 1], Cuaderno de Notas operativo (asientos directos a borrador)[cite: 1] y el Mapa de Calor Colaborativo anónimo basado en centroides geográficos[cite: 1].</li>
+            <li><strong>Desarrollo Climático Core (NEXO Climate):</strong> Motor de ingesta analítica conectado vía API a estaciones meteorológicas de redes públicas, generando alertas, previsiones y recomendaciones agroclimáticas automatizadas en el backend[cite: 1].</li>
+            <li><strong>Desarrollo Corporativo B2B (NEXO Enterprise):</strong> Despliegue del Panel Web de Supervisión para Cooperativas y Peritos (bandeja de validación pericial)[cite: 1] y el Conector oficial de Exportación Masiva SIEX adaptado al JSON Schema ministerial[cite: 1].</li>
+            <li><strong>Hito Comercial (Q1 2027):</strong> Cierre de 3 acuerdos comerciales piloto con cooperativas de la zona del Poniente Almeriense para el despliegue del Plan Free masivo y validación técnica en campo.</li>
+        </ul>
+    </div>
+
+    <div class="timeline-block">
+        <div class="timeline-title">
+            <span>🗓️ Año 2: Integración IoT y Consolidación Analítica</span>
+            <span>Q3 2027 - Q2 2028</span>
+        </div>
+        <p><strong>Objetivo Técnico:</strong> Expansión de la capa analítica de precisión y despliegue del ecosistema de sensores de interior.</p>
+        <ul>
+            <li><strong>Infraestructura IoT:</strong> Apertura de pasarelas de comunicación para integrar telemetría de sensores físicos bajo plástico (sondas de suelo, humedad relativa, temperatura y CO2)[cite: 1].</li>
+            <li><strong>Algoritmia Agroclimática Avanzada:</strong> Activación del cálculo del Déficit de Presión de Vapor (DPV) y Punto de Rocío en tiempo real conectado a notificaciones push automáticas de gestión de bandas[cite: 1].</li>
+            <li><strong>Módulo de Rentabilidad:</strong> Lanzamiento del Simulador de Costes e Insumos en la aplicación para calcular el coste financiero exacto por kilo de fruta comercializada (€/kg).</li>
+            <li><strong>Hito Comercial:</strong> Expansión de la red B2B a 12 cooperativas y fomento de la conversión de usuarios orgánicos del Plan Free al Plan Premium móvil.</li>
+        </ul>
+    </div>
+
+    <!-- Salto de página para el PDF -->
+    <div class="page-break"></div>
+
+    <div class="timeline-block year3">
+        <div class="timeline-title">
+            <span>🗓️ Año 3: Escalabilidad Enterprise e Inteligencia de Negocio</span>
+            <span>Q3 2028 - Q2 2029</span>
+        </div>
+        <p><strong>Objetivo Técnico:</strong> Transformación de la plataforma en la infraestructura predictiva de la cadena de suministro hortofrutícola.</p>
+        <ul>
+            <li><strong>Predictive Supply Chain:</strong> Despliegue en el panel de cooperativas del módulo de predicción masiva de entrada de género a 14 días vista, cruzando datos microclimáticos acumulados con estados fenológicos de los cultivos[cite: 1].</li>
+            <li><strong>Automatización del Ecosistema:</strong> Integración de APIs de distribuidores locales de insumos para agilizar la tramitación e indexación automatizada de recetas fitosanitarias de forma nativa.</li>
+            <li><strong>Hito Comercial:</strong> Escalabilidad a 25 cooperativas aliadas y replicación del modelo en zonas de agricultura intensiva limítrofes (Murcia, Huelva o Sur de Portugal).</li>
+        </ul>
+    </div>
+
+    <h2>2. Estimación de Usuarios y Proyección Financiera (ARR)</h2>
+    <p>La estrategia comercial se basa en dos palancas de ingresos recurrentes anuales (ARR):</p>
+    <ul>
+        <li><strong>B2C (Agricultores Premium Independientes):</strong> Suscripción de 14,99€ / mes (o 149€ / año con pago único).</li>
+        <li><strong>B2B (Cooperativas y SATs):</strong> Licencia anual base de 3.000€ + Canon variable de 4€ al año por socio/cuaderno activo.</li>
+    </ul>
+
+    <table class="financial-table">
+        <thead>
+            <tr>
+                <th>Métrica / Concepto de Ingreso</th>
+                <th>Año 1 (Campaña 26/27)</th>
+                <th>Año 2 (Campaña 27/28)</th>
+                <th>Año 3 (Campaña 28/29)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Cooperativas Adheridas (B2B)</strong></td>
+                <td>3 cooperativas</td>
+                <td>12 cooperativas</td>
+                <td>25 cooperativas</td>
+            </tr>
+            <tr>
+                <td><strong>Socios Activos (Vía Cooperativa)</strong></td>
+                <td>900 agricultores</td>
+                <td>3.600 agricultores</td>
+                <td>8.500 agricultores</td>
+            </tr>
+            <tr>
+                <td><strong>Agricultores Premium Libres (B2C)</strong></td>
+                <td>50 usuarios</td>
+                <td>250 usuarios</td>
+                <td>600 usuarios</td>
+            </tr>
+            <tr>
+                <td><em>Agricultores en Plan Free (Captación)</em></td>
+                <td><em>1.500 usuarios</em></td>
+                <td><em>5.000 usuarios</em></td>
+                <td><em>12.000 usuarios</em></td>
+            </tr>
+            <tr>
+                <td>Ingresos Anuales Licencias B2B</td>
+                <td>12.600 €</td>
+                <td>50.400 €</td>
+                <td>109.000 €</td>
+            </tr>
+            <tr>
+                <td>Ingresos Anuales Suscripciones B2C</td>
+                <td>7.450 €</td>
+                <td>37.250 €</td>
+                <td>89.400 €</td>
+            </tr>
+            <tr>
+                <td>Servicios Avanzados / Consultoría Data</td>
+                <td>5.000 €</td>
+                <td>15.000 €</td>
+                <td>35.000 €</td>
+            </tr>
+            <tr class="total-row">
+                <td>TOTAL INGRESOS BRUTOS ANUALES (ARR)</td>
+                <td>25.050 €</td>
+                <td>102.650 €</td>
+                <td>233.400 €</td>
+            </tr>
+        </tbody>
+    </table>
+    <p style="font-size: 11px; color: var(--light-text); font-style: italic;">*Nota: Las proyecciones B2B contemplan una media de 300 socios por cooperativa comercializadora en la comarca. Las métricas B2C asumen una tasa de conversión orgánica del Plan Free al Premium de entre el 3% y el 5% sobre la base total de usuarios registrados libres.</p>
+
+    <h2>3. Pilares de Robustez y Viabilidad Operativa</h2>
+    <p>Al estructurarse como un proyecto de desarrollo y propiedad independiente, la robustez sistémica de NEXO Agro se sustenta sobre tres ventajas arquitectónicas críticas:</p>
+    <ul>
+        <li><strong>Coste Cloud Próximo a Cero en Inferencia:</strong> Al delegar el procesamiento analítico del Scanner IA de forma local en el hardware del móvil del agricultor (SQLite + ONNX)[cite: 1], el backend desarrollado en FastAPI se libera del procesamiento gráfico (GPU). Solo gestiona la transferencia síncrona de archivos JSON planos, lo que permite absorber miles de usuarios concurrentes con costes de servidor mínimos.</li>
+        <li><strong>Validación Legal Delegada:</strong> La arquitectura del panel B2B traslada la responsabilidad de la revisión agronómica final al perito técnico de la cooperativa[cite: 1]. NEXO Agro provee la infraestructura tecnológica y la automatización del flujo de datos, pero la validación jurídica y firma digital recae en los técnicos oficiales, blindando la plataforma ante responsabilidades de inspección administrativa[cite: 1].</li>
+        <li><strong>Flujo de Caja Inmediato para Reinversión:</strong> El modelo de facturación B2B permite el cobro de licencias anuales por adelantado durante el último trimestre de 2026. Esta inyección de capital inicial otorga liquidez operativa inmediata para sostener la infraestructura técnica, el despliegue del portfolio y el posterior escalado a la fase IoT sin dependencia de financiación externa.</li>
+    </ul>
+
+    <footer>
+        NEXO Agro — Documentación de Estrategia Corporativa y Plan de Negocio. Confidencial. Propiedad Exclusiva de Valentín Ruiz León. © 2026.
+    </footer>
+</div>
+
+</body>
+</html>

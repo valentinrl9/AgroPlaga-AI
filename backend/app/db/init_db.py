@@ -11,7 +11,7 @@ from app.core.security import get_password_hash
 from app.db.seed_zones import SIGPAC_ZONES
 from app.db.session import SessionLocal, engine
 from app.db.seed_pilot_invites import seed_pilot_invites
-from app.models import user, scan, feedback, zone, outbreak_event, alert, alert_preference, user_badge, farm, contribution_log, pilot_invite
+from app.models import user, scan, feedback, zone, outbreak_event, alert, alert_preference, user_badge, farm, contribution_log, pilot_invite, climate
 from app.models.user import User
 from app.models.zone import AgriZone
 from app.services.geo_service import point_wkt

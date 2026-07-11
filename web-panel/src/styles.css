@@ -1,7 +1,7 @@
 :root {
   font-family: "Segoe UI", system-ui, sans-serif;
-  color: #1b1b1b;
-  background: #f4f6f4;
+  color: #1e293b;
+  background: #f4f6f9;
 }
 
 * { box-sizing: border-box; }
@@ -15,7 +15,7 @@ body { margin: 0; }
   justify-content: space-between;
   align-items: center;
   padding: 1rem 1.5rem;
-  background: #2e7d32;
+  background: #0b192c;
   color: white;
 }
 
@@ -30,7 +30,7 @@ body { margin: 0; }
 }
 .topbar .muted { margin: 0.2rem 0 0; opacity: 0.9; font-size: 0.85rem; }
 .topbar-right { display: flex; gap: 1rem; align-items: center; }
-.topbar button { background: white; color: #2e7d32; border: none; padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; }
+.topbar button { background: white; color: #0b192c; border: none; padding: 0.4rem 0.8rem; border-radius: 6px; cursor: pointer; }
 
 .nav {
   display: flex;
@@ -41,7 +41,7 @@ body { margin: 0; }
 }
 
 .nav a {
-  color: #2e7d32;
+  color: #00a86b;
   text-decoration: none;
   font-weight: 600;
 }
@@ -83,7 +83,7 @@ body { margin: 0; }
 
 .login-card button {
   margin-top: 0.5rem;
-  background: #2e7d32;
+  background: #00a86b;
   color: white;
   border: none;
   padding: 0.7rem;
@@ -119,7 +119,7 @@ body { margin: 0; }
 }
 
 .toolbar button {
-  background: #2e7d32;
+  background: #00a86b;
   color: white;
   border: none;
   padding: 0.55rem 1rem;
@@ -190,7 +190,7 @@ th { background: #eef5ee; }
 
 .timeline-bar div {
   width: 100%;
-  background: #2e7d32;
+  background: #00a86b;
   border-radius: 4px 4px 0 0;
   min-height: 4px;
 }
@@ -270,7 +270,7 @@ th { background: #eef5ee; }
 }
 
 .validation-actions button {
-  background: #2e7d32;
+  background: #00a86b;
   color: white;
   border: none;
   padding: 0.55rem 0.9rem;
@@ -295,7 +295,7 @@ th { background: #eef5ee; }
 }
 
 .status-inactive { background: #9e9e9e; }
-.status-ok { background: #2e7d32; }
+.status-ok { background: #00a86b; }
 .status-pending { background: #f9a825; }
 
 @media (max-width: 900px) {

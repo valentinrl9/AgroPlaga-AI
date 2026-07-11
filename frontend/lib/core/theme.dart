@@ -1,32 +1,38 @@
 import "package:flutter/material.dart";
 
-ThemeData appTheme() {
-  const primaryGreen = Color(0xFF2E7D32);
+import "nexo_colors.dart";
 
+ThemeData appTheme() {
   return ThemeData(
     useMaterial3: true,
     colorScheme: const ColorScheme.light(
-      primary: primaryGreen,
-      onPrimary: Colors.white,
-      secondary: Color(0xFF1565C0),
-      onSecondary: Colors.white,
-      error: Color(0xFFC62828),
-      onSurface: Color(0xFF424242),
+      primary: NexoColors.bioGreen,
+      onPrimary: NexoColors.pureWhite,
+      secondary: NexoColors.techCyan,
+      onSecondary: NexoColors.deepBlue,
+      surface: NexoColors.slateGray,
+      onSurface: NexoColors.darkText,
+      error: Color(0xFFEF4444),
     ),
-    scaffoldBackgroundColor: const Color(0xFFE8F5E9),
+    scaffoldBackgroundColor: NexoColors.slateGray,
     appBarTheme: const AppBarTheme(
-      backgroundColor: primaryGreen,
-      foregroundColor: Colors.white,
+      backgroundColor: NexoColors.deepBlue,
+      foregroundColor: NexoColors.pureWhite,
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
-        backgroundColor: primaryGreen,
-        foregroundColor: Colors.white,
+        backgroundColor: NexoColors.bioGreen,
+        foregroundColor: NexoColors.pureWhite,
       ),
     ),
+    navigationBarTheme: const NavigationBarThemeData(
+      backgroundColor: NexoColors.pureWhite,
+      indicatorColor: Color(0x332E7D32),
+      labelTextStyle: WidgetStatePropertyAll(TextStyle(fontSize: 12, fontWeight: FontWeight.w600)),
+    ),
     textTheme: const TextTheme(
-      bodyLarge: TextStyle(color: Color(0xFF424242)),
-      bodyMedium: TextStyle(color: Color(0xFF424242)),
+      bodyLarge: TextStyle(color: NexoColors.darkText),
+      bodyMedium: TextStyle(color: NexoColors.darkText),
     ),
   );
 }
