@@ -1,5 +1,7 @@
 import "package:flutter/material.dart";
 
+import "../../core/nexo_colors.dart";
+
 import "../../models/scan.dart";
 import "severity_badge.dart";
 
@@ -58,7 +60,7 @@ class CardScan extends StatelessWidget {
             ],
             Text(
               plagueLabel,
-              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Color(0xFFC62828)),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: NexoColors.errorRed),
             ),
             if (severityLabel != null) ...[
               const SizedBox(height: 8),

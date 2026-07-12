@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 
+import "../../core/nexo_colors.dart";
 import "../../data/repositories/farm_repository.dart";
 import "../../models/farm.dart";
 import "../widgets/primary_button.dart";
@@ -67,7 +68,7 @@ class _FarmsScreenState extends State<FarmsScreen> {
           children: [
             const Text(
               "Registra fincas o invernaderos para diagnósticos privados.",
-              style: TextStyle(color: Color(0xFF424242)),
+              style: TextStyle(color: NexoColors.textPrimary),
             ),
             const SizedBox(height: 16),
             TextField(

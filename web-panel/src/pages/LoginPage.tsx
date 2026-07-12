@@ -1,6 +1,7 @@
 import { FormEvent, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { clearToken, fetchProfile, login } from "../api/client";
+import BrandWordmark from "../components/BrandWordmark";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -33,8 +34,8 @@ export default function LoginPage() {
     <div className="login-page">
       <form className="login-card" onSubmit={onSubmit}>
         <img src={`${import.meta.env.BASE_URL}app_logo.png`} alt="NEXO Agro" className="login-logo" />
-        <h2>NEXO Agro — Panel</h2>
-        <p className="muted">Acceso para técnicos y administradores</p>
+        <BrandWordmark />
+        <p className="muted">Panel Enterprise — acceso para técnicos y administradores</p>
         <label>
           Email
           <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />

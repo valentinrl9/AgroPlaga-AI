@@ -99,11 +99,11 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
   Color _dpvColor(String? status) {
     switch (status) {
       case "optimal":
-        return const Color(0xFF10B981);
+        return NexoColors.successGreen;
       case "warning":
         return NexoColors.warningAmber;
       case "critical":
-        return const Color(0xFFEF4444);
+        return NexoColors.errorRed;
       default:
         return NexoColors.techCyan;
     }
@@ -135,7 +135,7 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-              ? Center(child: Text(_error!, style: const TextStyle(color: Colors.red)))
+              ? Center(child: Text(_error!, style: const TextStyle(color: NexoColors.errorRed)))
               : TabBarView(
                   controller: _tabs,
                   children: [
@@ -162,7 +162,7 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
         children: [
           Text(
             "El Ejido, Almería · Clima en tiempo real",
-            style: TextStyle(color: NexoColors.lightText, fontSize: 13),
+            style: TextStyle(color: NexoColors.textSecondary, fontSize: 13),
           ),
           const SizedBox(height: 12),
           if (_actual != null) ...[
@@ -290,7 +290,7 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
       children: [
         const Text("Informe resumido", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
-        Text("Generado desde datos Open-Meteo · NEXO Climate", style: TextStyle(color: NexoColors.lightText)),
+        Text("Generado desde datos Open-Meteo · NEXO Climate", style: TextStyle(color: NexoColors.textSecondary)),
         const SizedBox(height: 20),
         _informeBlock("Resumen semanal", sem),
         const SizedBox(height: 16),

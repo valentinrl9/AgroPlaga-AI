@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 
 import "../../core/auth_redirect.dart";
+import "../../core/nexo_colors.dart";
 import "../../core/navigation.dart";
 import "../../core/routes.dart";
 import "../../core/session.dart";
@@ -88,7 +89,7 @@ class _ContributeScreenState extends State<ContributeScreen> {
       ScaffoldMessenger.of(rootContext).showSnackBar(
         SnackBar(
           content: const Text("¡Gracias! Tu aporte ayuda al mapa de plagas de la comarca."),
-          backgroundColor: const Color(0xFF2E7D32),
+          backgroundColor: NexoColors.bioGreen,
           action: SnackBarAction(
             label: "Ver mapa",
             textColor: Colors.white,
@@ -129,7 +130,7 @@ class _ContributeScreenState extends State<ContributeScreen> {
             const Text(
               "Solo se envía la plaga, severidad y municipio SIGPAC. "
               "Nunca se comparte tu parcela ni coordenadas exactas.",
-              style: TextStyle(fontSize: 14, color: Color(0xFF424242)),
+              style: TextStyle(fontSize: 14, color: NexoColors.textPrimary),
             ),
             const SizedBox(height: 20),
             CardScan.fromScan(
@@ -167,7 +168,7 @@ class _ContributeScreenState extends State<ContributeScreen> {
               if (_error != null)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 12),
-                  child: Text(_error!, style: const TextStyle(color: Colors.red)),
+                  child: Text(_error!, style: const TextStyle(color: NexoColors.errorRed)),
                 ),
               PrimaryButton(
                 label: _submitting ? "Enviando..." : "Sí, contribuir",

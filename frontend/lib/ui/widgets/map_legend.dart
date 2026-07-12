@@ -1,5 +1,7 @@
 import "package:flutter/material.dart";
 
+import "../../core/nexo_colors.dart";
+
 class MapLegend extends StatelessWidget {
   const MapLegend({super.key});
 
@@ -14,15 +16,19 @@ class MapLegend extends StatelessWidget {
           children: [
             const Text(
               "Leyenda",
-              style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF616161)),
+              style: TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: NexoColors.textSecondary,
+              ),
             ),
             const SizedBox(height: 8),
-            Row(
+            const Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: const [
-                _LegendItem(color: Color(0xFF2E7D32), label: "Leve"),
-                _LegendItem(color: Color(0xFFFBC02D), label: "Moderado"),
-                _LegendItem(color: Color(0xFFC62828), label: "Alto"),
+              children: [
+                _LegendItem(color: NexoColors.severityLow, label: "Leve"),
+                _LegendItem(color: NexoColors.severityModerate, label: "Moderado"),
+                _LegendItem(color: NexoColors.severityHigh, label: "Alto"),
               ],
             ),
             const SizedBox(height: 8),
@@ -35,8 +41,8 @@ class MapLegend extends StatelessWidget {
                     borderRadius: BorderRadius.circular(4),
                     gradient: LinearGradient(
                       colors: [
-                        const Color(0xFFFBC02D).withValues(alpha: 0.5),
-                        const Color(0xFFC62828).withValues(alpha: 0.85),
+                        NexoColors.warningAmber.withValues(alpha: 0.5),
+                        NexoColors.errorRed.withValues(alpha: 0.85),
                       ],
                     ),
                   ),
@@ -44,8 +50,8 @@ class MapLegend extends StatelessWidget {
                 const SizedBox(width: 8),
                 const Expanded(
                   child: Text(
-                    "Calor: amarillo → rojo según intensidad",
-                    style: TextStyle(fontSize: 11, color: Color(0xFF616161)),
+                    "Calor: ámbar → rojo según intensidad",
+                    style: TextStyle(fontSize: 11, color: NexoColors.textSecondary),
                   ),
                 ),
               ],
@@ -55,14 +61,14 @@ class MapLegend extends StatelessWidget {
               children: [
                 _ValidationBadgeSample(
                   label: "?",
-                  fill: Color(0xFFFFB200),
+                  fill: NexoColors.warningAmber,
                   border: Color(0xFFEF6C00),
                 ),
                 SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     "Ámbar = aviso IA sin validar por perito",
-                    style: TextStyle(fontSize: 11, color: Color(0xFF616161)),
+                    style: TextStyle(fontSize: 11, color: NexoColors.textSecondary),
                   ),
                 ),
               ],
@@ -72,14 +78,14 @@ class MapLegend extends StatelessWidget {
               children: [
                 _ValidationBadgeSample(
                   label: "✓",
-                  fill: Color(0xFFC62828),
-                  border: Color(0xFF00A86B),
+                  fill: NexoColors.errorRed,
+                  border: NexoColors.bioGreen,
                 ),
                 SizedBox(width: 8),
                 Expanded(
                   child: Text(
                     "Borde verde = validado por perito (plaga confirmada o corregida)",
-                    style: TextStyle(fontSize: 11, color: Color(0xFF616161)),
+                    style: TextStyle(fontSize: 11, color: NexoColors.textSecondary),
                   ),
                 ),
               ],
@@ -116,7 +122,7 @@ class _ValidationBadgeSample extends StatelessWidget {
       child: Text(
         label,
         style: TextStyle(
-          color: label == "?" ? const Color(0xFF1E293B) : Colors.white,
+          color: label == "?" ? NexoColors.deepBlue : NexoColors.pureWhite,
           fontWeight: FontWeight.bold,
           fontSize: 11,
         ),
@@ -142,7 +148,7 @@ class _LegendItem extends StatelessWidget {
           decoration: BoxDecoration(color: color, shape: BoxShape.circle),
         ),
         const SizedBox(width: 6),
-        Text(label, style: const TextStyle(fontSize: 12)),
+        Text(label, style: const TextStyle(fontSize: 12, color: NexoColors.textPrimary)),
       ],
     );
   }

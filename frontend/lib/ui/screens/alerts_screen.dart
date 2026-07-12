@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 
 import "../../core/auth_redirect.dart";
+import "../../core/nexo_colors.dart";
 import "../../core/routes.dart";
 import "../../data/repositories/alert_repository.dart";
 import "../../models/alert.dart";
@@ -59,10 +60,10 @@ class _AlertsScreenState extends State<AlertsScreen> {
   }
 
   Color _priorityColor(double? score) {
-    if (score == null) return const Color(0xFF757575);
-    if (score >= 0.7) return const Color(0xFFC62828);
-    if (score >= 0.4) return const Color(0xFFF9A825);
-    return const Color(0xFF2E7D32);
+    if (score == null) return NexoColors.textSecondary;
+    if (score >= 0.7) return NexoColors.errorRed;
+    if (score >= 0.4) return NexoColors.warningAmber;
+    return NexoColors.bioGreen;
   }
 
   String _timeAgo(DateTime date) {
@@ -131,7 +132,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
             const SizedBox(height: 8),
             const Text(
               "Avisos automáticos cuando aumentan diagnósticos, aparece una plaga nueva o sube la severidad.",
-              style: TextStyle(color: Color(0xFF424242)),
+              style: TextStyle(color: NexoColors.textPrimary),
             ),
             const SizedBox(height: 16),
             Expanded(
@@ -199,10 +200,10 @@ class _AlertsScreenState extends State<AlertsScreen> {
                             alignment: Alignment.centerRight,
                             padding: const EdgeInsets.only(right: 20),
                             decoration: BoxDecoration(
-                              color: Colors.red.shade100,
+                              color: NexoColors.errorRed.withValues(alpha: 0.12),
                               borderRadius: BorderRadius.circular(12),
                             ),
-                            child: const Icon(Icons.delete_outline, color: Color(0xFFC62828)),
+                            child: const Icon(Icons.delete_outline, color: NexoColors.errorRed),
                           ),
                           onDismissed: (_) => _dismiss(alert),
                           child: Card(
@@ -345,7 +346,7 @@ class _AlertPreferencesSheetState extends State<_AlertPreferencesSheet> {
             children: [
               const Text(
                 "Elige qué plagas quieres ver en tus alertas. Si desactivas una, no aparecerá en la lista.",
-                style: TextStyle(color: Color(0xFF424242)),
+                style: TextStyle(color: NexoColors.textPrimary),
               ),
               const SizedBox(height: 16),
               ...List.generate(prefs.length, (index) {

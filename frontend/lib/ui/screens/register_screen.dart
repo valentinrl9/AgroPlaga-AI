@@ -1,8 +1,10 @@
 import "package:flutter/material.dart";
 
+import "../../core/nexo_colors.dart";
 import "../../core/routes.dart";
 import "../../data/repositories/auth_repository.dart";
 import "../widgets/app_logo.dart";
+import "../widgets/nexo_wordmark.dart";
 import "../widgets/primary_button.dart";
 
 class RegisterScreen extends StatefulWidget {
@@ -98,13 +100,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
               const SizedBox(height: 16),
               const Center(child: AppLogo(size: 88, borderRadius: 18)),
               const SizedBox(height: 20),
-              const Text(
-                "Crear cuenta NEXO Agro",
-                style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-              ),
+              const Center(child: NexoWordmark(fontSize: 26)),
+              const SizedBox(height: 8),
               const Text(
                 "Piloto cerrado: necesitas un código personal del responsable.",
-                style: TextStyle(fontSize: 14, color: Color(0xFF757575)),
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 14, color: NexoColors.textSecondary),
               ),
               const SizedBox(height: 24),
               TextField(
@@ -145,7 +146,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   padding: const EdgeInsets.only(bottom: 16.0),
                   child: Text(
                     _errorMessage!,
-                    style: const TextStyle(color: Colors.red),
+                    style: const TextStyle(color: NexoColors.errorRed),
                   ),
                 ),
               PrimaryButton(
@@ -162,7 +163,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     child: const Text(
                       "Inicia sesión",
                       style: TextStyle(
-                        color: Color(0xFF2E7D32),
+                        color: NexoColors.bioGreen,
                         fontWeight: FontWeight.bold,
                       ),
                     ),

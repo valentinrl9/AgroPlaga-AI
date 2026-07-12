@@ -15,8 +15,7 @@ class NexoLockScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final message = isB2C
-        ? "Desbloquea métricas avanzadas e IA climática predictiva. "
-            "Activa el periodo de prueba de 7 días cuando esté disponible."
+        ? "Desbloquea métricas avanzadas e IA climática predictiva por 9.99€/mes."
         : "Este módulo requiere vinculación oficial con tu Cooperativa o SAT adherida "
             "para la gestión unificada de alertas. Solicita el alta a tu perito técnico.";
 
@@ -41,9 +40,9 @@ class NexoLockScreen extends StatelessWidget {
                 ),
               ),
               const SizedBox(height: 12),
-              Text(
+              const Text(
                 "Módulo no activo",
-                style: TextStyle(fontSize: 15, color: NexoColors.lightText),
+                style: TextStyle(fontSize: 15, color: NexoColors.textSecondary),
               ),
               const SizedBox(height: 20),
               Text(
@@ -55,6 +54,21 @@ class NexoLockScreen extends StatelessWidget {
                   color: NexoColors.pureWhite,
                 ),
               ),
+              if (isB2C) ...[
+                const SizedBox(height: 28),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: null,
+                    style: ElevatedButton.styleFrom(
+                      disabledBackgroundColor: NexoColors.bioGreen.withValues(alpha: 0.35),
+                      disabledForegroundColor: NexoColors.pureWhite.withValues(alpha: 0.7),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                    ),
+                    child: const Text("Activar periodo de prueba de 7 días"),
+                  ),
+                ),
+              ],
             ],
           ),
         ),

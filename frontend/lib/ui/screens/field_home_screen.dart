@@ -1,8 +1,10 @@
 import "package:flutter/material.dart";
 
+import "../../core/nexo_colors.dart";
 import "../../core/routes.dart";
 import "../../core/session.dart";
 import "../../data/repositories/auth_repository.dart";
+import "../widgets/nexo_section_card.dart";
 import "../widgets/primary_button.dart";
 
 class FieldHomeScreen extends StatefulWidget {
@@ -39,18 +41,14 @@ class _FieldHomeScreenState extends State<FieldHomeScreen> {
     Navigator.pushNamedAndRemoveUntil(context, Routes.login, (_) => false);
   }
 
-  Widget _sectionTitle(String title) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 4, bottom: 8),
-      child: Text(
-        title,
-        style: const TextStyle(
-          fontSize: 13,
-          fontWeight: FontWeight.w600,
-          color: Color(0xFF757575),
-          letterSpacing: 0.5,
-        ),
-      ),
+  Widget _actionRow(List<Widget> tiles) {
+    return Row(
+      children: [
+        for (var i = 0; i < tiles.length; i++) ...[
+          if (i > 0) const SizedBox(width: 10),
+          Expanded(child: tiles[i]),
+        ],
+      ],
     );
   }
 
@@ -70,85 +68,118 @@ class _FieldHomeScreenState extends State<FieldHomeScreen> {
         ],
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            Text(
-              greeting,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold, color: Color(0xFF424242)),
-            ),
-            const SizedBox(height: 4),
-            const Text(
-              "Diagnostica plagas y contribuye al mapa de tu comarca.",
-              style: TextStyle(fontSize: 14, color: Color(0xFF757575)),
-            ),
-            const SizedBox(height: 20),
-            _sectionTitle("ESCANEAR"),
-            PrimaryButton(
-              label: "Nuevo escaneo",
-              onPressed: () => Navigator.pushNamed(context, Routes.scan),
-            ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.pushNamed(context, Routes.history),
-                    child: const Text("Historial"),
-                  ),
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [NexoColors.deepBlue, NexoColors.surfaceElevated],
                 ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.pushNamed(context, Routes.analytics),
-                    child: const Text("Mi analítica"),
-                  ),
+                border: Border(
+                  bottom: BorderSide(color: NexoColors.techCyan.withValues(alpha: 0.25)),
                 ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            _sectionTitle("COLABORACIÓN"),
-            PrimaryButton(
-              label: "Mapa de focos",
-              onPressed: () => Navigator.pushNamed(context, Routes.map),
-            ),
-            const SizedBox(height: 10),
-            Row(
-              children: [
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.pushNamed(context, Routes.alerts),
-                    child: const Text("Alertas"),
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.pushNamed(context, Routes.community),
-                    child: const Text("Comunidad"),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 16),
-            _sectionTitle("GESTIÓN"),
-            OutlinedButton(
-              onPressed: () => Navigator.pushNamed(context, Routes.settings),
-              child: const Text("Servidor API / Ajustes"),
-            ),
-            const SizedBox(height: 10),
-            OutlinedButton(
-              onPressed: () => Navigator.pushNamed(context, Routes.farms),
-              child: const Text("Mis fincas"),
-            ),
-            if (_isTech) ...[
-              const SizedBox(height: 10),
-              PrimaryButton(
-                label: "Validar eventos (técnico)",
-                onPressed: () => Navigator.pushNamed(context, Routes.techValidation),
               ),
-            ],
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    greeting,
+                    style: const TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.w800,
+                      color: NexoColors.textPrimary,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  const Text(
+                    "Diagnostica plagas y contribuye al mapa de tu comarca.",
+                    style: TextStyle(fontSize: 14, color: NexoColors.textSecondary, height: 1.4),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  NexoSectionCard(
+                    title: "ESCANEAR",
+                    children: [
+                      PrimaryButton(
+                        label: "Nuevo escaneo",
+                        onPressed: () => Navigator.pushNamed(context, Routes.scan),
+                      ),
+                      const SizedBox(height: 10),
+                      _actionRow([
+                        NexoActionTile(
+                          icon: Icons.history_rounded,
+                          label: "Historial",
+                          onTap: () => Navigator.pushNamed(context, Routes.history),
+                        ),
+                        NexoActionTile(
+                          icon: Icons.insights_rounded,
+                          label: "Mi analítica",
+                          onTap: () => Navigator.pushNamed(context, Routes.analytics),
+                        ),
+                      ]),
+                    ],
+                  ),
+                  NexoSectionCard(
+                    title: "COLABORACIÓN",
+                    children: [
+                      PrimaryButton(
+                        label: "Mapa de focos",
+                        onPressed: () => Navigator.pushNamed(context, Routes.map),
+                      ),
+                      const SizedBox(height: 10),
+                      _actionRow([
+                        NexoActionTile(
+                          icon: Icons.notifications_active_outlined,
+                          label: "Alertas",
+                          onTap: () => Navigator.pushNamed(context, Routes.alerts),
+                        ),
+                        NexoActionTile(
+                          icon: Icons.groups_outlined,
+                          label: "Comunidad",
+                          onTap: () => Navigator.pushNamed(context, Routes.community),
+                        ),
+                      ]),
+                    ],
+                  ),
+                  NexoSectionCard(
+                    title: "GESTIÓN",
+                    children: [
+                      _actionRow([
+                        NexoActionTile(
+                          icon: Icons.settings_outlined,
+                          label: "Ajustes API",
+                          onTap: () => Navigator.pushNamed(context, Routes.settings),
+                        ),
+                        NexoActionTile(
+                          icon: Icons.agriculture_outlined,
+                          label: "Mis fincas",
+                          onTap: () => Navigator.pushNamed(context, Routes.farms),
+                        ),
+                      ]),
+                      if (_isTech) ...[
+                        const SizedBox(height: 12),
+                        PrimaryButton(
+                          label: "Validar eventos (técnico)",
+                          onPressed: () => Navigator.pushNamed(context, Routes.techValidation),
+                        ),
+                      ],
+                    ],
+                  ),
+                ],
+              ),
+            ),
           ],
         ),
       ),

@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 import "package:http/http.dart" as http;
 
 import "../../core/api_config.dart";
+import "../../core/nexo_colors.dart";
 import "../widgets/primary_button.dart";
 
 class SettingsScreen extends StatefulWidget {
@@ -99,7 +100,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             const SizedBox(height: 8),
             const Text(
               "En móvil físico usa la IP de tu PC en la misma Wi‑Fi, por ejemplo http://192.168.1.104:8000",
-              style: TextStyle(color: Color(0xFF424242)),
+              style: TextStyle(color: NexoColors.textPrimary),
             ),
             const SizedBox(height: 16),
             TextField(
@@ -118,8 +119,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 _status!,
                 style: TextStyle(
                   color: _status!.startsWith("Conexión") || _status!.startsWith("URL")
-                      ? const Color(0xFF2E7D32)
-                      : const Color(0xFFC62828),
+                      ? NexoColors.bioGreen
+                      : NexoColors.errorRed,
                 ),
               ),
             const SizedBox(height: 16),

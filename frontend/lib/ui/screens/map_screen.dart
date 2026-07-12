@@ -3,6 +3,7 @@ import "package:flutter_map/flutter_map.dart";
 import "package:latlong2/latlong.dart";
 
 import "../../core/auth_redirect.dart";
+import "../../core/nexo_colors.dart";
 import "../../core/routes.dart";
 import "../../data/repositories/map_repository.dart";
 import "../../data/repositories/zone_repository.dart";
@@ -179,11 +180,11 @@ class _MapScreenState extends State<MapScreen> {
   Color _severityColor(int severity) {
     switch (severity) {
       case 3:
-        return const Color(0xFFC62828);
+        return NexoColors.severityHigh;
       case 2:
-        return const Color(0xFFFBC02D);
+        return NexoColors.severityModerate;
       default:
-        return const Color(0xFF2E7D32);
+        return NexoColors.severityLow;
     }
   }
 
@@ -193,8 +194,8 @@ class _MapScreenState extends State<MapScreen> {
 
   Color _heatColor(double intensity, _ValidationVisual visual) {
     final base = Color.lerp(
-      const Color(0xFFFBC02D),
-      const Color(0xFFC62828),
+      NexoColors.warningAmber,
+      NexoColors.errorRed,
       intensity,
     )!;
     final alpha = visual == _ValidationVisual.pending
@@ -254,7 +255,7 @@ class _MapScreenState extends State<MapScreen> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(cluster.name, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-            Text("SIGPAC ${cluster.sigpacCode}", style: const TextStyle(color: Color(0xFF757575))),
+            Text("SIGPAC ${cluster.sigpacCode}", style: const TextStyle(color: NexoColors.textSecondary)),
             const SizedBox(height: 12),
             Text("${cluster.count} reporte(s) · ${_periodLabel()}"),
             const SizedBox(height: 8),
@@ -263,7 +264,7 @@ class _MapScreenState extends State<MapScreen> {
             if (cluster.validatedCount + cluster.pendingCount < cluster.count)
               Text(
                 "Otros estados (p. ej. descartados): ${cluster.count - cluster.validatedCount - cluster.pendingCount}",
-                style: const TextStyle(fontSize: 12, color: Color(0xFF757575)),
+                style: const TextStyle(fontSize: 12, color: NexoColors.textSecondary),
               ),
             const SizedBox(height: 8),
             Text("Severidad máxima: ${_severityLabel(cluster.maxSeverity)}"),
@@ -418,7 +419,7 @@ class _MapScreenState extends State<MapScreen> {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(Icons.map_outlined, size: 40, color: Color(0xFF2E7D32)),
+              const Icon(Icons.map_outlined, size: 40, color: NexoColors.bioGreen),
               const SizedBox(height: 12),
               Text(
                 "Sin focos en ${_periodLabel()}",
@@ -600,7 +601,7 @@ class _MapScreenState extends State<MapScreen> {
                 Text(
                   _data == null ? "" : _footerMessage(clusters, _data!),
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 13, color: Color(0xFF424242)),
+                  style: const TextStyle(fontSize: 13, color: NexoColors.textPrimary),
                 ),
               ],
             ),

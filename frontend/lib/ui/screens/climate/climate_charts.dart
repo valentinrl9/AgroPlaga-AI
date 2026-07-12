@@ -19,6 +19,9 @@ class ClimateLineChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final axisColor = Theme.of(context).colorScheme.onSurface.withValues(alpha: 0.55);
+    final gridColor = NexoColors.borderSubtle.withValues(alpha: 0.6);
+
     if (values.isEmpty) {
       return Card(
         child: Padding(
@@ -49,9 +52,22 @@ class ClimateLineChart extends StatelessWidget {
                 LineChartData(
                   minY: 0,
                   maxY: maxY,
-                  gridData: const FlGridData(show: true, drawVerticalLine: false),
+                  gridData: FlGridData(
+                    show: true,
+                    drawVerticalLine: false,
+                    getDrawingHorizontalLine: (_) => FlLine(color: gridColor, strokeWidth: 1),
+                  ),
                   titlesData: FlTitlesData(
-                    leftTitles: const AxisTitles(sideTitles: SideTitles(showTitles: true, reservedSize: 36)),
+                    leftTitles: AxisTitles(
+                      sideTitles: SideTitles(
+                        showTitles: true,
+                        reservedSize: 36,
+                        getTitlesWidget: (value, meta) => Text(
+                          value.toStringAsFixed(0),
+                          style: TextStyle(fontSize: 10, color: axisColor),
+                        ),
+                      ),
+                    ),
                     bottomTitles: AxisTitles(
                       sideTitles: SideTitles(
                         showTitles: true,
@@ -63,7 +79,7 @@ class ClimateLineChart extends StatelessWidget {
                           final short = label.length > 6 ? label.substring(5) : label;
                           return Padding(
                             padding: const EdgeInsets.only(top: 6),
-                            child: Text(short, style: const TextStyle(fontSize: 10)),
+                            child: Text(short, style: TextStyle(fontSize: 10, color: axisColor)),
                           );
                         },
                       ),
@@ -111,18 +127,41 @@ class ClimateMetricCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Card(
-      color: (accent ?? NexoColors.bioGreen).withValues(alpha: 0.08),
+      color: NexoColors.surfaceElevated,
       child: Padding(
         padding: const EdgeInsets.all(14),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text("$emoji $title", style: const TextStyle(fontWeight: FontWeight.w600)),
-            const SizedBox(height: 6),
-            Text(value, style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
+            Row(
+              children: [
+                Container(
+                  width: 4,
+                  height: 36,
+                  decoration: BoxDecoration(
+                    color: accent ?? NexoColors.bioGreen,
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text("$emoji $title", style: const TextStyle(fontWeight: FontWeight.w600)),
+                      const SizedBox(height: 4),
+                      Text(
+                        value,
+                        style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
             if (hint != null) ...[
-              const SizedBox(height: 4),
-              Text(hint!, style: TextStyle(fontSize: 12, color: NexoColors.lightText)),
+              const SizedBox(height: 8),
+              Text(hint!, style: TextStyle(fontSize: 12, color: NexoColors.textSecondary)),
             ],
           ],
         ),

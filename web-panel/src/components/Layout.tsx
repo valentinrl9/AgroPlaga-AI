@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { clearToken, fetchProfile } from "../api/client";
 import type { UserProfile } from "../types";
+import BrandWordmark from "./BrandWordmark";
 
 export default function Layout() {
   const navigate = useNavigate();
@@ -34,7 +35,7 @@ export default function Layout() {
         <div className="topbar-brand">
           <img src={`${import.meta.env.BASE_URL}app_logo.png`} alt="NEXO Agro" className="brand-logo" />
           <div>
-            <h1>NEXO Agro</h1>
+            <BrandWordmark />
             <p className="muted">Panel Enterprise — cooperativas y SAT</p>
           </div>
         </div>

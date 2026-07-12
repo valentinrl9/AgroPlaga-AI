@@ -2,9 +2,9 @@ import { Circle, MapContainer, TileLayer } from "react-leaflet";
 import type { ZoneCell } from "../types";
 
 function severityColor(maxSeverity: number): string {
-  if (maxSeverity >= 3) return "#c62828";
-  if (maxSeverity >= 2) return "#f9a825";
-  return "#2e7d32";
+  if (maxSeverity >= 3) return "#ef4444";
+  if (maxSeverity >= 2) return "#ffb200";
+  return "#00a86b";
 }
 
 function zoneStyle(zone: ZoneCell) {

@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 
+import "../../core/nexo_colors.dart";
 import "../../data/repositories/analytics_repository.dart";
 import "../../models/analytics.dart";
 import "../widgets/severity_badge.dart";
@@ -105,7 +106,7 @@ class _AnalyticsScreenState extends State<AnalyticsScreen> {
                                   Container(
                                     height: h.clamp(4, 90),
                                     decoration: BoxDecoration(
-                                      color: const Color(0xFF2E7D32),
+                                      color: NexoColors.bioGreen,
                                       borderRadius: BorderRadius.circular(4),
                                     ),
                                   ),
@@ -174,7 +175,7 @@ class _KpiCard extends StatelessWidget {
         padding: const EdgeInsets.all(12),
         child: Column(
           children: [
-            Text(label, style: const TextStyle(fontSize: 12, color: Color(0xFF757575))),
+            Text(label, style: const TextStyle(fontSize: 12, color: NexoColors.textSecondary)),
             Text(value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
           ],
         ),

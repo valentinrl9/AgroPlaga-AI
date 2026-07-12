@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 
+import "../../core/nexo_colors.dart";
 import "../../core/severity.dart";
 
 class SeverityBadge extends StatelessWidget {
@@ -10,13 +11,13 @@ class SeverityBadge extends StatelessWidget {
   Color _colorFor(int? level) {
     switch (level) {
       case 3:
-        return const Color(0xFFC62828);
+        return NexoColors.severityHigh;
       case 2:
-        return const Color(0xFFFBC02D);
+        return NexoColors.severityModerate;
       case 1:
-        return const Color(0xFF2E7D32);
+        return NexoColors.severityLow;
       default:
-        return Colors.grey;
+        return NexoColors.textSecondary;
     }
   }
 

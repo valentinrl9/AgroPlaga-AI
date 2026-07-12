@@ -2,6 +2,7 @@ import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
 import "package:image_picker/image_picker.dart";
 
+import "../../core/nexo_colors.dart";
 import "../../core/routes.dart";
 import "../../core/session.dart";
 import "../../data/repositories/farm_repository.dart";
@@ -192,14 +193,14 @@ class _ScanScreenState extends State<ScanScreen> {
           children: [
             const Text(
               "Enfoca una hoja afectada, con buena luz y a menos de 20 cm.",
-              style: TextStyle(fontSize: 15, color: Color(0xFF424242)),
+              style: TextStyle(fontSize: 15, color: NexoColors.textPrimary),
             ),
             if (kIsWeb)
               const Padding(
                 padding: EdgeInsets.only(top: 8),
                 child: Text(
                   "Web: análisis heurístico. En Android/iOS se usa el modelo TFLite local.",
-                  style: TextStyle(fontSize: 12, color: Color(0xFF757575)),
+                  style: TextStyle(fontSize: 12, color: NexoColors.textSecondary),
                 ),
               ),
             const SizedBox(height: 16),
@@ -252,7 +253,7 @@ class _ScanScreenState extends State<ScanScreen> {
                         style: const TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFFC62828),
+                          color: NexoColors.errorRed,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -267,7 +268,7 @@ class _ScanScreenState extends State<ScanScreen> {
                       const SizedBox(height: 4),
                       Text(
                         "Modelo: ${_diagnosis!.modelVersion}",
-                        style: const TextStyle(fontSize: 12, color: Color(0xFF757575)),
+                        style: const TextStyle(fontSize: 12, color: NexoColors.textSecondary),
                       ),
                     ],
                   ),
@@ -344,7 +345,7 @@ class _ScanScreenState extends State<ScanScreen> {
             if (_errorMessage != null)
               Padding(
                 padding: const EdgeInsets.only(bottom: 12),
-                child: Text(_errorMessage!, style: const TextStyle(color: Colors.red)),
+                child: Text(_errorMessage!, style: const TextStyle(color: NexoColors.errorRed)),
               ),
             PrimaryButton(
               label: _isSaving
@@ -391,7 +392,7 @@ class _ImagePreview extends StatelessWidget {
                     children: [
                       AppLogo(size: 56, borderRadius: 12),
                       SizedBox(height: 8),
-                      Text("Sin imagen", style: TextStyle(color: Color(0xFF757575))),
+                      Text("Sin imagen", style: TextStyle(color: NexoColors.textSecondary)),
                     ],
                   ),
                 )

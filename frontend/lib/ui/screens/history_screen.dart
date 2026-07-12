@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 
 import "../../core/auth_redirect.dart";
+import "../../core/nexo_colors.dart";
 import "../../core/routes.dart";
 import "../../core/session.dart";
 import "../../data/repositories/scan_repository.dart";
@@ -65,7 +66,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
             const SizedBox(height: 8),
             const Text(
               "Toca un escaneo para ver recomendaciones personalizadas.",
-              style: TextStyle(color: Color(0xFF424242)),
+              style: TextStyle(color: NexoColors.textPrimary),
             ),
             const SizedBox(height: 16),
             Expanded(
@@ -119,7 +120,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
                               if (_contributedIds.contains(scan.id))
                                 const Padding(
                                   padding: EdgeInsets.only(right: 8),
-                                  child: Icon(Icons.map, size: 18, color: Color(0xFF2E7D32)),
+                                  child: Icon(Icons.map, size: 18, color: NexoColors.bioGreen),
                                 ),
                               SeverityBadge(severity: scan.severity),
                             ],
