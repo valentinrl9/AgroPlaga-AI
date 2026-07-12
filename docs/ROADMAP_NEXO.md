@@ -1,9 +1,9 @@
 # NEXO Agro — Roadmap de Desarrollo
 
 **Autor:** Valentín Ruiz León  
-**Actualizado:** 11 jul 2026  
+**Actualizado:** 12 jul 2026  
 **Rama:** `nexoagro`  
-**Estado:** 🔄 **Fase 0 ~90 %** — unificación base en local · producción sigue en AgroPlaga piloto
+**Estado:** ✅ **Fase 0 cerrada** — unificación validada en local · producción sigue en AgroPlaga piloto
 
 ---
 
@@ -42,7 +42,7 @@
 
 ---
 
-## Fase 0 — Consolidación unificada 🔄 ~90 %
+## Fase 0 — Consolidación unificada ✅ COMPLETADA (12 jul 2026)
 
 > Unificar AgroPlaga + AgroData en una sola infraestructura PostgreSQL, shell Nexo y permisos por módulo.
 
@@ -75,12 +75,12 @@
 - [ ] Actualizar `GUIA_ROLES.md` con módulos Nexo
 
 ### Validación local (checklist)
-- [x] Login → 3 pestañas visibles *(confirmado en `flutter run` Chrome)*
-- [ ] Field: PlagaScan, mapa, alertas sin regresiones
-- [x] Climate: métricas y gráficos con Docker local *(confirmado en `flutter run`)*
-- [ ] SIEX: lock screen correcto
-- [ ] Panel `/panel`: login operativo
-- [x] Mapa: avisos IA pendientes vs validados por perito (jul 2026)
+- [x] Login → 3 pestañas visibles
+- [x] Field: PlagaScan, mapa, alertas sin regresiones
+- [x] Climate: métricas y gráficos con Docker local
+- [x] SIEX: lock screen correcto
+- [x] Panel `/panel`: login y validación perito operativos
+- [x] Mapa: avisos IA pendientes vs validados por perito
 
 ### Validación automatizada (11 jul 2026)
 - [x] `flutter analyze lib/` — 0 errores (2 warnings menores)
@@ -203,7 +203,7 @@ Fase 0 (ahora)
 | jun 2026 | v1 MVP + v1.6-core AgroPlaga en VPS piloto |
 | jul 2026 | Decisión unificación → rama `nexoagro` |
 | jul 2026 | Fase 0: backend Climate PostgreSQL + shell Nexo + UI Climate B+ |
-| jul 2026 | `ROADMAP_NEXO.md` — roadmap único, roadmaps AgroPlaga archivados |
+| jul 2026 | Fase 0 validada: checklist manual E2E + commit `14947d9` (mapa validado, migración 0012) |
 
 ---
 
