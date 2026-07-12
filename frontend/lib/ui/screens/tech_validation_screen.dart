@@ -28,8 +28,8 @@ class _TechValidationScreenState extends State<TechValidationScreen> {
     });
   }
 
-  Future<void> _validate(OutbreakEvent event, bool validated) async {
-    await _repository.setValidation(event.id, validated: validated);
+  Future<void> _validate(OutbreakEvent event) async {
+    await _repository.setValidation(event.id, action: "confirm");
     _reload();
   }
 
@@ -50,7 +50,7 @@ class _TechValidationScreenState extends State<TechValidationScreen> {
             return Center(child: Text("Error: ${snapshot.error}"));
           }
 
-          final pending = (snapshot.data ?? []).where((e) => !e.validated).toList();
+          final pending = (snapshot.data ?? []).where((e) => e.isPending).toList();
           if (pending.isEmpty) {
             return const Center(child: Text("No hay eventos pendientes de validar."));
           }
@@ -63,15 +63,27 @@ class _TechValidationScreenState extends State<TechValidationScreen> {
               final event = pending[index];
               return Card(
                 child: ListTile(
-                  title: Text("${event.plague} · ${event.zoneName ?? "Zona ${event.zoneId}"}"),
-                  subtitle: Text("Severidad ${event.severity} · ${event.modelVersion}"),
+                  title: Text("${event.displayPlague} · ${event.zoneName ?? "Zona ${event.zoneId}"}"),
+                  subtitle: Text(
+                    "Severidad ${event.severity} · IA sin validar"
+                    "${event.originalPlague != null && event.originalPlague != event.displayPlague ? " · original: ${event.originalPlague}" : ""}",
+                  ),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: const Color(0xFFFFB200).withValues(alpha: 0.2),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: const Text("Pendiente", style: TextStyle(fontSize: 11, color: Color(0xFFEF6C00))),
+                      ),
+                      const SizedBox(width: 4),
                       SeverityBadge(severity: event.severity.toString()),
                       IconButton(
-                        icon: const Icon(Icons.check_circle, color: Color(0xFF2E7D32)),
-                        onPressed: () => _validate(event, true),
+                        icon: const Icon(Icons.check_circle, color: Color(0xFF00A86B)),
+                        onPressed: () => _validate(event),
                       ),
                     ],
                   ),

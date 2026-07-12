@@ -25,6 +25,7 @@ export interface ZoneCell {
   max_severity: number;
   intensity: number;
   validated_count: number;
+  pending_count?: number;
 }
 
 export interface TimelinePoint {

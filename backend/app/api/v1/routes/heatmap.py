@@ -15,10 +15,17 @@ def read_heatmap(
     plague: str | None = Query(default=None),
     hours: int = Query(default=168, ge=1, le=720),
     min_severity: int = Query(default=1, ge=1, le=3),
+    validated_only: bool = Query(default=False),
     _current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
-    cells = get_heatmap_grid(db, plague=plague, hours=hours, min_severity=min_severity)
+    cells = get_heatmap_grid(
+        db,
+        plague=plague,
+        hours=hours,
+        min_severity=min_severity,
+        validated_only=validated_only,
+    )
     return HeatmapResponse(
         hours=hours,
         min_severity=min_severity,

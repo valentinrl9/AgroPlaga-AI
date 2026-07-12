@@ -7,6 +7,8 @@ class HeatmapCell {
   final int count;
   final int maxSeverity;
   final double intensity;
+  final int validatedCount;
+  final int pendingCount;
 
   HeatmapCell({
     required this.zoneId,
@@ -17,6 +19,8 @@ class HeatmapCell {
     required this.count,
     required this.maxSeverity,
     required this.intensity,
+    this.validatedCount = 0,
+    this.pendingCount = 0,
   });
 
   factory HeatmapCell.fromJson(Map<String, dynamic> json) {
@@ -29,6 +33,12 @@ class HeatmapCell {
       count: json["count"] as int,
       maxSeverity: json["max_severity"] as int,
       intensity: (json["intensity"] as num).toDouble(),
+      validatedCount: json["validated_count"] as int? ?? 0,
+      pendingCount: json["pending_count"] as int? ?? 0,
     );
   }
+
+  bool get hasPendingOnly => pendingCount > 0 && validatedCount == 0;
+  bool get hasValidatedOnly => validatedCount > 0 && pendingCount == 0;
+  bool get isMixed => validatedCount > 0 && pendingCount > 0;
 }

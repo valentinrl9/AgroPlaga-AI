@@ -37,6 +37,7 @@ def _count_events(
         OutbreakEvent.zone_id == zone_id,
         OutbreakEvent.plague == plague,
         OutbreakEvent.reported_at >= since,
+        OutbreakEvent.status == "validated",
     )
     if until is not None:
         query = query.filter(OutbreakEvent.reported_at < until)
@@ -58,6 +59,7 @@ def _severity_stats(
         OutbreakEvent.zone_id == zone_id,
         OutbreakEvent.plague == plague,
         OutbreakEvent.reported_at >= since,
+        OutbreakEvent.status == "validated",
     )
     if until is not None:
         query = query.filter(OutbreakEvent.reported_at < until)

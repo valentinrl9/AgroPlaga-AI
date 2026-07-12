@@ -141,6 +141,118 @@ def test_validate_scan_forbidden_for_farmer(client, unique_email):
     assert response.status_code == 403
 
 
+def test_validate_scan_only_updates_linked_outbreak_not_same_plague(client, unique_email):
+    """Validar un escaneo no debe validar otros avisos con la misma plaga."""
+    farmer_token = register_and_login(client, unique_email)
+    farmer_headers = auth_headers(farmer_token)
+    admin_headers = _admin_headers(client)
+    zone_id = _first_zone_id(client, farmer_token)
+
+    def _scan_and_event(plague: str, suffix: str) -> tuple[int, int]:
+        files = {"image": ("leaf.jpg", _jpeg_bytes(), "image/jpeg")}
+        data = {
+            "crop": "Tomate",
+            "plague": plague,
+            "severity": "Moderado",
+            "confidence": "0.72",
+            "share_with_tech": "true",
+        }
+        created = client.post(
+            "/api/v1/scans/with-image",
+            headers=farmer_headers,
+            data=data,
+            files=files,
+        )
+        scan_id = created.json()["id"]
+        event = client.post(
+            "/api/v1/outbreak-events",
+            headers=farmer_headers,
+            json={
+                "plague": plague.replace(" ", "_"),
+                "severity": 2,
+                "zone_id": zone_id,
+                "source_scan_id": scan_id,
+            },
+        )
+        assert event.status_code == 201, event.text
+        return scan_id, event.json()["id"]
+
+    scan_a, event_a = _scan_and_event("trips", "a")
+    scan_b, event_b = _scan_and_event("trips", "b")
+
+    validated = client.patch(
+        f"/api/v1/scans/{scan_a}/validate",
+        headers=admin_headers,
+        json={"action": "confirm"},
+    )
+    assert validated.status_code == 200
+
+    events = client.get(
+        "/api/v1/outbreak-events",
+        headers=admin_headers,
+        params={"zone_id": zone_id, "plague": "trips"},
+    ).json()
+    by_id = {item["id"]: item for item in events}
+    assert by_id[event_a]["status"] == "validated"
+    assert by_id[event_b]["status"] == "pending"
+
+
+def test_validate_scan_correct_updates_linked_outbreak(client, unique_email):
+    farmer_token = register_and_login(client, unique_email)
+    farmer_headers = auth_headers(farmer_token)
+    admin_headers = _admin_headers(client)
+    zone_id = _first_zone_id(client, farmer_token)
+
+    files = {"image": ("leaf.jpg", _jpeg_bytes(), "image/jpeg")}
+    data = {
+        "crop": "Tomate",
+        "plague": "trips",
+        "severity": "Moderado",
+        "confidence": "0.72",
+        "share_with_tech": "true",
+    }
+    created = client.post(
+        "/api/v1/scans/with-image",
+        headers=farmer_headers,
+        data=data,
+        files=files,
+    )
+    scan_id = created.json()["id"]
+
+    event = client.post(
+        "/api/v1/outbreak-events",
+        headers=farmer_headers,
+        json={
+            "plague": "trips",
+            "severity": 2,
+            "zone_id": zone_id,
+            "source_scan_id": scan_id,
+        },
+    )
+    assert event.status_code == 201
+    event_id = event.json()["id"]
+
+    validated = client.patch(
+        f"/api/v1/scans/{scan_id}/validate",
+        headers=admin_headers,
+        json={"action": "correct", "corrected_plague": "mosca_blanca"},
+    )
+    assert validated.status_code == 200
+
+    updated = client.get("/api/v1/outbreak-events", headers=admin_headers, params={"zone_id": zone_id})
+    linked = next(item for item in updated.json() if item["id"] == event_id)
+    assert linked["status"] == "validated"
+    assert linked["plague"] == "mosca_blanca"
+    assert linked["corrected_plague"] == "mosca_blanca"
+    assert linked["display_plague"] == "mosca_blanca"
+
+
+def _first_zone_id(client, token: str) -> int:
+    response = client.get("/api/v1/zones", headers=auth_headers(token))
+    assert response.status_code == 200
+    return response.json()[0]["id"]
+
+
 def test_pilot_farmers_list(client, unique_email):
     register_and_login(client, unique_email)
     admin_headers = _admin_headers(client)

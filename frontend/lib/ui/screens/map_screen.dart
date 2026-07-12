@@ -33,6 +33,7 @@ class _MapScreenState extends State<MapScreen> {
   int _hours = 168;
   int _minSeverity = 1;
   String? _plagueFilter;
+  bool _validatedOnly = false;
   _MapViewMode _viewMode = _MapViewMode.both;
   List<String> _plagueOptions = [];
   bool _isLoading = false;
@@ -53,6 +54,7 @@ class _MapScreenState extends State<MapScreen> {
         hours: _hours,
         minSeverity: _minSeverity,
         plague: _plagueFilter,
+        validatedOnly: _validatedOnly,
       );
 
   void _reloadData() {
@@ -139,8 +141,10 @@ class _MapScreenState extends State<MapScreen> {
     _reloadData();
   }
 
-  void _recenterMap() {
-    _mapController.move(_ponienteCenter, 10);
+  void _setValidatedOnly(bool value) {
+    if (_validatedOnly == value) return;
+    _validatedOnly = value;
+    _reloadData();
   }
 
   List<_ZoneCluster> _clusters(List<HeatmapCell> heatmap) {
@@ -155,9 +159,21 @@ class _MapScreenState extends State<MapScreen> {
             count: cell.count,
             maxSeverity: cell.maxSeverity,
             intensity: cell.intensity,
+            validatedCount: cell.validatedCount,
+            pendingCount: cell.pendingCount,
           ),
         )
         .toList();
+  }
+
+  _ValidationVisual _validationVisual(_ZoneCluster cluster) {
+    if (cluster.validatedCount > 0 && cluster.pendingCount == 0) {
+      return _ValidationVisual.validated;
+    }
+    if (cluster.pendingCount > 0 && cluster.validatedCount == 0) {
+      return _ValidationVisual.pending;
+    }
+    return _ValidationVisual.mixed;
   }
 
   Color _severityColor(int severity) {
@@ -171,15 +187,63 @@ class _MapScreenState extends State<MapScreen> {
     }
   }
 
-  Color _heatColor(double intensity) {
-    return Color.lerp(
+  void _recenterMap() {
+    _mapController.move(_ponienteCenter, 10);
+  }
+
+  Color _heatColor(double intensity, _ValidationVisual visual) {
+    final base = Color.lerp(
       const Color(0xFFFBC02D),
       const Color(0xFFC62828),
       intensity,
-    )!.withValues(alpha: 0.28 + intensity * 0.42);
+    )!;
+    final alpha = visual == _ValidationVisual.pending
+        ? 0.18 + intensity * 0.22
+        : visual == _ValidationVisual.validated
+            ? 0.32 + intensity * 0.45
+            : 0.24 + intensity * 0.34;
+    if (visual == _ValidationVisual.pending) {
+      return Color.lerp(const Color(0xFFFFB200), base, 0.45)!.withValues(alpha: alpha);
+    }
+    return base.withValues(alpha: alpha);
+  }
+
+  Color _markerFillColor(_ZoneCluster cluster) {
+    final visual = _validationVisual(cluster);
+    if (visual == _ValidationVisual.pending) {
+      return const Color(0xFFFFB200);
+    }
+    return _severityColor(cluster.maxSeverity);
+  }
+
+  Color _markerBorderColor(_ZoneCluster cluster) {
+    final visual = _validationVisual(cluster);
+    if (visual == _ValidationVisual.validated) {
+      return const Color(0xFF00A86B);
+    }
+    if (visual == _ValidationVisual.pending) {
+      return const Color(0xFFEF6C00);
+    }
+    return Colors.white;
+  }
+
+  String _markerLabel(_ZoneCluster cluster) {
+    final visual = _validationVisual(cluster);
+    if (visual == _ValidationVisual.mixed) {
+      return "✓${cluster.validatedCount}\n?${cluster.pendingCount}";
+    }
+    if (visual == _ValidationVisual.pending) {
+      return "?${cluster.pendingCount}";
+    }
+    return "✓${cluster.validatedCount}";
   }
 
   void _showClusterDetails(_ZoneCluster cluster) {
+    final zoneEvents = (_data?.events ?? [])
+        .where((event) => event.zoneId == cluster.zoneId)
+        .toList();
+    final visual = _validationVisual(cluster);
+
     showModalBottomSheet(
       context: context,
       showDragHandle: true,
@@ -194,9 +258,35 @@ class _MapScreenState extends State<MapScreen> {
             const SizedBox(height: 12),
             Text("${cluster.count} reporte(s) · ${_periodLabel()}"),
             const SizedBox(height: 8),
+            Text("Validados por perito: ${cluster.validatedCount}"),
+            Text("Pendientes IA (sin validar): ${cluster.pendingCount}"),
+            if (cluster.validatedCount + cluster.pendingCount < cluster.count)
+              Text(
+                "Otros estados (p. ej. descartados): ${cluster.count - cluster.validatedCount - cluster.pendingCount}",
+                style: const TextStyle(fontSize: 12, color: Color(0xFF757575)),
+              ),
+            const SizedBox(height: 8),
             Text("Severidad máxima: ${_severityLabel(cluster.maxSeverity)}"),
             const SizedBox(height: 8),
             Text("Intensidad: ${(cluster.intensity * 100).toStringAsFixed(0)}%"),
+            const SizedBox(height: 8),
+            _ValidationStatusChip(visual: visual),
+            if (zoneEvents.isNotEmpty) ...[
+              const SizedBox(height: 12),
+              const Text("Detalle de avisos", style: TextStyle(fontWeight: FontWeight.bold)),
+              const SizedBox(height: 6),
+              ...zoneEvents.take(5).map(
+                (event) => Padding(
+                  padding: const EdgeInsets.only(bottom: 4),
+                  child: Text(
+                    "${event.displayPlague} · ${event.severityLabel} · "
+                    "${event.isValidated ? "Validado" : "IA sin validar"}"
+                    "${event.wasCorrected ? " (corregido por perito)" : ""}",
+                    style: const TextStyle(fontSize: 13),
+                  ),
+                ),
+              ),
+            ],
           ],
         ),
       ),
@@ -275,6 +365,17 @@ class _MapScreenState extends State<MapScreen> {
               ),
             ),
           ],
+          const _FilterDivider(),
+          _filterChip(
+            label: "Solo validados",
+            selected: _validatedOnly,
+            onSelect: () => _setValidatedOnly(true),
+          ),
+          _filterChip(
+            label: "Todos",
+            selected: !_validatedOnly,
+            onSelect: () => _setValidatedOnly(false),
+          ),
         ],
       ),
     );
@@ -423,9 +524,9 @@ class _MapScreenState extends State<MapScreen> {
                                         (c) => CircleMarker(
                                           point: LatLng(c.lat, c.lon),
                                           radius: 28 + c.intensity * 50,
-                                          color: _heatColor(c.intensity),
-                                          borderColor: _severityColor(c.maxSeverity).withValues(alpha: 0.5),
-                                          borderStrokeWidth: 1,
+                                          color: _heatColor(c.intensity, _validationVisual(c)),
+                                          borderColor: _markerBorderColor(c).withValues(alpha: 0.8),
+                                          borderStrokeWidth: _validationVisual(c) == _ValidationVisual.pending ? 2 : 1,
                                           useRadiusInMeter: false,
                                         ),
                                       )
@@ -437,21 +538,30 @@ class _MapScreenState extends State<MapScreen> {
                                       .map(
                                         (c) => Marker(
                                           point: LatLng(c.lat, c.lon),
-                                          width: 40,
-                                          height: 40,
+                                          width: 44,
+                                          height: 44,
                                           child: Container(
                                             alignment: Alignment.center,
                                             decoration: BoxDecoration(
-                                              color: _severityColor(c.maxSeverity),
+                                              color: _markerFillColor(c).withValues(
+                                                alpha: _validationVisual(c) == _ValidationVisual.pending ? 0.75 : 1,
+                                              ),
                                               shape: BoxShape.circle,
-                                              border: Border.all(color: Colors.white, width: 2),
+                                              border: Border.all(
+                                                color: _markerBorderColor(c),
+                                                width: _validationVisual(c) == _ValidationVisual.validated ? 3 : 2,
+                                              ),
                                             ),
                                             child: Text(
-                                              "${c.count}",
-                                              style: const TextStyle(
-                                                color: Colors.white,
+                                              _markerLabel(c),
+                                              textAlign: TextAlign.center,
+                                              style: TextStyle(
+                                                color: _validationVisual(c) == _ValidationVisual.pending
+                                                    ? const Color(0xFF1E293B)
+                                                    : Colors.white,
                                                 fontWeight: FontWeight.bold,
-                                                fontSize: 12,
+                                                fontSize: _validationVisual(c) == _ValidationVisual.mixed ? 9 : 12,
+                                                height: 1.05,
                                               ),
                                             ),
                                           ),
@@ -538,6 +648,8 @@ class _ZoneCluster {
   final int count;
   final int maxSeverity;
   final double intensity;
+  final int validatedCount;
+  final int pendingCount;
 
   _ZoneCluster({
     required this.zoneId,
@@ -548,5 +660,40 @@ class _ZoneCluster {
     required this.count,
     required this.maxSeverity,
     required this.intensity,
+    required this.validatedCount,
+    required this.pendingCount,
   });
+}
+
+enum _ValidationVisual { pending, validated, mixed }
+
+class _ValidationStatusChip extends StatelessWidget {
+  final _ValidationVisual visual;
+
+  const _ValidationStatusChip({required this.visual});
+
+  @override
+  Widget build(BuildContext context) {
+    late final String label;
+    late final Color color;
+    if (visual == _ValidationVisual.pending) {
+      label = "Avisos IA sin validar";
+      color = const Color(0xFFFFB200);
+    } else if (visual == _ValidationVisual.validated) {
+      label = "Validado por perito";
+      color = const Color(0xFF00A86B);
+    } else {
+      label = "Mixto: validados + pendientes";
+      color = const Color(0xFF5C6BC0);
+    }
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: color),
+      ),
+      child: Text(label, style: TextStyle(color: color, fontWeight: FontWeight.w600, fontSize: 12)),
+    );
+  }
 }

@@ -94,4 +94,41 @@ def test_validate_event_as_admin(client):
         json={"validated": True},
     )
     assert response.status_code == 200
-    assert response.json()["validated"] is True
+    body = response.json()
+    assert body["validated"] is True
+    assert body["status"] == "validated"
+
+
+def test_contribute_with_source_scan_id(client, unique_email):
+    token = register_and_login(client, unique_email)
+    headers = auth_headers(token)
+    zone_id = _first_zone_id(client, token)
+
+    scan = client.post(
+        "/api/v1/scans",
+        headers=headers,
+        json={
+            "crop": "Tomate",
+            "plague": "tuta_absoluta",
+            "severity": "Moderado",
+            "confidence": 0.8,
+        },
+    )
+    assert scan.status_code == 201
+    scan_id = scan.json()["id"]
+
+    response = client.post(
+        "/api/v1/outbreak-events",
+        headers=headers,
+        json={
+            "plague": "tuta_absoluta",
+            "severity": 2,
+            "zone_id": zone_id,
+            "source_scan_id": scan_id,
+        },
+    )
+    assert response.status_code == 201
+    body = response.json()
+    assert body["source_scan_id"] == scan_id
+    assert body["status"] == "pending"
+    assert body["validated"] is False

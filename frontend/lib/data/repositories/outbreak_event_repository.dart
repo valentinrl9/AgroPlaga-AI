@@ -34,19 +34,26 @@ class OutbreakEventRepository {
     required int severity,
     required int zoneId,
     String modelVersion = "v0.0",
+    int? sourceScanId,
   }) async {
     final response = await _client.postAuth("/api/v1/outbreak-events", {
       "plague": plague,
       "severity": severity,
       "zone_id": zoneId,
       "model_version": modelVersion,
+      if (sourceScanId != null) "source_scan_id": sourceScanId,
     });
     return OutbreakEvent.fromJson(response);
   }
 
-  Future<OutbreakEvent> setValidation(int eventId, {required bool validated}) async {
+  Future<OutbreakEvent> setValidation(
+    int eventId, {
+    required String action,
+    String? correctedPlague,
+  }) async {
     final response = await _client.patchAuth("/api/v1/outbreak-events/$eventId/validate", {
-      "validated": validated,
+      "action": action,
+      if (correctedPlague != null) "corrected_plague": correctedPlague,
     });
     return OutbreakEvent.fromJson(response);
   }

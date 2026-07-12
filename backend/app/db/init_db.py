@@ -97,6 +97,9 @@ def seed_master_user() -> None:
             existing.name = name
             existing.role = "admin"
             existing.hashed_password = get_password_hash(password)
+            existing.has_field_premium = True
+            existing.has_climate_module = True
+            existing.has_siex_enterprise = True
         else:
             db.add(
                 User(
@@ -104,6 +107,9 @@ def seed_master_user() -> None:
                     email=email,
                     hashed_password=get_password_hash(password),
                     role="admin",
+                    has_field_premium=True,
+                    has_climate_module=True,
+                    has_siex_enterprise=True,
                 )
             )
         db.commit()

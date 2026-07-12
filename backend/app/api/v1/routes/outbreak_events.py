@@ -4,13 +4,17 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db
-from app.core.security import get_current_active_admin, get_current_active_user, require_roles
+from app.core.security import get_current_active_user, require_roles
 from app.models.outbreak_event import OutbreakEvent
 from app.models.user import User
 from app.models.zone import AgriZone
 from app.schemas.outbreak_event import OutbreakEventCreate, OutbreakEventRead, OutbreakEventValidate
 from app.services.alert_engine import evaluate_zone_plague
-from app.services.outbreak_event_service import create_anonymous_event, validate_event
+from app.services.outbreak_event_service import (
+    create_anonymous_event,
+    display_plague_for_event,
+    validate_event,
+)
 
 router = APIRouter()
 
@@ -27,6 +31,11 @@ def _event_read(event: OutbreakEvent, zone_name: str | None = None) -> OutbreakE
         reported_at=event.reported_at,
         model_version=event.model_version,
         validated=event.validated,
+        status=event.status,
+        original_plague=event.original_plague,
+        corrected_plague=event.corrected_plague,
+        display_plague=display_plague_for_event(event),
+        source_scan_id=event.source_scan_id,
     )
 
 
@@ -37,6 +46,7 @@ def list_outbreak_events(
     hours: int | None = Query(default=None, ge=1, le=720),
     min_severity: int = Query(default=1, ge=1, le=3),
     validated_only: bool = Query(default=False),
+    include_rejected: bool = Query(default=False),
     _current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
@@ -53,7 +63,9 @@ def list_outbreak_events(
     if min_severity > 1:
         query = query.filter(OutbreakEvent.severity >= min_severity)
     if validated_only:
-        query = query.filter(OutbreakEvent.validated.is_(True))
+        query = query.filter(OutbreakEvent.status == "validated")
+    if not include_rejected:
+        query = query.filter(OutbreakEvent.status != "rejected")
     rows = query.order_by(OutbreakEvent.reported_at.desc()).limit(500).all()
     return [_event_read(event, zone_name) for event, zone_name in rows]
 
@@ -91,6 +103,6 @@ def set_event_validation(
     event = db.query(OutbreakEvent).filter(OutbreakEvent.id == event_id).first()
     if not event:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Evento no encontrado")
-    validated = validate_event(db, event, current_user, validated=body.validated)
+    validated = validate_event(db, event, current_user, body)
     zone = db.query(AgriZone).filter(AgriZone.id == validated.zone_id).first()
     return _event_read(validated, zone.name if zone else None)

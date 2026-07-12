@@ -21,3 +21,7 @@ class OutbreakEvent(Base):
     validated = Column(Boolean, default=False, nullable=False)
     validated_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     validated_at = Column(DateTime(timezone=True), nullable=True)
+    source_scan_id = Column(Integer, ForeignKey("scans.id", ondelete="SET NULL"), nullable=True, index=True)
+    original_plague = Column(String(50), nullable=True)
+    corrected_plague = Column(String(50), nullable=True)
+    status = Column(String(20), nullable=False, default="pending", index=True)

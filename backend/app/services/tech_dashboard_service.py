@@ -34,24 +34,7 @@ def get_overview(db: Session, hours: int = 168) -> dict:
 
 
 def get_zone_comparison(db: Session, hours: int = 168) -> list[dict]:
-    cells = get_heatmap_grid(db, hours=hours)
-    since = datetime.now(timezone.utc) - timedelta(hours=hours)
-    validated_by_zone = dict(
-        db.query(
-            OutbreakEvent.zone_id,
-            func.sum(cast(OutbreakEvent.validated, Integer)),
-        )
-        .filter(OutbreakEvent.reported_at >= since)
-        .group_by(OutbreakEvent.zone_id)
-        .all()
-    )
-    return [
-        {
-            **cell,
-            "validated_count": int(validated_by_zone.get(cell["zone_id"], 0) or 0),
-        }
-        for cell in cells
-    ]
+    return get_heatmap_grid(db, hours=hours)
 
 
 def get_timeline(db: Session, days: int = 30) -> list[dict]:

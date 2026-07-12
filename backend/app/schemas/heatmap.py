@@ -10,6 +10,8 @@ class HeatmapCellRead(BaseModel):
     count: int
     max_severity: int
     intensity: float = Field(ge=0.0, le=1.0)
+    validated_count: int = 0
+    pending_count: int = 0
 
 
 class HeatmapResponse(BaseModel):

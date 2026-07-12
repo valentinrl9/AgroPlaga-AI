@@ -7,17 +7,20 @@ class MapFilters {
   final int hours;
   final int minSeverity;
   final String? plague;
+  final bool validatedOnly;
 
   const MapFilters({
     this.hours = 168,
     this.minSeverity = 1,
     this.plague,
+    this.validatedOnly = false,
   });
 
   Map<String, String> get queryParams => {
         "hours": hours.toString(),
         "min_severity": minSeverity.toString(),
         if (plague != null && plague!.isNotEmpty) "plague": plague!,
+        if (validatedOnly) "validated_only": "true",
       };
 
   @override
@@ -25,10 +28,11 @@ class MapFilters {
       other is MapFilters &&
       other.hours == hours &&
       other.minSeverity == minSeverity &&
-      other.plague == plague;
+      other.plague == plague &&
+      other.validatedOnly == validatedOnly;
 
   @override
-  int get hashCode => Object.hash(hours, minSeverity, plague);
+  int get hashCode => Object.hash(hours, minSeverity, plague, validatedOnly);
 }
 
 class MapRepository {

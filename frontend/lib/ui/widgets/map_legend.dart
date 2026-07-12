@@ -50,14 +50,35 @@ class MapLegend extends StatelessWidget {
                 ),
               ],
             ),
-            const SizedBox(height: 6),
+            const SizedBox(height: 8),
             const Row(
               children: [
-                _BadgeSample(count: "3"),
+                _ValidationBadgeSample(
+                  label: "?",
+                  fill: Color(0xFFFFB200),
+                  border: Color(0xFFEF6C00),
+                ),
                 SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    "Número = reportes en la zona",
+                    "Ámbar = aviso IA sin validar por perito",
+                    style: TextStyle(fontSize: 11, color: Color(0xFF616161)),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 6),
+            const Row(
+              children: [
+                _ValidationBadgeSample(
+                  label: "✓",
+                  fill: Color(0xFFC62828),
+                  border: Color(0xFF00A86B),
+                ),
+                SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    "Borde verde = validado por perito (plaga confirmada o corregida)",
                     style: TextStyle(fontSize: 11, color: Color(0xFF616161)),
                   ),
                 ),
@@ -70,10 +91,16 @@ class MapLegend extends StatelessWidget {
   }
 }
 
-class _BadgeSample extends StatelessWidget {
-  final String count;
+class _ValidationBadgeSample extends StatelessWidget {
+  final String label;
+  final Color fill;
+  final Color border;
 
-  const _BadgeSample({required this.count});
+  const _ValidationBadgeSample({
+    required this.label,
+    required this.fill,
+    required this.border,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -82,13 +109,17 @@ class _BadgeSample extends StatelessWidget {
       height: 28,
       alignment: Alignment.center,
       decoration: BoxDecoration(
-        color: const Color(0xFFC62828),
+        color: fill,
         shape: BoxShape.circle,
-        border: Border.all(color: Colors.white, width: 2),
+        border: Border.all(color: border, width: 2),
       ),
       child: Text(
-        count,
-        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 11),
+        label,
+        style: TextStyle(
+          color: label == "?" ? const Color(0xFF1E293B) : Colors.white,
+          fontWeight: FontWeight.bold,
+          fontSize: 11,
+        ),
       ),
     );
   }

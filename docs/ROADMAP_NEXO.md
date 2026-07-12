@@ -80,6 +80,7 @@
 - [x] Climate: métricas y gráficos con Docker local *(confirmado en `flutter run`)*
 - [ ] SIEX: lock screen correcto
 - [ ] Panel `/panel`: login operativo
+- [x] Mapa: avisos IA pendientes vs validados por perito (jul 2026)
 
 ### Validación automatizada (11 jul 2026)
 - [x] `flutter analyze lib/` — 0 errores (2 warnings menores)

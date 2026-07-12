@@ -77,6 +77,7 @@ class _ContributeScreenState extends State<ContributeScreen> {
         severity: severityLevel,
         zoneId: _selectedZone!.id,
         modelVersion: "v1.0",
+        sourceScanId: widget.scan.id,
       );
       await Session.markContributed(widget.scan.id);
 
