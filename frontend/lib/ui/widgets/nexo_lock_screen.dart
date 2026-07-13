@@ -5,19 +5,21 @@ import "../../core/nexo_colors.dart";
 class NexoLockScreen extends StatelessWidget {
   final String moduleName;
   final bool isB2C;
+  final String? message;
 
   const NexoLockScreen({
     super.key,
     required this.moduleName,
     this.isB2C = true,
+    this.message,
   });
 
   @override
   Widget build(BuildContext context) {
-    final message = isB2C
+    final displayMessage = message ?? (isB2C
         ? "Desbloquea métricas avanzadas e IA climática predictiva por 9.99€/mes."
         : "Este módulo requiere vinculación oficial con tu Cooperativa o SAT adherida "
-            "para la gestión unificada de alertas. Solicita el alta a tu perito técnico.";
+            "para la gestión unificada de alertas. Solicita el alta a tu perito técnico.");
 
     return Container(
       color: NexoColors.deepBlue.withValues(alpha: 0.95),
@@ -46,7 +48,7 @@ class NexoLockScreen extends StatelessWidget {
               ),
               const SizedBox(height: 20),
               Text(
-                message,
+                displayMessage,
                 textAlign: TextAlign.center,
                 style: const TextStyle(
                   fontSize: 15,

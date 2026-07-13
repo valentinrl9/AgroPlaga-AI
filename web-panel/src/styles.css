@@ -471,6 +471,42 @@ td { color: var(--nexo-text); }
 .status-ok { background: var(--nexo-bio-green); }
 .status-pending { background: var(--nexo-warning-amber); }
 
+.siex-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: 1rem 0 1.25rem;
+}
+
+.siex-text-block {
+  margin: 0.75rem 0;
+  padding: 0.75rem;
+  background: var(--nexo-surface-elevated);
+  border-radius: 10px;
+  font-size: 0.9rem;
+}
+
+.siex-text-block p {
+  margin: 0.35rem 0 0;
+  white-space: pre-wrap;
+  color: var(--nexo-text-muted);
+}
+
+.siex-export-preview {
+  margin-bottom: 1.5rem;
+  background: var(--nexo-surface);
+  border: 1px solid var(--nexo-border);
+  border-radius: 12px;
+  padding: 0.75rem 1rem;
+}
+
+.siex-export-preview pre {
+  max-height: 280px;
+  overflow: auto;
+  font-size: 0.75rem;
+  margin: 0.75rem 0 0;
+}
+
 @media (max-width: 900px) {
   .validation-card { grid-template-columns: 1fr; }
   .validation-body { padding: 0 1rem 1rem; }

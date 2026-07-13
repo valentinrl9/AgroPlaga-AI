@@ -188,6 +188,11 @@ class _ResultScreenState extends State<ResultScreen> {
             ],
             const SizedBox(height: 12),
             OutlinedButton(
+              onPressed: () => Navigator.pushNamed(context, Routes.registerTreatment, arguments: scan),
+              child: const Text("Registrar tratamiento (carencia)"),
+            ),
+            const SizedBox(height: 12),
+            OutlinedButton(
               onPressed: () => goHome(context),
               style: OutlinedButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 16),

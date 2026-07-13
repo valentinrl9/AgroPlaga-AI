@@ -32,6 +32,7 @@ class _SplashScreenState extends State<SplashScreen> {
           name: profile.name,
           hasFieldPremium: profile.hasFieldPremium,
           hasClimateModule: profile.hasClimateModule,
+          hasSiexModule: profile.hasSiexModule,
           hasSiexEnterprise: profile.hasSiexEnterprise,
         );
         goHome = await Session.hasToken();

@@ -11,7 +11,8 @@ from app.core.security import get_password_hash
 from app.db.seed_zones import SIGPAC_ZONES
 from app.db.session import SessionLocal, engine
 from app.db.seed_pilot_invites import seed_pilot_invites
-from app.models import user, scan, feedback, zone, outbreak_event, alert, alert_preference, user_badge, farm, contribution_log, pilot_invite, climate
+from app.db.seed_demo_users import seed_local_demo_users
+from app.models import user, scan, feedback, zone, outbreak_event, alert, alert_preference, user_badge, farm, contribution_log, pilot_invite, climate, farm_treatment, biocide_product, siex_entry
 from app.models.user import User
 from app.models.zone import AgriZone
 from app.services.geo_service import point_wkt
@@ -99,6 +100,7 @@ def seed_master_user() -> None:
             existing.hashed_password = get_password_hash(password)
             existing.has_field_premium = True
             existing.has_climate_module = True
+            existing.has_siex_module = True
             existing.has_siex_enterprise = True
         else:
             db.add(
@@ -109,6 +111,7 @@ def seed_master_user() -> None:
                     role="admin",
                     has_field_premium=True,
                     has_climate_module=True,
+                    has_siex_module=True,
                     has_siex_enterprise=True,
                 )
             )
@@ -122,5 +125,6 @@ def init_db() -> None:
     seed_sigpac_zones()
     seed_admin_user()
     seed_master_user()
+    seed_local_demo_users()
     if os.getenv("PILOT_SEED_INVITES", "").strip().lower() in {"1", "true", "yes"}:
         seed_pilot_invites()

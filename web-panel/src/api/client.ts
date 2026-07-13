@@ -1,4 +1,4 @@
-import type { OutbreakEvent, PilotFarmer, ScanValidatePayload, TechDashboard, TechScanQueueItem, UserProfile } from "../types";
+import type { OutbreakEvent, PilotFarmer, ScanValidatePayload, SiexEntry, SiexEntryValidatePayload, SiexExportPreview, TechDashboard, TechScanQueueItem, UserProfile } from "../types";
 
 const TOKEN_KEY = "agroplaga_token";
 
@@ -103,4 +103,19 @@ export function exportEventsCsv(hours = 720): void {
     return;
   }
   link.click();
+}
+
+export function fetchPendingSiexEntries(): Promise<SiexEntry[]> {
+  return request<SiexEntry[]>("/api/v1/siex/entries/pending");
+}
+
+export function validateSiexEntry(entryId: number, payload: SiexEntryValidatePayload): Promise<SiexEntry> {
+  return request<SiexEntry>(`/api/v1/siex/entries/${entryId}/validate`, {
+    method: "PATCH",
+    body: JSON.stringify(payload),
+  });
+}
+
+export function fetchSiexExportPreview(): Promise<SiexExportPreview> {
+  return request<SiexExportPreview>("/api/v1/siex/entries/export");
 }

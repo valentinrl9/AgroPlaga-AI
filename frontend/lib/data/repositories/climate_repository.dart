@@ -26,4 +26,8 @@ class ClimateRepository {
   Future<List<dynamic>> fetchPrediccion({int dias = 7}) async {
     return await _client.getList("/api/v1/climate/prediccion?dias=$dias");
   }
+
+  Future<Map<String, dynamic>> fetchRiesgo({int dias = 7}) async {
+    return await _client.get("/api/v1/climate/riesgo?dias=$dias");
+  }
 }

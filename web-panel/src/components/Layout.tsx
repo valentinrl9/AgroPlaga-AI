@@ -47,6 +47,7 @@ export default function Layout() {
       <nav className="nav">
         <NavLink to="/" end>Dashboard</NavLink>
         <NavLink to="/validacion">Validar escaneos</NavLink>
+        <NavLink to="/siex">Cuaderno SIEX</NavLink>
         <NavLink to="/agricultores">Agricultores</NavLink>
       </nav>
       <main className="content">

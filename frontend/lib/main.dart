@@ -12,6 +12,8 @@ import "ui/screens/contribute_screen.dart";
 import "ui/screens/farms_screen.dart";
 import "ui/screens/history_screen.dart";
 import "ui/screens/nexo_shell_screen.dart";
+import "ui/screens/register_treatment_screen.dart";
+import "ui/screens/tech_scan_validation_screen.dart";
 import "ui/screens/tech_validation_screen.dart";
 import "ui/screens/login_screen.dart";
 import "ui/screens/map_screen.dart";
@@ -49,6 +51,7 @@ class NexoAgroApp extends StatelessWidget {
         Routes.community: (context) => const CommunityScreen(),
         Routes.farms: (context) => const FarmsScreen(),
         Routes.techValidation: (context) => const TechValidationScreen(),
+        Routes.techScanValidation: (context) => const TechScanValidationScreen(),
         Routes.analytics: (context) => const AnalyticsScreen(),
         Routes.settings: (context) => const SettingsScreen(),
       },
@@ -73,6 +76,10 @@ class NexoAgroApp extends StatelessWidget {
           if (scan != null) {
             return MaterialPageRoute(builder: (context) => ContributeScreen(scan: scan));
           }
+        }
+        if (settings.name == Routes.registerTreatment) {
+          final scan = settings.arguments as Scan?;
+          return MaterialPageRoute(builder: (context) => RegisterTreatmentScreen(scan: scan));
         }
         return null;
       },

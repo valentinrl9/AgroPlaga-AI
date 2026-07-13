@@ -18,6 +18,8 @@ class _FarmsScreenState extends State<FarmsScreen> {
 
   final _nameController = TextEditingController();
   final _cropController = TextEditingController();
+  final _sigpacController = TextEditingController();
+  final _surfaceController = TextEditingController();
   String _farmType = "farm";
 
   @override
@@ -30,25 +32,29 @@ class _FarmsScreenState extends State<FarmsScreen> {
   void dispose() {
     _nameController.dispose();
     _cropController.dispose();
+    _sigpacController.dispose();
+    _surfaceController.dispose();
     super.dispose();
   }
 
   void _reload() {
-    final newFuture = _repository.fetchFarms();
-    setState(() {
-      _future = newFuture;
-    });
+    setState(() => _future = _repository.fetchFarms());
   }
 
   Future<void> _createFarm() async {
     if (_nameController.text.trim().isEmpty || _cropController.text.trim().isEmpty) return;
+    final surface = double.tryParse(_surfaceController.text.trim());
     await _repository.createFarm(
       name: _nameController.text.trim(),
       crop: _cropController.text.trim(),
       farmType: _farmType,
+      surfaceM2: surface,
+      sigpacCode: _sigpacController.text.trim().isEmpty ? null : _sigpacController.text.trim(),
     );
     _nameController.clear();
     _cropController.clear();
+    _sigpacController.clear();
+    _surfaceController.clear();
     _reload();
   }
 
@@ -67,8 +73,9 @@ class _FarmsScreenState extends State<FarmsScreen> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const Text(
-              "Registra fincas o invernaderos para diagnósticos privados.",
-              style: TextStyle(color: NexoColors.textPrimary),
+              "Para el cuaderno SIEX necesitas el código SIGPAC del recinto (parcela concreta). "
+              "El mapa comunitario sigue usando zonas anonimizadas.",
+              style: TextStyle(color: NexoColors.textSecondary, fontSize: 13),
             ),
             const SizedBox(height: 16),
             TextField(
@@ -79,6 +86,21 @@ class _FarmsScreenState extends State<FarmsScreen> {
             TextField(
               controller: _cropController,
               decoration: const InputDecoration(labelText: "Cultivo", border: OutlineInputBorder()),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _sigpacController,
+              decoration: const InputDecoration(
+                labelText: "SIGPAC recinto (obligatorio para SIEX)",
+                hintText: "Ej. 04014A00100001",
+                border: OutlineInputBorder(),
+              ),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _surfaceController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(labelText: "Superficie m²", border: OutlineInputBorder()),
             ),
             const SizedBox(height: 8),
             DropdownButtonFormField<String>(
@@ -115,7 +137,12 @@ class _FarmsScreenState extends State<FarmsScreen> {
                       return Card(
                         child: ListTile(
                           title: Text(farm.name),
-                          subtitle: Text("${farm.typeLabel} · ${farm.crop}"),
+                          subtitle: Text(
+                            "${farm.typeLabel} · ${farm.crop}\n"
+                            "SIGPAC: ${farm.sigpacCode ?? "—"}\n"
+                            "Sup.: ${farm.surfaceM2?.toStringAsFixed(0) ?? "—"} m²",
+                          ),
+                          isThreeLine: true,
                           trailing: IconButton(
                             icon: const Icon(Icons.delete_outline),
                             onPressed: () => _deleteFarm(farm),

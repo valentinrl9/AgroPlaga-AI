@@ -19,6 +19,8 @@ services:
       - ./backend:/app
       - ./backend/data/scans:/data/scans
       - ./backend/data/climate:/data/climate
+      - ./backend/data/mapa:/data/mapa
+      - ./shared:/shared
     environment:
       - DATABASE_URL=postgresql+psycopg://plagaia:plagaia@db:5432/plagaia_db
       - PYTHONUNBUFFERED=1
@@ -30,7 +32,12 @@ services:
       - MASTER_NAME=Valentín Ruiz León
       - SCAN_IMAGES_DIR=/data/scans
       - CLIMATE_DATA_DIR=/data/climate
+      - MAPA_DATA_DIR=/data/mapa
       - CLIMATE_PREVIEW_OPEN=true
+      - SIEX_PREVIEW_OPEN=true
+      - REGISTRATION_MODE=open
+      - DEMO_SEED_USERS=true
+      - DEMO_USERS_PASSWORD=nexo1234
       - OPENMETEO_LAT=36.77
       - OPENMETEO_LON=-2.81
     ports:

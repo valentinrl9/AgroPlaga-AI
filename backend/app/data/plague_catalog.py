@@ -5,11 +5,22 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-_CATALOG_PATH = Path(__file__).resolve().parents[3] / "shared" / "plague_catalog.json"
+_CATALOG_CANDIDATES = (
+    Path(__file__).resolve().parent / "plague_catalog.json",
+    Path(__file__).resolve().parents[3] / "shared" / "plague_catalog.json",
+    Path("/shared/plague_catalog.json"),
+)
+
+
+def _catalog_path() -> Path:
+    for path in _CATALOG_CANDIDATES:
+        if path.exists():
+            return path
+    raise FileNotFoundError("plague_catalog.json no encontrado (shared/ ni backend/app/data/)")
 
 
 def load_catalog() -> dict:
-    return json.loads(_CATALOG_PATH.read_text(encoding="utf-8"))
+    return json.loads(_catalog_path().read_text(encoding="utf-8"))
 
 
 def plague_labels() -> list[str]:

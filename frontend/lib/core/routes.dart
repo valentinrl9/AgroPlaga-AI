@@ -13,6 +13,8 @@ class Routes {
   static const community = "/community";
   static const farms = "/farms";
   static const techValidation = "/tech-validation";
+  static const techScanValidation = "/tech-scan-validation";
+  static const registerTreatment = "/register-treatment";
   static const analytics = "/analytics";
   static const settings = "/settings";
 }

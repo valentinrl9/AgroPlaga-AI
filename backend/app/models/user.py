@@ -14,4 +14,5 @@ class User(Base):
     contribution_count = Column(Integer, default=0, nullable=False)
     has_field_premium = Column(Boolean, default=False, nullable=False)
     has_climate_module = Column(Boolean, default=False, nullable=False)
+    has_siex_module = Column(Boolean, default=False, nullable=False)
     has_siex_enterprise = Column(Boolean, default=False, nullable=False)

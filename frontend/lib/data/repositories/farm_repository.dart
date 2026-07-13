@@ -14,12 +14,24 @@ class FarmRepository {
     required String crop,
     required String farmType,
     int? zoneId,
+    double? surfaceM2,
+    String? sigpacCode,
   }) async {
     final json = await _client.postAuth("/api/v1/farms", {
       "name": name,
       "crop": crop,
       "farm_type": farmType,
       if (zoneId != null) "zone_id": zoneId,
+      if (surfaceM2 != null) "surface_m2": surfaceM2,
+      if (sigpacCode != null && sigpacCode.trim().isNotEmpty) "sigpac_code": sigpacCode.trim(),
+    });
+    return Farm.fromJson(json);
+  }
+
+  Future<Farm> updateFarm(int id, {String? sigpacCode, double? surfaceM2}) async {
+    final json = await _client.patchAuth("/api/v1/farms/$id", {
+      if (sigpacCode != null) "sigpac_code": sigpacCode,
+      if (surfaceM2 != null) "surface_m2": surfaceM2,
     });
     return Farm.fromJson(json);
   }

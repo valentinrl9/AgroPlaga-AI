@@ -4,6 +4,8 @@ class Farm {
   final String crop;
   final String farmType;
   final int? zoneId;
+  final double? surfaceM2;
+  final String? sigpacCode;
   final DateTime createdAt;
 
   Farm({
@@ -12,6 +14,8 @@ class Farm {
     required this.crop,
     required this.farmType,
     this.zoneId,
+    this.surfaceM2,
+    this.sigpacCode,
     required this.createdAt,
   });
 
@@ -22,9 +26,13 @@ class Farm {
       crop: json["crop"] as String,
       farmType: json["farm_type"] as String? ?? "farm",
       zoneId: json["zone_id"] as int?,
+      surfaceM2: (json["surface_m2"] as num?)?.toDouble(),
+      sigpacCode: json["sigpac_code"] as String?,
       createdAt: DateTime.parse(json["created_at"] as String),
     );
   }
 
   String get typeLabel => farmType == "greenhouse" ? "Invernadero" : "Finca";
+
+  bool get hasSigpac => sigpacCode != null && sigpacCode!.trim().isNotEmpty;
 }

@@ -17,6 +17,7 @@ class AuthRepository {
         name: profile.name,
         hasFieldPremium: profile.hasFieldPremium,
         hasClimateModule: profile.hasClimateModule,
+        hasSiexModule: profile.hasSiexModule,
         hasSiexEnterprise: profile.hasSiexEnterprise,
       );
     } catch (_) {}

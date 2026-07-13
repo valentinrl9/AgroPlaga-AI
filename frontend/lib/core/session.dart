@@ -9,6 +9,7 @@ class Session {
   static const String nameKey = "user_name";
   static const String fieldPremiumKey = "has_field_premium";
   static const String climateModuleKey = "has_climate_module";
+  static const String siexModuleKey = "has_siex_module";
   static const String siexEnterpriseKey = "has_siex_enterprise";
   static const String contributedScansKey = "contributed_scan_ids";
 
@@ -64,6 +65,7 @@ class Session {
     required String name,
     bool hasFieldPremium = false,
     bool hasClimateModule = false,
+    bool hasSiexModule = false,
     bool hasSiexEnterprise = false,
   }) async {
     final prefs = await SharedPreferences.getInstance();
@@ -71,6 +73,7 @@ class Session {
     await prefs.setString(nameKey, name);
     await prefs.setBool(fieldPremiumKey, hasFieldPremium);
     await prefs.setBool(climateModuleKey, hasClimateModule);
+    await prefs.setBool(siexModuleKey, hasSiexModule);
     await prefs.setBool(siexEnterpriseKey, hasSiexEnterprise);
   }
 
@@ -115,9 +118,19 @@ class Session {
     return prefs.getBool(climateModuleKey) ?? false;
   }
 
+  static Future<bool> get hasSiexModule async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool(siexModuleKey) ?? false;
+  }
+
   static Future<bool> get hasSiexEnterprise async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getBool(siexEnterpriseKey) ?? false;
+  }
+
+  static Future<bool> get hasSiexAccess async {
+    if (await hasSiexModule || await hasSiexEnterprise) return true;
+    return await isTechOrAdmin;
   }
 
   static Future<bool> get isTechOrAdmin async {
@@ -134,6 +147,7 @@ class Session {
     await prefs.remove(nameKey);
     await prefs.remove(fieldPremiumKey);
     await prefs.remove(climateModuleKey);
+    await prefs.remove(siexModuleKey);
     await prefs.remove(siexEnterpriseKey);
   }
 

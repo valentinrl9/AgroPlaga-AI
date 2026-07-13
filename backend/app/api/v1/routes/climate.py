@@ -68,6 +68,14 @@ def alertas(db: Session = Depends(get_db), _user: User = Depends(_require_climat
     return climate_service.get_alertas(db)
 
 
+@router.get("/riesgo")
+def riesgo(dias: int = 7, db: Session = Depends(get_db), _user: User = Depends(_require_climate)):
+    result = climate_service.get_riesgo_semanal(db, dias=dias)
+    if isinstance(result, dict) and result.get("error"):
+        raise HTTPException(status_code=503, detail=result["error"])
+    return result
+
+
 @router.get("/access")
 def climate_access(user: User = Depends(get_current_active_user)):
     return {

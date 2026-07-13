@@ -93,3 +93,41 @@ export interface ScanValidatePayload {
   corrected_plague?: string;
   tech_notes?: string;
 }
+
+export interface SiexEntry {
+  id: number;
+  treatment_id: number;
+  scan_id: number | null;
+  tipo_actuacion: string;
+  sigpac_code: string;
+  farm_name: string | null;
+  zone_name: string | null;
+  crop: string;
+  plague: string;
+  product_name: string;
+  registry_number: string | null;
+  active_substance: string | null;
+  dose_ml: number | null;
+  surface_m2: number | null;
+  safety_hours: number;
+  applied_at: string;
+  que_se_hizo: string;
+  justificacion: string;
+  climate_context: string | null;
+  status: string;
+  tech_notes: string | null;
+  farmer_name: string | null;
+  farmer_email: string | null;
+  created_at: string;
+}
+
+export interface SiexEntryValidatePayload {
+  action: "approve" | "reject";
+  tech_notes?: string;
+}
+
+export interface SiexExportPreview {
+  exported_at: string;
+  count: number;
+  entries: Record<string, unknown>[];
+}

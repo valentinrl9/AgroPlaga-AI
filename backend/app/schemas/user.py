@@ -8,6 +8,7 @@ class UserRead(BaseModel):
     contribution_count: int = 0
     has_field_premium: bool = False
     has_climate_module: bool = False
+    has_siex_module: bool = False
     has_siex_enterprise: bool = False
 
     model_config = ConfigDict(from_attributes=True)

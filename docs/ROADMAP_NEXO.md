@@ -27,7 +27,7 @@
 |--------|--------|--------------|--------|
 | **NEXO Field** | AgroPlaga AI | base (todos) + `has_field_premium` | ✅ Operativo (piloto VPS) |
 | **NEXO Climate** | AgroData Consulting | `has_climate_module` | 🟡 Portado a PostgreSQL + UI Flutter B+ |
-| **NEXO SIEX** | CEX / cumplimiento 2027 | `has_siex_enterprise` | 🔒 Lock screen — Fase 3 |
+| **NEXO SIEX** | CEX / cumplimiento 2027 | `has_siex_enterprise` | 🟡 MVP local — Fase 3 |
 
 ### Mapeo versiones antiguas → NEXO
 
@@ -97,16 +97,19 @@
 > Cerrar lo pendiente del piloto AgroPlaga y Field Premium.
 
 ### Experiencia perito móvil (ex v1.6 / Fase 11)
-- [ ] Home "Centro de mando" para rol `tech`
-- [ ] Cola validación fullscreen con foto
-- [ ] Mapa técnico con capas (calor, pendientes, validados)
+- [x] Home "Centro de mando" para rol `tech` (KPIs + CTAs)
+- [x] Cola validación con foto (`TechScanValidationScreen` → `/api/v1/tech/pending-scans`)
+- [ ] Mapa técnico con capas (calor, pendientes, validados) — presets parciales vía mapa existente
 - [ ] Modo visita a finca + informe PDF
 
 ### Field Premium (ex v1.7 parcial + v1.8)
-- [ ] Modelo `farm_treatments` + flujo opt-in tras escaneo
-- [ ] Contador plazo de carencia (semáforo recolección)
-- [ ] ETL catálogo biocidas MAPA / Ministerio (TP18)
-- [ ] Motor dosis automática por superficie invernadero
+- [x] Modelo `farm_treatments` + API `/api/v1/treatments` (migración `0013`)
+- [x] Contador plazo de carencia (`CarenciaBanner` + semáforo recolección)
+- [x] Catálogo biocidas MAPA piloto (seed `biocide_products`, 5 productos)
+- [x] **ETL real MAPA CEX** (`ExportJsonProductosAutorizados` — cuaderno digital ministerial)
+- [x] Motor dosis automática (`POST /api/v1/treatments/dose/calculate`)
+- [x] API catálogo: `GET /treatments/catalog/status` + `POST /treatments/etl/run` (admin)
+- [x] Scheduler ETL MAPA semanal (domingos 03:00 UTC)
 - [ ] Historial resistencias cruzadas (48 días)
 
 ### IA (ex v1.5 — pausado)
@@ -124,10 +127,10 @@
 > Paridad con dashboard AgroData original + monetización B2C.
 
 ### Paridad funcional AgroData
-- [ ] Informe mensual exportable PDF
-- [ ] Auto-refresh cada 15 min en app
-- [ ] Pestaña Riesgo con lógica completa (`api_prediccion.py` original)
-- [ ] Semáforos DPV / punto de rocío en UI con tokens NEXO
+- [x] Informe mensual exportable PDF (Flutter `pdf` + `printing`)
+- [x] Auto-refresh cada 15 min en app (`Timer.periodic` + ETL status)
+- [x] Pestaña Riesgo (`GET /api/v1/climate/riesgo` + barra semanal)
+- [x] Semáforos DPV / punto de rocío en UI (`punto_rocio_status`)
 - [ ] Copiar histórico CSV AgroData → `backend/data/climate/` (arranque rápido ETL)
 
 ### Futuro IoT / B2B
@@ -138,15 +141,19 @@
 
 ---
 
-## Fase 3 — NEXO SIEX + Enterprise ⏳
+## Fase 3 — NEXO SIEX + Enterprise 🟡 (MVP local)
 
 > Cumplimiento legal SIEX (obligatorio enero 2027) + panel cooperativa.
 
-- [ ] Tabla `siex_cuaderno_borrador` + pipeline eventos Field/Climate
-- [ ] Justificación climática automática en tratamientos
-- [ ] Bandeja validación perito B2B (web)
+- [x] Tabla `siex_cuaderno_borrador` + compilación automática desde tratamientos Field
+- [x] SIGPAC obligatorio en finca (`farms.sigpac_code`) para validez del cuaderno
+- [x] Justificación automática (plaga/escaneo/MAPA + contexto Climate si activo)
+- [x] API `/api/v1/siex/*` + hook post-`create_treatment`
+- [x] Flutter: pestaña SIEX + selector finca en registro tratamiento
+- [x] Bandeja validación perito B2B (panel web `/siex`)
+- [x] Export preview JSON entradas validadas
 - [ ] Firma digital cooperativa → `VALIDADO_OFICIAL`
-- [ ] Exportador JSON schema ministerial (un clic)
+- [ ] Exportador JSON schema ministerial definitivo (un clic)
 - [ ] Panel multivista socios (plagas + clima agregado)
 - [ ] Gestión documental (GlobalGAP, certificaciones)
 
@@ -204,6 +211,7 @@ Fase 0 (ahora)
 | jul 2026 | Decisión unificación → rama `nexoagro` |
 | jul 2026 | Fase 0: backend Climate PostgreSQL + shell Nexo + UI Climate B+ |
 | jul 2026 | Fase 0 validada: checklist manual E2E + commit `14947d9` (mapa validado, migración 0012) |
+| jul 2026 | Fases 1–2 parcial: Climate riesgo/PDF/refresh, perito móvil, carencia + biocidas stub (`0013`) |
 
 ---
 

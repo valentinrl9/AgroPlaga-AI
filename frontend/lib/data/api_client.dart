@@ -1,5 +1,6 @@
 import "dart:async";
 import "dart:convert";
+import "dart:typed_data";
 
 import "package:http/http.dart" as http;
 
@@ -60,6 +61,20 @@ class ApiClient {
     }
     _parseResponse(response);
     return [];
+  }
+
+  Future<Uint8List> getBytesAuth(String path) async {
+    await ensureAuth();
+    final headers = <String, String>{};
+    if (_token != null && _token!.isNotEmpty) {
+      headers["Authorization"] = "Bearer $_token";
+    }
+    final response = await _send(() => client.get(_uri(path), headers: headers));
+    if (response.statusCode >= 200 && response.statusCode < 300) {
+      return response.bodyBytes;
+    }
+    _parseResponse(response);
+    return Uint8List(0);
   }
 
   Future<Map<String, dynamic>> post(String path, Map<String, dynamic> body, {bool retryOn401 = false}) async {

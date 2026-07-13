@@ -32,6 +32,9 @@ Thumbs.db
 postgres_data/
 backend/data/scans/*
 !backend/data/scans/.gitkeep
+backend/data/mapa/productos_autorizados.json
+backend/data/mapa/*.html
+backend/data/mapa/*.xlsx
 *.db
 app.db
 

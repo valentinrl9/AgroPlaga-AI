@@ -6,6 +6,7 @@ class UserProfile {
   final int contributionCount;
   final bool hasFieldPremium;
   final bool hasClimateModule;
+  final bool hasSiexModule;
   final bool hasSiexEnterprise;
 
   UserProfile({
@@ -16,6 +17,7 @@ class UserProfile {
     required this.contributionCount,
     this.hasFieldPremium = false,
     this.hasClimateModule = false,
+    this.hasSiexModule = false,
     this.hasSiexEnterprise = false,
   });
 
@@ -28,9 +30,12 @@ class UserProfile {
       contributionCount: json["contribution_count"] as int? ?? 0,
       hasFieldPremium: json["has_field_premium"] as bool? ?? false,
       hasClimateModule: json["has_climate_module"] as bool? ?? false,
+      hasSiexModule: json["has_siex_module"] as bool? ?? false,
       hasSiexEnterprise: json["has_siex_enterprise"] as bool? ?? false,
     );
   }
+
+  bool get hasSiexAccess => hasSiexModule || hasSiexEnterprise || isTechOrAdmin;
 
   bool get isTechOrAdmin => role == "tech" || role == "admin";
 }

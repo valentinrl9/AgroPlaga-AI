@@ -94,6 +94,23 @@ def _metricas_dia(ts) -> dict | None:
     }
 
 
+def _riesgo_dia_pct(estres: float, humedad: float) -> int:
+    """Ponderación AgroData: estrés 60% + humedad 40%."""
+    e = min(max(estres / 120.0, 0.0), 1.0)
+    h = min(max((humedad - 70.0) / 30.0, 0.0), 1.0)
+    return int(round(100 * (0.6 * e + 0.4 * h)))
+
+
+def dew_point_status(dew_point_c: float, temp_c: float) -> str:
+    """Semáforo condensación: diferencial T - Td pequeño = riesgo goteo."""
+    delta = temp_c - dew_point_c
+    if delta <= 2:
+        return "critical"
+    if delta <= 5:
+        return "warning"
+    return "optimal"
+
+
 def get_actual(db: Session) -> dict:
     del db
     try:
@@ -108,6 +125,7 @@ def get_actual(db: Session) -> dict:
     t = float(row["temperature_2m"])
     rh = float(row["relative_humidity_2m"])
     dpv = calc_dpv_kpa(t, rh)
+    dew = calc_dew_point_c(t, rh)
 
     salida = {
         "timestamp": str(ts),
@@ -119,7 +137,8 @@ def get_actual(db: Session) -> dict:
         "precipitacion": float(row["precipitation"]),
         "dpv_kpa": round(dpv, 3),
         "dpv_status": dpv_status(dpv),
-        "punto_rocio_c": round(calc_dew_point_c(t, rh), 2),
+        "punto_rocio_c": round(dew, 2),
+        "punto_rocio_status": dew_point_status(dew, t),
         "estres_instantaneo": round(
             float(
                 calc_estres_termico(
@@ -230,16 +249,31 @@ def get_alertas(db: Session) -> dict:
             if nivel >= 2:
                 alertas_pred.append(f"[{d['fecha']}] Previsto: " + " · ".join(condiciones))
 
+    riesgo = get_riesgo_semanal(db, dias=7)
+    combinado = []
+    if isinstance(riesgo, dict) and riesgo.get("diario"):
+        high_days = [d for d in riesgo["diario"] if d.get("riesgo_pct", 0) >= 55]
+        if high_days:
+            combinado.append(
+                f"Riesgo acumulado {riesgo.get('score_pct', 0)}% — "
+                f"{len(high_days)} día(s) por encima del umbral."
+            )
+        combinado.extend(
+            f"[{d['fecha']}] Riesgo {d['riesgo_pct']}% (estrés {d['estres']}, HR {d['humedad']}%)"
+            for d in high_days[:3]
+        )
+
     return {
         "resumen": f"{len(alertas_reales)} día(s) con alertas recientes",
         "alertas_reales": alertas_reales,
         "alertas_prediccion": alertas_pred,
         "alertas_prioritarias": (alertas_reales + alertas_pred)[:5],
-        "alertas_combinadas": alertas_pred[:2],
+        "alertas_combinadas": combinado[:5] or alertas_pred[:2],
         "riesgo_acumulado": {
             "real": [a for a in alertas_reales if "estrés" in a.lower()][:3],
             "prediccion": [a for a in alertas_pred if "estrés" in a.lower()][:3],
-            "combinado": [],
+            "combinado": combinado,
+            "score_pct": riesgo.get("score_pct") if isinstance(riesgo, dict) else None,
         },
     }
 
@@ -305,3 +339,28 @@ def get_recomendaciones(db: Session, dias: int = 7) -> dict:
             }
 
     return {"diario": diario, "resumen_semanal": resumen_semanal, "resumen_mensual": resumen_mensual}
+
+
+def get_riesgo_semanal(db: Session, dias: int = 7) -> dict:
+    pred = get_prediccion(db, dias)
+    if not isinstance(pred, list):
+        return pred
+
+    diario = []
+    scores: list[int] = []
+    for d in pred:
+        estres = float(d.get("estres_termico_medio") or 0)
+        humedad = float(d.get("humedad_media") or 0)
+        score = _riesgo_dia_pct(estres, humedad)
+        scores.append(score)
+        diario.append({
+            "fecha": d["fecha"],
+            "estres": round(estres, 1),
+            "humedad": round(humedad, 1),
+            "riesgo_pct": score,
+        })
+
+    return {
+        "score_pct": int(round(sum(scores) / len(scores))) if scores else 0,
+        "diario": diario,
+    }

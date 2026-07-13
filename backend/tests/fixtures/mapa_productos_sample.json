@@ -1,0 +1,82 @@
+[
+  {
+    "DATOSPRODUCTO": {
+      "IdProducto": 110634,
+      "Num_Registro": "22839",
+      "Nombre": "SPINTOR 480 SC",
+      "Titular": "CORTEVA AGRISCIENCE SPAIN, S.L.U. (Sevilla)",
+      "Fabricante": "CORTEVA (Sevilla)",
+      "Formulado": "SPINOSAD 48% [SC] P/V",
+      "Fecha_Registro": "2002-06-18T00:00:00",
+      "Estado": "Vigente",
+      "Fecha_Caducidad": "2026/10/31",
+      "Fecha_Cancelacion": "",
+      "Fecha_LimiteVenta": "",
+      "Condicionamiento": "Aplicar al inicio de la infestación."
+    },
+    "COMPOSICION": [
+      {
+        "Nombre Sustancia": "SPINOSAD",
+        "Concentracion": 48.0,
+        "DescripcionNota": "%"
+      }
+    ],
+    "USOS": [
+      {
+        "CodigoCultivo": "0103010301000000",
+        "Cultivo": "Tomate",
+        "CodigoAgente": "6.2.4",
+        "Agente": "Lepidópteros",
+        "Dosis_Min": 20.0,
+        "Dosis_Max": 25.0,
+        "Unidad Medida dosis": "cc/hl",
+        "Plazo Seguridad": "3",
+        "Volumen Caldo": "-",
+        "Aplicaciones": "Máx. 3",
+        "IntervaloAplicaciones": "7",
+        "Bbch": "",
+        "CondicionamientoEspecifico": "Invernadero. No sobrepasar 0,25 l/Ha."
+      }
+    ]
+  },
+  {
+    "DATOSPRODUCTO": {
+      "IdProducto": 57105,
+      "Num_Registro": "19159",
+      "Nombre": "DELFIN",
+      "Titular": "FMC CHEMICAL SPAIN S.A.",
+      "Fabricante": "FMC",
+      "Formulado": "BACILLUS THURINGIENSIS [WG] P/P",
+      "Fecha_Registro": "1998-01-01T00:00:00",
+      "Estado": "Vigente",
+      "Fecha_Caducidad": "2030/12/31",
+      "Fecha_Cancelacion": "",
+      "Fecha_LimiteVenta": "",
+      "Condicionamiento": ""
+    },
+    "COMPOSICION": [
+      {
+        "Nombre Sustancia": "BACILLUS THURINGIENSIS",
+        "Concentracion": 32.0,
+        "DescripcionNota": "%"
+      }
+    ],
+    "USOS": [
+      {
+        "CodigoCultivo": "0103010301000000",
+        "Cultivo": "Tomate",
+        "CodigoAgente": "6.2.4.7.7",
+        "Agente": "Polilla del tomate, Tuta absoluta",
+        "Dosis_Min": 0.05,
+        "Dosis_Max": 0.15,
+        "Unidad Medida dosis": "%",
+        "Plazo Seguridad": "NP",
+        "Volumen Caldo": "",
+        "Aplicaciones": "",
+        "IntervaloAplicaciones": "",
+        "Bbch": "",
+        "CondicionamientoEspecifico": "0,5-1,5 kg de producto/ha y volumen de caldo 200-1000 l/ha."
+      }
+    ]
+  }
+]
