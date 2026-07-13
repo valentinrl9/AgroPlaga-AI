@@ -10,6 +10,7 @@ import "../../models/analytics.dart";
 import "../../models/scan.dart";
 import "../widgets/card_scan.dart";
 import "../widgets/primary_button.dart";
+import "../widgets/scan_validation_banner.dart";
 
 class ResultScreen extends StatefulWidget {
   final Scan scan;
@@ -84,6 +85,8 @@ class _ResultScreenState extends State<ResultScreen> {
               style: TextStyle(fontSize: 13, color: NexoColors.textSecondary),
             ),
             const SizedBox(height: 20),
+            ScanValidationBanner(scan: scan),
+            const SizedBox(height: 12),
             CardScan.fromScan(scan),
             const SizedBox(height: 16),
             const Text(
@@ -187,10 +190,29 @@ class _ResultScreenState extends State<ResultScreen> {
               ),
             ],
             const SizedBox(height: 12),
-            OutlinedButton(
-              onPressed: () => Navigator.pushNamed(context, Routes.registerTreatment, arguments: scan),
-              child: const Text("Registrar tratamiento (carencia)"),
-            ),
+            if (!scan.isRejectedByTech)
+              OutlinedButton(
+                onPressed: () => Navigator.pushNamed(context, Routes.registerTreatment, arguments: scan),
+                child: Text(
+                  scan.isVerifiedByTech
+                      ? "Registrar tratamiento (carencia)"
+                      : "Registrar bajo mi responsabilidad",
+                ),
+              )
+            else
+              const Text(
+                "Registro de tratamiento deshabilitado para escaneos rechazados.",
+                style: TextStyle(color: NexoColors.errorRed, fontSize: 13),
+                textAlign: TextAlign.center,
+              ),
+            if (scan.isUnverified) ...[
+              const SizedBox(height: 8),
+              const Text(
+                "Recomendado: comparte el escaneo con el perito y espera validación antes de tratar.",
+                style: TextStyle(fontSize: 12, color: NexoColors.warningAmber),
+                textAlign: TextAlign.center,
+              ),
+            ],
             const SizedBox(height: 12),
             OutlinedButton(
               onPressed: () => goHome(context),

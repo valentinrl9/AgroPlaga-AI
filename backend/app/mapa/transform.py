@@ -178,7 +178,7 @@ def transform_cex_productos(
                     "safety_hours": _parse_safety_hours(uso.get("Plazo Seguridad")),
                     "synced_at": synced_at,
                     "source": "mapa_cex",
-                    "product_status": estado or "vigente",
+                    "product_status": (estado or "vigente").strip().lower(),
                 }
             )
 

@@ -18,6 +18,7 @@ def test_transform_matches_tuta_tomate():
     assert len(tuta_rows) >= 2
     delfin = next(r for r in tuta_rows if r["registry_no"] == "19159")
     assert delfin["name"] == "DELFIN"
+    assert delfin["product_status"] == "vigente"
 
 
 def test_transform_matches_lepidopteros_as_oruga_or_tuta():

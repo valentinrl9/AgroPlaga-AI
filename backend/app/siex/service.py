@@ -18,6 +18,7 @@ from app.models.user import User
 from app.models.zone import AgriZone
 from app.schemas.siex import SiexEntryRead, SiexEntryValidate
 from app.siex.config import SIEX_PREVIEW_OPEN
+from app.services.scan_validation import effective_plague, is_scan_verified
 
 _SIGPAC_RE = re.compile(r"^[A-Za-z0-9]{10,20}$")
 
@@ -109,6 +110,7 @@ def _build_texts(
     safety_hours: int,
     scan: Scan | None,
     climate_context: str | None,
+    verified: bool = True,
 ) -> tuple[str, str]:
     reg = registry_number or "sin nº registro"
     dose_txt = f"{dose_ml} ml" if dose_ml is not None else "dosis no calculada"
@@ -124,8 +126,12 @@ def _build_texts(
     detection = "diagnóstico en campo"
     if scan is not None:
         detection = f"escaneo PlagaScan (confianza {round(scan.confidence * 100)}%)"
-        if scan.corrected_plague:
+        if verified and scan.corrected_plague:
             detection += f", validado por perito como «{scan.corrected_plague}»"
+        elif verified:
+            detection += ", confirmado por perito"
+        else:
+            detection += " — diagnóstico NO validado por perito (responsabilidad del agricultor)"
 
     justificacion = (
         f"Actuación fitosanitaria registrada tras detección de «{plague}» en cultivo «{crop}» "
@@ -133,6 +139,11 @@ def _build_texts(
         f"plaga/cultivo. Tratamiento orientado a controlar la plaga detectada conforme a la ficha "
         f"oficial del producto."
     )
+    if not verified:
+        justificacion += (
+            "\n\nAdvertencia: el tratamiento se registró sobre una plaga detectada por IA sin "
+            "validación previa del perito técnico."
+        )
     if climate_context:
         justificacion += f"\n\n{climate_context}"
 
@@ -169,15 +180,17 @@ def compile_from_treatment(db: Session, user: User, treatment: FarmTreatment) ->
     if farm is None or not farm.sigpac_code:
         return None
 
+    verified = is_scan_verified(scan)
+    if scan and not verified and user.has_siex_enterprise:
+        return None
+
     sigpac = validate_sigpac(farm.sigpac_code)
     zone_name = None
     if farm.zone_id:
         zone = db.query(AgriZone).filter(AgriZone.id == farm.zone_id).first()
         zone_name = zone.name if zone else None
 
-    plague = scan.plague if scan else "plaga no indicada"
-    if scan and scan.corrected_plague:
-        plague = scan.corrected_plague
+    plague = effective_plague(scan, "plaga no indicada")
     crop = scan.crop if scan else farm.crop
 
     climate_context = _climate_snippet(db, user, plague)
@@ -192,6 +205,7 @@ def compile_from_treatment(db: Session, user: User, treatment: FarmTreatment) ->
         safety_hours=treatment.safety_hours,
         scan=scan,
         climate_context=climate_context,
+        verified=verified,
     )
 
     row = SiexCuadernoEntry(

@@ -9,6 +9,11 @@ class ScanRepository {
     return result.map((item) => Scan.fromJson(Map<String, dynamic>.from(item as Map))).toList();
   }
 
+  Future<Scan> fetchScan(int scanId) async {
+    final response = await _client.getAuth("/api/v1/scans/$scanId");
+    return Scan.fromJson(response);
+  }
+
   Future<Scan> createScan({
     required String crop,
     required String plague,

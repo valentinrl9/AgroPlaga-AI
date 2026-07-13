@@ -57,6 +57,18 @@ def read_scans(
     return [_scan_to_read(scan) for scan in scans]
 
 
+@router.get("/{scan_id}", response_model=ScanRead)
+def read_scan(
+    scan_id: int,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    scan = db.query(Scan).filter(Scan.id == scan_id, Scan.user_id == current_user.id).first()
+    if not scan:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Escaneo no encontrado")
+    return _scan_to_read(scan)
+
+
 @router.post("", response_model=ScanRead, status_code=201)
 def create_scan(
     scan_data: ScanCreate,

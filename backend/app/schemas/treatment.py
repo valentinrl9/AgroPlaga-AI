@@ -54,6 +54,7 @@ class TreatmentCreate(BaseModel):
     safety_hours: int = Field(ge=1, le=720)
     dose_ml: float | None = Field(default=None, ge=0)
     notes: str | None = Field(default=None, max_length=500)
+    ack_unverified: bool = False
 
 
 class TreatmentRead(BaseModel):
@@ -72,5 +73,6 @@ class TreatmentRead(BaseModel):
     harvest_allowed: bool = False
     siex_entry_id: int | None = None
     siex_message: str | None = None
+    scan_verification: str | None = None
 
     model_config = ConfigDict(from_attributes=True)

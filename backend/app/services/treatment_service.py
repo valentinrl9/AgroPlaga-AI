@@ -1,13 +1,16 @@
 from datetime import datetime, timedelta, timezone
 
 from fastapi import HTTPException, status
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
 from app.models.biocide_product import BiocideProduct
 from app.models.farm import Farm
 from app.models.farm_treatment import FarmTreatment
+from app.models.scan import Scan
 from app.models.user import User
 from app.schemas.treatment import DoseCalculateRequest, DoseCalculateResponse, TreatmentCreate, TreatmentRead
+from app.services.scan_validation import is_scan_rejected, is_scan_verified, verification_label
 
 
 def list_biocides(db: Session, plague: str, crop: str) -> list[BiocideProduct]:
@@ -18,7 +21,7 @@ def list_biocides(db: Session, plague: str, crop: str) -> list[BiocideProduct]:
         .filter(
             BiocideProduct.plague == plague_key,
             BiocideProduct.crop == crop_key,
-            BiocideProduct.product_status == "vigente",
+            func.lower(BiocideProduct.product_status) == "vigente",
         )
         .order_by(BiocideProduct.name.asc())
         .all()
@@ -81,6 +84,28 @@ def create_treatment(db: Session, user: User, payload: TreatmentCreate) -> Treat
         if not farm:
             raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Finca no encontrada")
 
+    scan: Scan | None = None
+    if payload.scan_id is not None:
+        scan = db.query(Scan).filter(Scan.id == payload.scan_id, Scan.user_id == user.id).first()
+        if not scan:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Escaneo no encontrado")
+        if is_scan_rejected(scan):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=(
+                    "Este escaneo fue rechazado por el perito. "
+                    "Realiza un nuevo escaneo o consulta con tu técnico antes de registrar un tratamiento."
+                ),
+            )
+        if not is_scan_verified(scan) and not payload.ack_unverified:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=(
+                    "Plaga no validada por perito. Confirma ack_unverified=true "
+                    "para registrar bajo tu responsabilidad."
+                ),
+            )
+
     row = FarmTreatment(
         user_id=user.id,
         farm_id=payload.farm_id,
@@ -107,6 +132,10 @@ def create_treatment(db: Session, user: User, payload: TreatmentCreate) -> Treat
             siex_message = (
                 "Tratamiento registrado. Para cuaderno SIEX, vincula una finca con código SIGPAC del recinto."
             )
+        elif scan and not is_scan_verified(scan) and user.has_siex_enterprise:
+            siex_message = (
+                "Tratamiento registrado. El cuaderno SIEX de cooperativa requiere un escaneo validado por el perito."
+            )
         else:
             entry = siex_service.compile_from_treatment(db, user, row)
             if entry:
@@ -116,10 +145,15 @@ def create_treatment(db: Session, user: User, payload: TreatmentCreate) -> Treat
                     if entry.status == "registrado"
                     else "Entrada SIEX enviada a validación del perito."
                 )
+            elif scan and not is_scan_verified(scan):
+                siex_message = (
+                    "Tratamiento registrado. Entrada SIEX omitida: plaga no validada por perito."
+                )
 
     result = _treatment_read(row)
     result.siex_entry_id = siex_entry_id
     result.siex_message = siex_message
+    result.scan_verification = verification_label(scan)
     return result
 
 

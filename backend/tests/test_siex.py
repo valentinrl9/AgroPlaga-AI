@@ -7,6 +7,17 @@ from app.models.user import User
 from tests.conftest import auth_headers, register_and_login
 
 
+def _jpeg_bytes() -> bytes:
+    return bytes.fromhex(
+        "ffd8ffe000104a46494600010100000100010000ffdb004300080606070605080707"
+        "070908090a0c140d0c0b0b0c1912130f141d1a1f1e1d1a1c1c20242e2720222c231c"
+        "1c2837292c30313434341f27393d38323c2e333432ffdb0043010909090c0b0c180d0d"
+        "1832211c2132323232323232323232323232323232323232323232323232323232323232"
+        "323232323232323232323232323232323232323c0a2834001108df0450100301100002"
+        "011101c2100000000110010002011101c210000000011000fc0000003fffd9"
+    )
+
+
 def _admin_headers(client):
     login = client.post(
         "/api/v1/auth/login",
@@ -55,21 +66,61 @@ def _create_scan(client, token: str, farm_id: int | None = None) -> int:
     return response.json()["id"]
 
 
-def _create_treatment(client, token: str, *, farm_id: int | None, scan_id: int | None = None) -> dict:
+def _create_scan_with_image(client, token: str, farm_id: int | None = None) -> int:
+    files = {"image": ("leaf.jpg", _jpeg_bytes(), "image/jpeg")}
+    data = {
+        "crop": "Tomate",
+        "plague": "tuta absoluta",
+        "severity": "Moderado",
+        "confidence": "0.82",
+        "share_with_tech": "true",
+    }
+    if farm_id is not None:
+        data["farm_id"] = str(farm_id)
+    response = client.post(
+        "/api/v1/scans/with-image",
+        headers=auth_headers(token),
+        data=data,
+        files=files,
+    )
+    assert response.status_code == 201, response.text
+    return response.json()["id"]
+
+
+def _create_treatment(
+    client,
+    token: str,
+    *,
+    farm_id: int | None,
+    scan_id: int | None = None,
+    ack_unverified: bool = True,
+) -> dict:
+    payload = {
+        "farm_id": farm_id,
+        "scan_id": scan_id,
+        "product_name": "Producto test MAPA",
+        "registry_number": "12345",
+        "safety_hours": 48,
+        "dose_ml": 250.0,
+    }
+    if scan_id is not None:
+        payload["ack_unverified"] = ack_unverified
     response = client.post(
         "/api/v1/treatments",
         headers=auth_headers(token),
-        json={
-            "farm_id": farm_id,
-            "scan_id": scan_id,
-            "product_name": "Producto test MAPA",
-            "registry_number": "12345",
-            "safety_hours": 48,
-            "dose_ml": 250.0,
-        },
+        json=payload,
     )
     assert response.status_code == 201, response.text
     return response.json()
+
+
+def _confirm_scan(client, scan_id: int, admin_headers: dict) -> None:
+    response = client.patch(
+        f"/api/v1/scans/{scan_id}/validate",
+        headers=admin_headers,
+        json={"action": "confirm"},
+    )
+    assert response.status_code == 200, response.text
 
 
 def _enable_siex_enterprise(email: str) -> None:
@@ -130,10 +181,12 @@ def test_treatment_with_sigpac_compiles_siex_entry(client, unique_email):
 def test_enterprise_treatment_pending_tech_validation(client, unique_email):
     token = register_and_login(client, unique_email)
     _enable_siex_enterprise(unique_email)
+    admin_headers = _admin_headers(client)
     farm = _create_farm(client, token)
-    scan_id = _create_scan(client, token, farm_id=farm["id"])
+    scan_id = _create_scan_with_image(client, token, farm_id=farm["id"])
+    _confirm_scan(client, scan_id, admin_headers)
 
-    result = _create_treatment(client, token, farm_id=farm["id"], scan_id=scan_id)
+    result = _create_treatment(client, token, farm_id=farm["id"], scan_id=scan_id, ack_unverified=False)
     entry_id = result["siex_entry_id"]
     assert entry_id is not None
 
