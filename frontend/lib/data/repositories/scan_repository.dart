@@ -10,7 +10,7 @@ class ScanRepository {
   }
 
   Future<Scan> fetchScan(int scanId) async {
-    final response = await _client.getAuth("/api/v1/scans/$scanId");
+    final response = await _client.get("/api/v1/scans/$scanId");
     return Scan.fromJson(response);
   }
 
