@@ -19,3 +19,30 @@ PLG-PILOT-T02
 Código
 PLG-PILOT-C01
 
+
+Cuentas demo locales (Docker con DEMO_SEED_USERS=true):
+
+Contraseña común
+nexo1234 (variable DEMO_USERS_PASSWORD)
+
+Rol	Email	Módulos
+Agricultor
+local.agricultor@nexo.test
+Field Premium + Climate + SIEX (sin enterprise)
+Perito
+local.perito@nexo.test
+Igual que agricultor, rol tech (panel validación)
+Cooperativa
+local.cooperativa@nexo.test
+Todo + has_siex_enterprise (exportación SIEX)
+Cuenta maestro / admin
+Email	Contraseña
+valentinruizleon@gmail.com
+12345678
+Rol admin con todos los módulos activos.
+
+Accesos:
+
+App Flutter → login con cualquiera de arriba
+Panel web → http://localhost:5173/panel/ (perito/cooperativa/admin)
+API docs → http://localhost:8000/docs
