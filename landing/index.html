@@ -3,26 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NEXO Agro — Ecosistema de Inteligencia Agrícola Unificado</title>
-  <meta name="description" content="Unificamos Scanner IA offline, telemetría IoT y Cuaderno Digital SIEX en una única fuente de la verdad para agricultores y cooperativas. Obligatoriedad SIEX 2027.">
+  <title>AgroPlaga AI — Sanidad vegetal inteligente para el Poniente</title>
+  <meta name="description" content="Escanea plagas offline en el invernadero, calcula dosis con el MAPA, comparte alertas comarcales SIGPAC y conecta con tu cooperativa. Piloto Poniente Almeriense.">
   <link rel="icon" type="image/png" href="/assets/app_logo.png">
 
-  <!-- Tipografía corporativa NEXO (Plus Jakarta Sans) -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,200;0,300;0,400;0,500;0,600;0,700;0,800;1,300&display=swap" rel="stylesheet">
-
-  <!-- FontAwesome 6 — iconografía de módulos y UI -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" crossorigin="anonymous">
 
-  <!-- Tailwind CSS CDN + Design Tokens NEXO -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
       theme: {
         extend: {
           colors: {
-            nexo: {
+            brand: {
               deep: '#0B192C',
               green: '#00A86B',
               cyan: '#00D2C4',
@@ -32,15 +28,11 @@
               'light-text': '#94A3B8',
             },
           },
-          fontFamily: {
-            sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'],
-          },
-          scale: {
-            102: '1.02',
-          },
+          fontFamily: { sans: ['"Plus Jakarta Sans"', 'system-ui', 'sans-serif'] },
+          scale: { 102: '1.02' },
           boxShadow: {
-            'nexo': '0 20px 50px -12px rgba(0, 168, 107, 0.25)',
-            'nexo-cyan': '0 20px 50px -12px rgba(0, 210, 196, 0.2)',
+            brand: '0 20px 50px -12px rgba(0, 168, 107, 0.25)',
+            'brand-cyan': '0 20px 50px -12px rgba(0, 210, 196, 0.2)',
           },
         },
       },
@@ -48,79 +40,44 @@
   </script>
 
   <style>
-    /* Animaciones y efectos fuera del alcance directo de utilidades Tailwind */
     @keyframes float-node {
       0%, 100% { transform: translateY(0) scale(1); opacity: 0.4; }
       50% { transform: translateY(-12px) scale(1.05); opacity: 0.7; }
     }
-    @keyframes pulse-ring {
-      0% { transform: scale(0.95); opacity: 0.6; }
-      70% { transform: scale(1.15); opacity: 0; }
-      100% { transform: scale(1.15); opacity: 0; }
-    }
     .hero-node { animation: float-node 6s ease-in-out infinite; }
     .hero-node-delay-1 { animation-delay: 1.5s; }
     .hero-node-delay-2 { animation-delay: 3s; }
-    .countdown-digit {
-      background: linear-gradient(145deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
-      backdrop-filter: blur(8px);
-    }
-    .profile-card.active {
-      ring-width: 2px;
-      ring-color: #00A86B;
-      transform: scale(1.02);
-    }
-    .gradient-logo-line {
-      stroke: url(#nexoGradient);
-    }
+    .gradient-logo-line { stroke: url(#brandGradient); }
   </style>
 </head>
 
-<body class="font-sans text-nexo-dark-text bg-white antialiased">
+<body class="font-sans text-brand-dark-text bg-white antialiased">
 
-  <!-- ═══════════════════════════════════════════════════════════════════
-       A. BARRA DE NAVEGACIÓN STICKY
-       Layout: flex container, logo izquierda, nav centro-derecha, CTA final
-       ═══════════════════════════════════════════════════════════════════ -->
+  <!-- A. HEADER -->
   <header id="site-header" class="fixed top-0 inset-x-0 z-50 transition-all duration-300 ease-in-out bg-transparent">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex items-center justify-between h-16 lg:h-20">
-
-        <!-- Logotipo NEXO Agro + imagotipo SVG (invernadero × red neuronal) -->
         <a href="#inicio" class="flex items-center gap-3 group">
-          <svg class="w-10 h-10 transition-transform duration-300 ease-in-out group-hover:scale-105" viewBox="0 0 48 48" fill="none" aria-hidden="true">
-            <defs>
-              <linearGradient id="nexoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-                <stop offset="0%" stop-color="#00D2C4"/>
-                <stop offset="100%" stop-color="#00A86B"/>
-              </linearGradient>
-            </defs>
-            <path class="gradient-logo-line" stroke-width="2.5" stroke-linecap="round" d="M8 38 Q24 8 40 38"/>
-            <path class="gradient-logo-line" stroke-width="2.5" stroke-linecap="round" d="M14 38 Q24 14 34 38"/>
-            <path class="gradient-logo-line" stroke-width="2.5" stroke-linecap="round" d="M20 38 Q24 20 28 38"/>
-            <circle cx="24" cy="24" r="4" fill="url(#nexoGradient)"/>
-          </svg>
+          <img src="/assets/app_logo.png" alt="AgroPlaga AI" class="w-10 h-10 rounded-xl transition-transform duration-300 group-hover:scale-105">
           <div class="leading-none">
-            <span id="logo-nexo" class="text-xl lg:text-2xl font-extrabold tracking-tight text-white">NEXO</span>
-            <span id="logo-agro" class="text-xl lg:text-2xl font-light text-nexo-green ml-0.5">Agro</span>
+            <span id="logo-main" class="text-xl lg:text-2xl font-extrabold tracking-tight text-white">AgroPlaga</span>
+            <span class="text-xl lg:text-2xl font-light text-brand-green ml-0.5">AI</span>
           </div>
         </a>
 
-        <!-- Nav desktop -->
         <nav class="hidden lg:flex items-center gap-8">
-          <a href="#inicio" class="nav-link text-sm font-medium text-white/90 hover:text-nexo-cyan transition-colors duration-300">Inicio</a>
-          <a href="#modulos" class="nav-link text-sm font-medium text-white/90 hover:text-nexo-cyan transition-colors duration-300">Módulos</a>
-          <a href="#perfiles" class="nav-link text-sm font-medium text-white/90 hover:text-nexo-cyan transition-colors duration-300">Solución Cooperativas</a>
-          <a href="#siex" class="nav-link text-sm font-medium text-white/90 hover:text-nexo-cyan transition-colors duration-300">SIEX 2027</a>
-          <a href="#demo" class="nav-link text-sm font-medium text-white/90 hover:text-nexo-cyan transition-colors duration-300">Precios</a>
+          <a href="#inicio" class="nav-link text-sm font-medium text-white/90 hover:text-brand-cyan transition-colors duration-300">Inicio</a>
+          <a href="#funciones" class="nav-link text-sm font-medium text-white/90 hover:text-brand-cyan transition-colors duration-300">Funcionalidades</a>
+          <a href="#perfiles" class="nav-link text-sm font-medium text-white/90 hover:text-brand-cyan transition-colors duration-300">Cooperativas</a>
+          <a href="#piloto" class="nav-link text-sm font-medium text-white/90 hover:text-brand-cyan transition-colors duration-300">Piloto</a>
+          <a href="#contacto" class="nav-link text-sm font-medium text-white/90 hover:text-brand-cyan transition-colors duration-300">Contacto</a>
         </nav>
 
         <div class="flex items-center gap-3">
-          <a href="#demo" class="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-nexo-green text-white text-sm font-semibold shadow-nexo hover:bg-emerald-500 hover:scale-102 transition-all duration-300 ease-in-out">
-            <i class="fa-solid fa-handshake"></i>
-            Solicitar Demo B2B
+          <a href="#contacto" class="hidden sm:inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-brand-green text-white text-sm font-semibold shadow-brand hover:bg-emerald-500 hover:scale-102 transition-all duration-300 ease-in-out">
+            <i class="fa-solid fa-seedling"></i>
+            Solicitar Piloto
           </a>
-          <!-- Botón menú móvil -->
           <button id="mobile-menu-btn" type="button" class="lg:hidden p-2 rounded-lg text-white hover:bg-white/10 transition-colors duration-300" aria-label="Abrir menú">
             <i class="fa-solid fa-bars text-xl"></i>
           </button>
@@ -128,451 +85,291 @@
       </div>
     </div>
 
-    <!-- Panel menú móvil colapsable -->
-    <div id="mobile-menu" class="lg:hidden hidden border-t border-white/10 bg-nexo-deep/98 backdrop-blur-lg">
+    <div id="mobile-menu" class="lg:hidden hidden border-t border-white/10 bg-brand-deep/98 backdrop-blur-lg">
       <nav class="max-w-7xl mx-auto px-4 py-4 flex flex-col gap-1">
-        <a href="#inicio" class="mobile-nav-link px-4 py-3 rounded-lg text-white/90 hover:bg-white/5 transition-colors duration-300">Inicio</a>
-        <a href="#modulos" class="mobile-nav-link px-4 py-3 rounded-lg text-white/90 hover:bg-white/5 transition-colors duration-300">Módulos</a>
-        <a href="#perfiles" class="mobile-nav-link px-4 py-3 rounded-lg text-white/90 hover:bg-white/5 transition-colors duration-300">Solución Cooperativas</a>
-        <a href="#siex" class="mobile-nav-link px-4 py-3 rounded-lg text-white/90 hover:bg-white/5 transition-colors duration-300">SIEX 2027</a>
-        <a href="#demo" class="mobile-nav-link px-4 py-3 rounded-lg text-white/90 hover:bg-white/5 transition-colors duration-300">Precios</a>
-        <a href="#demo" class="mt-2 mx-4 py-3 rounded-xl bg-nexo-green text-white text-center font-semibold">Solicitar Demo B2B</a>
+        <a href="#inicio" class="mobile-nav-link px-4 py-3 rounded-lg text-white/90 hover:bg-white/5">Inicio</a>
+        <a href="#funciones" class="mobile-nav-link px-4 py-3 rounded-lg text-white/90 hover:bg-white/5">Funcionalidades</a>
+        <a href="#perfiles" class="mobile-nav-link px-4 py-3 rounded-lg text-white/90 hover:bg-white/5">Cooperativas</a>
+        <a href="#piloto" class="mobile-nav-link px-4 py-3 rounded-lg text-white/90 hover:bg-white/5">Piloto</a>
+        <a href="#contacto" class="mobile-nav-link px-4 py-3 rounded-lg text-white/90 hover:bg-white/5">Contacto</a>
+        <a href="/panel/" class="mx-4 py-3 rounded-xl border border-brand-cyan text-brand-cyan text-center font-semibold">Panel técnicos</a>
       </nav>
     </div>
   </header>
 
   <main>
 
-    <!-- ═══════════════════════════════════════════════════════════════════
-         B. HERO — Propuesta de valor con degradado Deep Blue y nodos
-         ═══════════════════════════════════════════════════════════════════ -->
-    <section id="inicio" class="relative min-h-screen flex items-center overflow-hidden bg-nexo-deep">
-      <!-- Degradado y vectores de nodos de datos -->
-      <div class="absolute inset-0 bg-gradient-to-br from-nexo-deep via-[#0f2340] to-[#071018]"></div>
+    <!-- B. HERO -->
+    <section id="inicio" class="relative min-h-screen flex items-center overflow-hidden bg-brand-deep">
+      <div class="absolute inset-0 bg-gradient-to-br from-brand-deep via-[#0f2340] to-[#071018]"></div>
       <div class="absolute inset-0 opacity-30" style="background-image: radial-gradient(circle at 20% 50%, rgba(0,210,196,0.15) 0%, transparent 50%), radial-gradient(circle at 80% 20%, rgba(0,168,107,0.12) 0%, transparent 40%);"></div>
-
-      <!-- Nodos flotantes decorativos -->
-      <div class="absolute top-1/4 left-[10%] w-3 h-3 rounded-full bg-nexo-cyan hero-node"></div>
-      <div class="absolute top-1/3 right-[15%] w-2 h-2 rounded-full bg-nexo-green hero-node hero-node-delay-1"></div>
-      <div class="absolute bottom-1/3 left-[25%] w-4 h-4 rounded-full bg-nexo-cyan/60 hero-node hero-node-delay-2"></div>
-      <svg class="absolute inset-0 w-full h-full opacity-[0.07]" aria-hidden="true">
-        <line x1="10%" y1="30%" x2="50%" y2="50%" stroke="#00D2C4" stroke-width="1"/>
-        <line x1="50%" y1="50%" x2="85%" y2="25%" stroke="#00A86B" stroke-width="1"/>
-        <line x1="25%" y1="70%" x2="50%" y2="50%" stroke="#00D2C4" stroke-width="1"/>
-        <circle cx="50%" cy="50%" r="6" fill="#00A86B"/>
-      </svg>
+      <div class="absolute top-1/4 left-[10%] w-3 h-3 rounded-full bg-brand-cyan hero-node"></div>
+      <div class="absolute top-1/3 right-[15%] w-2 h-2 rounded-full bg-brand-green hero-node hero-node-delay-1"></div>
+      <div class="absolute bottom-1/3 left-[25%] w-4 h-4 rounded-full bg-brand-cyan/60 hero-node hero-node-delay-2"></div>
 
       <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-28 pb-20 lg:pt-36 lg:pb-28">
         <div class="max-w-4xl">
-          <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-nexo-cyan text-xs font-semibold uppercase tracking-wider mb-6">
-            <span class="w-2 h-2 rounded-full bg-nexo-green animate-pulse"></span>
-            Ecosistema Enterprise · Poniente Almeriense
+          <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-brand-cyan text-xs font-semibold uppercase tracking-wider mb-6">
+            <span class="w-2 h-2 rounded-full bg-brand-green animate-pulse"></span>
+            Piloto abierto · Poniente Almeriense
           </div>
 
           <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-[1.1] tracking-tight mb-6">
-            Conectamos tu invernadero, tu IA y el cumplimiento
-            <span class="text-transparent bg-clip-text bg-gradient-to-r from-nexo-green to-nexo-cyan"> SIEX</span>
-            en un solo clic
+            Plagas en el invernadero,
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-green to-brand-cyan"> respuesta en segundos</span>
+            — sin depender de la cobertura
           </h1>
 
-          <p class="text-lg sm:text-xl text-nexo-light-text leading-relaxed max-w-3xl mb-10">
-            NEXO Agro unifica el <strong class="text-white font-semibold">Scanner IA Offline</strong> (0% cobertura),
-            la <strong class="text-white font-semibold">telemetría IoT microclimática</strong> y el
-            <strong class="text-white font-semibold">Cuaderno Digital SIEX</strong> en una única fuente de la verdad
-            para agricultores, peritos y cooperativas agrarias.
+          <p class="text-lg sm:text-xl text-brand-light-text leading-relaxed max-w-3xl mb-10">
+            <strong class="text-white font-semibold">AgroPlaga AI</strong> une IA offline en el móvil, el
+            <strong class="text-white font-semibold">vademécum MAPA</strong>, un mapa comarcal anónimo (SIGPAC) y un
+            <strong class="text-white font-semibold">panel para técnicos y cooperativas</strong>.
+            Hecho para el plástico del Poniente.
           </p>
 
-          <!-- CTAs principales -->
           <div class="flex flex-col sm:flex-row gap-4">
-            <a href="#demo" class="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-nexo-green text-white font-semibold text-base shadow-nexo hover:bg-emerald-500 hover:scale-102 transition-all duration-300 ease-in-out">
-              <i class="fa-solid fa-building-columns"></i>
-              Solicitar Demo para Cooperativas
+            <a href="#contacto" class="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-brand-green text-white font-semibold text-base shadow-brand hover:bg-emerald-500 hover:scale-102 transition-all duration-300 ease-in-out">
+              <i class="fa-solid fa-handshake"></i>
+              Solicitar acceso al piloto
             </a>
-            <a href="#perfiles" class="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl border-2 border-nexo-cyan text-nexo-cyan font-semibold text-base hover:bg-nexo-cyan/10 hover:scale-102 transition-all duration-300 ease-in-out">
-              <i class="fa-solid fa-mobile-screen-button"></i>
-              Descargar App Móvil
+            <a href="/panel/" class="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl border-2 border-brand-cyan text-brand-cyan font-semibold text-base hover:bg-brand-cyan/10 hover:scale-102 transition-all duration-300 ease-in-out">
+              <i class="fa-solid fa-user-shield"></i>
+              Acceso cooperativas
             </a>
           </div>
 
-          <!-- Métricas de confianza -->
-          <div class="mt-14 grid grid-cols-2 sm:grid-cols-4 gap-6 pt-8 border-t border-white/10">
-            <div>
-              <p class="text-2xl lg:text-3xl font-bold text-white">100%</p>
-              <p class="text-sm text-nexo-light-text mt-1">IA offline en campo</p>
-            </div>
-            <div>
-              <p class="text-2xl lg:text-3xl font-bold text-nexo-cyan">MAPA</p>
-              <p class="text-sm text-nexo-light-text mt-1">Vademécum sincronizado</p>
-            </div>
-            <div>
-              <p class="text-2xl lg:text-3xl font-bold text-nexo-green">3</p>
-              <p class="text-sm text-nexo-light-text mt-1">Módulos integrados</p>
-            </div>
-            <div>
-              <p class="text-2xl lg:text-3xl font-bold text-nexo-amber">2027</p>
-              <p class="text-sm text-nexo-light-text mt-1">Cumplimiento SIEX</p>
-            </div>
+          <div class="mt-14 flex flex-wrap gap-3 pt-8 border-t border-white/10">
+            <span class="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-white text-sm">PlagaScan offline</span>
+            <span class="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-white text-sm">15 plagas Poniente</span>
+            <span class="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-white text-sm">Mapa SIGPAC</span>
+            <span class="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-white text-sm">Validación con foto</span>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ═══════════════════════════════════════════════════════════════════
-         C. SELECTOR INTERACTIVO DE PERFILES — Agricultor vs Cooperativa
-         Grid 2 columnas con tarjetas interactivas y panel de detalle
-         ═══════════════════════════════════════════════════════════════════ -->
-    <section id="perfiles" class="py-20 lg:py-28 bg-nexo-slate">
+    <!-- C. PERFILES -->
+    <section id="perfiles" class="py-20 lg:py-28 bg-brand-slate">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center max-w-3xl mx-auto mb-14">
-          <h2 class="text-3xl lg:text-4xl font-bold text-nexo-deep tracking-tight mb-4">¿Agricultor o Cooperativa?</h2>
-          <p class="text-nexo-light-text text-lg">Un ecosistema, dos experiencias optimizadas. Selecciona tu perfil para descubrir tu flujo de trabajo.</p>
+          <h2 class="text-3xl lg:text-4xl font-bold text-brand-deep tracking-tight mb-4">¿Agricultor o cooperativa?</h2>
+          <p class="text-brand-light-text text-lg">La misma plataforma conecta el campo con el almacén. Elige tu perfil.</p>
         </div>
 
-        <!-- Tabs de perfil -->
         <div class="flex flex-col sm:flex-row justify-center gap-3 mb-10">
-          <button type="button" data-profile="agricultor" class="profile-tab active flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-300 ease-in-out bg-nexo-green text-white shadow-nexo">
-            <i class="fa-solid fa-seedling"></i> Agricultor · B2C
+          <button type="button" data-profile="agricultor" class="profile-tab active flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-300 bg-brand-green text-white shadow-brand">
+            <i class="fa-solid fa-seedling"></i> Agricultor
           </button>
-          <button type="button" data-profile="cooperativa" class="profile-tab flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-300 ease-in-out bg-white text-nexo-dark-text border border-gray-200 hover:border-nexo-green">
-            <i class="fa-solid fa-users"></i> Cooperativa · B2B
+          <button type="button" data-profile="cooperativa" class="profile-tab flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-semibold text-sm transition-all duration-300 bg-white text-brand-dark-text border border-gray-200 hover:border-brand-green">
+            <i class="fa-solid fa-users"></i> Cooperativa / técnico
           </button>
         </div>
 
         <div class="grid lg:grid-cols-2 gap-6 lg:gap-8">
-          <!-- Tarjeta Agricultor -->
-          <article id="card-agricultor" data-profile-card="agricultor" class="profile-card active group relative bg-white rounded-2xl p-8 lg:p-10 border border-gray-100 shadow-sm hover:shadow-lg hover:scale-102 transition-all duration-300 ease-in-out cursor-pointer ring-2 ring-nexo-green">
-            <div class="absolute top-0 right-0 w-32 h-32 bg-nexo-green/5 rounded-bl-[4rem] rounded-tr-2xl"></div>
-            <div class="relative">
-              <div class="w-14 h-14 rounded-2xl bg-nexo-green/10 flex items-center justify-center mb-6 group-hover:scale-105 transition-transform duration-300">
-                <i class="fa-solid fa-camera text-2xl text-nexo-green"></i>
-              </div>
-              <h3 class="text-2xl font-bold text-nexo-deep mb-3">NEXO Field · Agricultor</h3>
-              <p class="text-nexo-light-text mb-6 leading-relaxed">Operativa diaria a pie de campo bajo el plástico, sin depender de cobertura móvil.</p>
-              <ul class="space-y-4">
-                <li class="flex gap-3">
-                  <i class="fa-solid fa-wifi text-nexo-green mt-1"></i>
-                  <div>
-                    <strong class="text-nexo-dark-text block text-sm">Scanner IA Offline</strong>
-                    <span class="text-sm text-nexo-light-text">Inferencia ONNX local con 0% cobertura. Sincronización diferida al recuperar señal.</span>
-                  </div>
-                </li>
-                <li class="flex gap-3">
-                  <i class="fa-solid fa-flask text-nexo-green mt-1"></i>
-                  <div>
-                    <strong class="text-nexo-dark-text block text-sm">Cálculo de dosis instantáneo</strong>
-                    <span class="text-sm text-nexo-light-text">Cruce automático con el Registro MAPA según plaga y cultivo detectados.</span>
-                  </div>
-                </li>
-                <li class="flex gap-3">
-                  <i class="fa-solid fa-clock text-nexo-amber mt-1"></i>
-                  <div>
-                    <strong class="text-nexo-dark-text block text-sm">Calculadora de plazo de carencia</strong>
-                    <span class="text-sm text-nexo-light-text">Cronómetro inverso visual. Cero rechazos de camiones en el almacén cooperativo.</span>
-                  </div>
-                </li>
-                <li class="flex gap-3">
-                  <i class="fa-solid fa-book text-nexo-green mt-1"></i>
-                  <div>
-                    <strong class="text-nexo-dark-text block text-sm">Borrador automático del cuaderno</strong>
-                    <span class="text-sm text-nexo-light-text">Cada tratamiento alimenta el cuaderno SIEX sin libretas de papel.</span>
-                  </div>
-                </li>
-              </ul>
+          <article data-profile-card="agricultor" class="profile-card active group relative bg-white rounded-2xl p-8 lg:p-10 border border-gray-100 shadow-sm hover:shadow-lg hover:scale-102 transition-all duration-300 cursor-pointer ring-2 ring-brand-green">
+            <div class="w-14 h-14 rounded-2xl bg-brand-green/10 flex items-center justify-center mb-6">
+              <i class="fa-solid fa-camera text-2xl text-brand-green"></i>
             </div>
+            <h3 class="text-2xl font-bold text-brand-deep mb-3">App móvil · Agricultor</h3>
+            <p class="text-brand-light-text mb-6">Operativa diaria bajo el plástico, con o sin cobertura.</p>
+            <ul class="space-y-4 text-sm">
+              <li class="flex gap-3"><i class="fa-solid fa-wifi text-brand-green mt-1"></i><div><strong class="text-brand-dark-text block">PlagaScan IA offline</strong><span class="text-brand-light-text">Foto de hoja → plaga + confianza. Sincroniza al recuperar señal.</span></div></li>
+              <li class="flex gap-3"><i class="fa-solid fa-flask text-brand-green mt-1"></i><div><strong class="text-brand-dark-text block">Dosis MAPA automática</strong><span class="text-brand-light-text">Productos vigentes filtrados por plaga y cultivo detectados.</span></div></li>
+              <li class="flex gap-3"><i class="fa-solid fa-clock text-brand-amber mt-1"></i><div><strong class="text-brand-dark-text block">Plazo de carencia</strong><span class="text-brand-light-text">Cronómetro visual para evitar rechazos en el almacén.</span></div></li>
+              <li class="flex gap-3"><i class="fa-solid fa-map text-brand-green mt-1"></i><div><strong class="text-brand-dark-text block">Mapa comarcal anónimo</strong><span class="text-brand-light-text">Alertas de brotes cercanos sin exponer tu parcela exacta.</span></div></li>
+            </ul>
           </article>
 
-          <!-- Tarjeta Cooperativa -->
-          <article id="card-cooperativa" data-profile-card="cooperativa" class="profile-card group relative bg-white rounded-2xl p-8 lg:p-10 border border-gray-100 shadow-sm hover:shadow-lg hover:scale-102 transition-all duration-300 ease-in-out cursor-pointer">
-            <div class="absolute top-0 right-0 w-32 h-32 bg-nexo-cyan/5 rounded-bl-[4rem] rounded-tr-2xl"></div>
-            <div class="relative">
-              <div class="w-14 h-14 rounded-2xl bg-nexo-cyan/10 flex items-center justify-center mb-6 group-hover:scale-105 transition-transform duration-300">
-                <i class="fa-solid fa-building-columns text-2xl text-nexo-cyan"></i>
-              </div>
-              <h3 class="text-2xl font-bold text-nexo-deep mb-3">NEXO Enterprise · Cooperativa</h3>
-              <p class="text-nexo-light-text mb-6 leading-relaxed">Panel web de supervisión pericial con firma digital y exportación ministerial masiva.</p>
-              <ul class="space-y-4">
-                <li class="flex gap-3">
-                  <i class="fa-solid fa-user-check text-nexo-cyan mt-1"></i>
-                  <div>
-                    <strong class="text-nexo-dark-text block text-sm">Panel de Validación Pericial</strong>
-                    <span class="text-sm text-nexo-light-text">Aprueba o rechaza escaneos de socios con imagen HD, paraje y dosis calculada.</span>
-                  </div>
-                </li>
-                <li class="flex gap-3">
-                  <i class="fa-solid fa-database text-nexo-cyan mt-1"></i>
-                  <div>
-                    <strong class="text-nexo-dark-text block text-sm">Unificación de datos de socios</strong>
-                    <span class="text-sm text-nexo-light-text">Una sola fuente de la verdad PostgreSQL + PostGIS para toda la cooperativa.</span>
-                  </div>
-                </li>
-                <li class="flex gap-3">
-                  <i class="fa-solid fa-file-export text-nexo-cyan mt-1"></i>
-                  <div>
-                    <strong class="text-nexo-dark-text block text-sm">Exportador masivo SIEX oficial</strong>
-                    <span class="text-sm text-nexo-light-text">JSON Schema ministerial en un clic. Volcado masivo de cuadernos validados.</span>
-                  </div>
-                </li>
-                <li class="flex gap-3">
-                  <i class="fa-solid fa-chart-line text-nexo-cyan mt-1"></i>
-                  <div>
-                    <strong class="text-nexo-dark-text block text-sm">Analítica predictiva de entrada de género</strong>
-                    <span class="text-sm text-nexo-light-text">Anticipa volúmenes de recepción cruzando clima, plagas y tratamientos activos.</span>
-                  </div>
-                </li>
-              </ul>
+          <article data-profile-card="cooperativa" class="profile-card group relative bg-white rounded-2xl p-8 lg:p-10 border border-gray-100 shadow-sm hover:shadow-lg hover:scale-102 transition-all duration-300 cursor-pointer">
+            <div class="w-14 h-14 rounded-2xl bg-brand-cyan/10 flex items-center justify-center mb-6">
+              <i class="fa-solid fa-building-columns text-2xl text-brand-cyan"></i>
             </div>
+            <h3 class="text-2xl font-bold text-brand-deep mb-3">Panel web · Cooperativa</h3>
+            <p class="text-brand-light-text mb-6">Supervisión pericial y visión agregada de los socios.</p>
+            <ul class="space-y-4 text-sm">
+              <li class="flex gap-3"><i class="fa-solid fa-user-check text-brand-cyan mt-1"></i><div><strong class="text-brand-dark-text block">Validación con foto</strong><span class="text-brand-light-text">Aprueba o corrige diagnósticos de socios con imagen HD y paraje.</span></div></li>
+              <li class="flex gap-3"><i class="fa-solid fa-map-location-dot text-brand-cyan mt-1"></i><div><strong class="text-brand-dark-text block">Mapa de calor comarcal</strong><span class="text-brand-light-text">Detecta brotes antes de que lleguen al almacén.</span></div></li>
+              <li class="flex gap-3"><i class="fa-solid fa-clipboard-list text-brand-cyan mt-1"></i><div><strong class="text-brand-dark-text block">Historial de tratamientos</strong><span class="text-brand-light-text">Registro centralizado de aplicaciones fitosanitarias de socios.</span></div></li>
+              <li class="flex gap-3"><i class="fa-solid fa-chart-line text-brand-cyan mt-1"></i><div><strong class="text-brand-dark-text block">Dashboard de alertas</strong><span class="text-brand-light-text">Escaneos pendientes, brotes activos y actividad reciente.</span></div></li>
+            </ul>
+            <a href="/panel/" class="mt-8 inline-flex items-center gap-2 text-brand-cyan font-semibold hover:text-brand-green transition-colors duration-300">
+              Entrar al panel <i class="fa-solid fa-arrow-right text-sm"></i>
+            </a>
           </article>
         </div>
       </div>
     </section>
 
-    <!-- ═══════════════════════════════════════════════════════════════════
-         D. ESCAPARATE DE MÓDULOS — NEXO Core (rejilla responsiva)
-         ═══════════════════════════════════════════════════════════════════ -->
-    <section id="modulos" class="py-20 lg:py-28 bg-white">
+    <!-- D. FUNCIONALIDADES -->
+    <section id="funciones" class="py-20 lg:py-28 bg-white">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center max-w-3xl mx-auto mb-14">
-          <p class="text-nexo-green font-semibold text-sm uppercase tracking-wider mb-3">NEXO Core</p>
-          <h2 class="text-3xl lg:text-4xl font-bold text-nexo-deep tracking-tight mb-4">Tres módulos. Un ecosistema.</h2>
-          <p class="text-nexo-light-text text-lg">Arquitectura modular SaaS con RBAC dinámico. Cada módulo se activa según el rol y la licencia del usuario.</p>
+          <p class="text-brand-green font-semibold text-sm uppercase tracking-wider mb-3">Qué incluye el piloto</p>
+          <h2 class="text-3xl lg:text-4xl font-bold text-brand-deep tracking-tight mb-4">Sanidad vegetal de punta a punta</h2>
+          <p class="text-brand-light-text text-lg">Desde la foto bajo el plástico hasta la validación en tu cooperativa.</p>
         </div>
 
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8">
-          <!-- NEXO Field -->
-          <article class="group relative bg-nexo-slate rounded-2xl p-8 border border-transparent hover:border-nexo-green/30 hover:shadow-nexo hover:scale-102 transition-all duration-300 ease-in-out overflow-hidden">
-            <div class="absolute -top-10 -right-10 w-40 h-40 bg-nexo-green/5 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
-            <div class="relative">
-              <div class="w-14 h-14 rounded-2xl bg-nexo-green flex items-center justify-center mb-6 shadow-nexo">
-                <i class="fa-solid fa-leaf text-2xl text-white"></i>
-              </div>
-              <h3 class="text-xl font-bold text-nexo-deep mb-1">NEXO Field</h3>
-              <p class="text-xs font-semibold text-nexo-green uppercase tracking-wider mb-4">AgroPlaga AI</p>
-              <p class="text-nexo-light-text text-sm leading-relaxed mb-6">Detección, prescripción y control fitosanitario a pie de campo con IA local y vademécum MAPA activo.</p>
-              <ul class="space-y-2 text-sm text-nexo-dark-text">
-                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-nexo-green text-xs"></i> Inferencia ONNX offline</li>
-                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-nexo-green text-xs"></i> ETL semanal Registro MAPA</li>
-                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-nexo-green text-xs"></i> Mapa de calor comarcal SIGPAC</li>
-                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-nexo-green text-xs"></i> Motor automático de dosis</li>
-              </ul>
+        <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <article class="group bg-brand-slate rounded-2xl p-7 hover:border-brand-green/30 hover:shadow-brand hover:scale-102 border border-transparent transition-all duration-300">
+            <div class="w-12 h-12 rounded-xl bg-brand-green flex items-center justify-center mb-5 shadow-brand">
+              <i class="fa-solid fa-leaf text-xl text-white"></i>
             </div>
+            <h3 class="font-bold text-brand-deep mb-2">PlagaScan offline</h3>
+            <p class="text-sm text-brand-light-text leading-relaxed">IA en el móvil sin internet. 15 plagas del Poniente con modelo ONNX optimizado.</p>
           </article>
-
-          <!-- NEXO Climate -->
-          <article class="group relative bg-nexo-slate rounded-2xl p-8 border border-transparent hover:border-nexo-cyan/30 hover:shadow-nexo-cyan hover:scale-102 transition-all duration-300 ease-in-out overflow-hidden">
-            <div class="absolute -top-10 -right-10 w-40 h-40 bg-nexo-cyan/5 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
-            <div class="relative">
-              <div class="w-14 h-14 rounded-2xl bg-nexo-cyan flex items-center justify-center mb-6 shadow-nexo-cyan">
-                <i class="fa-solid fa-tower-broadcast text-2xl text-white"></i>
-              </div>
-              <h3 class="text-xl font-bold text-nexo-deep mb-1">NEXO Climate</h3>
-              <p class="text-xs font-semibold text-nexo-cyan uppercase tracking-wider mb-4">AgroData IoT</p>
-              <p class="text-nexo-light-text text-sm leading-relaxed mb-6">Telemetría microclimática bajo plástico con indicadores agroclimáticos en tiempo real.</p>
-              <ul class="space-y-2 text-sm text-nexo-dark-text">
-                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-nexo-cyan text-xs"></i> DPV — Déficit Presión Vapor</li>
-                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-nexo-cyan text-xs"></i> Punto de rocío predictivo</li>
-                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-nexo-cyan text-xs"></i> Alertas fúngicas Mildiu/Botritis</li>
-                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-nexo-cyan text-xs"></i> Ventana óptima de ventilación</li>
-              </ul>
+          <article class="group bg-brand-slate rounded-2xl p-7 hover:border-brand-green/30 hover:shadow-brand hover:scale-102 border border-transparent transition-all duration-300">
+            <div class="w-12 h-12 rounded-xl bg-brand-green flex items-center justify-center mb-5 shadow-brand">
+              <i class="fa-solid fa-prescription-bottle text-xl text-white"></i>
             </div>
+            <h3 class="font-bold text-brand-deep mb-2">Vademécum MAPA</h3>
+            <p class="text-sm text-brand-light-text leading-relaxed">Productos fitosanitarios vigentes cruzados con plaga y cultivo. Cálculo de dosis por m².</p>
           </article>
-
-          <!-- NEXO SIEX -->
-          <article class="group relative bg-nexo-deep rounded-2xl p-8 border border-nexo-amber/20 hover:border-nexo-amber/50 hover:shadow-lg hover:scale-102 transition-all duration-300 ease-in-out overflow-hidden md:col-span-2 lg:col-span-1">
-            <div class="absolute -top-10 -right-10 w-40 h-40 bg-nexo-amber/5 rounded-full group-hover:scale-150 transition-transform duration-500"></div>
-            <div class="relative">
-              <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-nexo-amber to-yellow-600 flex items-center justify-center mb-6">
-                <i class="fa-solid fa-shield-halved text-2xl text-nexo-deep"></i>
-              </div>
-              <h3 class="text-xl font-bold text-white mb-1">NEXO SIEX</h3>
-              <p class="text-xs font-semibold text-nexo-amber uppercase tracking-wider mb-4">Enterprise Legal</p>
-              <p class="text-nexo-light-text text-sm leading-relaxed mb-6">Motor B2B de cumplimiento legal con auto-compilación, validación pericial y exportación ministerial.</p>
-              <ul class="space-y-2 text-sm text-white/80">
-                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-nexo-amber text-xs"></i> Cuaderno auto-compilado por eventos</li>
-                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-nexo-amber text-xs"></i> Justificación climática automatizada</li>
-                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-nexo-amber text-xs"></i> Firma digital cooperativa</li>
-                <li class="flex items-center gap-2"><i class="fa-solid fa-check text-nexo-amber text-xs"></i> Exportador JSON Schema MAPA</li>
-              </ul>
+          <article class="group bg-brand-slate rounded-2xl p-7 hover:border-brand-cyan/30 hover:shadow-brand-cyan hover:scale-102 border border-transparent transition-all duration-300">
+            <div class="w-12 h-12 rounded-xl bg-brand-cyan flex items-center justify-center mb-5">
+              <i class="fa-solid fa-fire-flame-curved text-xl text-white"></i>
             </div>
+            <h3 class="font-bold text-brand-deep mb-2">Mapa comarcal</h3>
+            <p class="text-sm text-brand-light-text leading-relaxed">Heatmap anónimo SIGPAC. Privacidad de parcela con utilidad colectiva.</p>
+          </article>
+          <article class="group bg-brand-deep rounded-2xl p-7 hover:scale-102 border border-brand-cyan/20 transition-all duration-300">
+            <div class="w-12 h-12 rounded-xl bg-brand-cyan flex items-center justify-center mb-5">
+              <i class="fa-solid fa-user-shield text-xl text-white"></i>
+            </div>
+            <h3 class="font-bold text-white mb-2">Panel B2B</h3>
+            <p class="text-sm text-brand-light-text leading-relaxed">Peritos validan escaneos, gestionan alertas y supervisan la red de socios.</p>
           </article>
         </div>
       </div>
     </section>
 
-    <!-- ═══════════════════════════════════════════════════════════════════
-         E. BANNER SIEX 2027 — Urgencia legal + cuenta atrás
-         Fondo Warning Amber con borde de énfasis
-         ═══════════════════════════════════════════════════════════════════ -->
-    <section id="siex" class="py-16 lg:py-20 bg-nexo-amber relative overflow-hidden">
+    <!-- E. BANNER PILOTO (sustituye SIEX 2027) -->
+    <section id="piloto" class="py-16 lg:py-20 bg-brand-amber relative overflow-hidden">
       <div class="absolute inset-0 opacity-10" style="background-image: repeating-linear-gradient(45deg, #0B192C 0, #0B192C 1px, transparent 0, transparent 50%); background-size: 12px 12px;"></div>
       <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="grid lg:grid-cols-2 gap-10 items-center">
           <div>
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-nexo-deep/10 text-nexo-deep text-xs font-bold uppercase mb-4">
-              <i class="fa-solid fa-triangle-exclamation"></i> Alerta normativa
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-brand-deep/10 text-brand-deep text-xs font-bold uppercase mb-4">
+              <i class="fa-solid fa-bullhorn"></i> Piloto activo
             </div>
-            <h2 class="text-2xl lg:text-3xl font-bold text-nexo-deep leading-tight mb-4">
-              OBLIGATORIEDAD SIEX 2027
+            <h2 class="text-2xl lg:text-3xl font-bold text-brand-deep leading-tight mb-4">
+              Únete al piloto del Poniente Almeriense
             </h2>
-            <p class="text-nexo-deep/80 text-base lg:text-lg leading-relaxed">
-              A partir del <strong>1 de enero de 2027</strong>, el cuaderno digital es obligatorio por ley.
-              No colapses administrativamente a tus peritos de cooperativa.
-              <strong>NEXO Agro</strong> automatiza la exportación oficial en un solo clic.
+            <p class="text-brand-deep/80 text-base lg:text-lg leading-relaxed">
+              Buscamos <strong>agricultores, técnicos y cooperativas</strong> del Poniente para probar AgroPlaga AI
+              en condiciones reales de invernadero. Acceso gratuito durante la fase piloto con soporte directo del equipo.
             </p>
           </div>
-
-          <!-- Cuenta atrás elegante hacia 01/01/2027 -->
-          <div class="bg-nexo-deep rounded-2xl p-6 lg:p-8 shadow-2xl border-2 border-nexo-deep">
-            <p class="text-nexo-cyan text-sm font-semibold uppercase tracking-wider text-center mb-4">Tiempo restante para el cumplimiento</p>
-            <div id="countdown" class="grid grid-cols-4 gap-3 sm:gap-4 text-center">
-              <div class="countdown-digit rounded-xl py-4 px-2 border border-white/10">
-                <span id="cd-days" class="block text-3xl lg:text-4xl font-bold text-white tabular-nums">---</span>
-                <span class="text-xs text-nexo-light-text uppercase mt-1 block">Días</span>
-              </div>
-              <div class="countdown-digit rounded-xl py-4 px-2 border border-white/10">
-                <span id="cd-hours" class="block text-3xl lg:text-4xl font-bold text-white tabular-nums">--</span>
-                <span class="text-xs text-nexo-light-text uppercase mt-1 block">Horas</span>
-              </div>
-              <div class="countdown-digit rounded-xl py-4 px-2 border border-white/10">
-                <span id="cd-minutes" class="block text-3xl lg:text-4xl font-bold text-white tabular-nums">--</span>
-                <span class="text-xs text-nexo-light-text uppercase mt-1 block">Min</span>
-              </div>
-              <div class="countdown-digit rounded-xl py-4 px-2 border border-white/10">
-                <span id="cd-seconds" class="block text-3xl lg:text-4xl font-bold text-nexo-amber tabular-nums">--</span>
-                <span class="text-xs text-nexo-light-text uppercase mt-1 block">Seg</span>
-              </div>
-            </div>
-            <a href="#demo" class="mt-6 flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-nexo-green text-white font-semibold hover:bg-emerald-500 transition-all duration-300 ease-in-out">
-              Preparar mi cooperativa ahora
-              <i class="fa-solid fa-arrow-right"></i>
+          <div class="bg-brand-deep rounded-2xl p-6 lg:p-8 shadow-2xl">
+            <p class="text-brand-cyan text-sm font-semibold uppercase tracking-wider text-center mb-6">Qué obtienes al apuntarte</p>
+            <ul class="space-y-4 text-white/90 text-sm">
+              <li class="flex items-center gap-3"><i class="fa-solid fa-check-circle text-brand-green"></i> APK Android con IA offline configurada</li>
+              <li class="flex items-center gap-3"><i class="fa-solid fa-check-circle text-brand-green"></i> Acceso al panel web para tu técnico</li>
+              <li class="flex items-center gap-3"><i class="fa-solid fa-check-circle text-brand-green"></i> Formación express de 30 minutos</li>
+              <li class="flex items-center gap-3"><i class="fa-solid fa-check-circle text-brand-green"></i> Canal directo de feedback al desarrollo</li>
+            </ul>
+            <a href="#contacto" class="mt-6 flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-brand-green text-white font-semibold hover:bg-emerald-500 transition-all duration-300">
+              Quiero unirme al piloto <i class="fa-solid fa-arrow-right"></i>
             </a>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ═══════════════════════════════════════════════════════════════════
-         Precios / Modelo freemium (teaser antes del formulario)
-         ═══════════════════════════════════════════════════════════════════ -->
-    <section id="precios" class="py-20 bg-nexo-slate">
+    <!-- Precios simplificados piloto -->
+    <section id="precios" class="py-20 bg-brand-slate">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
-          <h2 class="text-3xl font-bold text-nexo-deep mb-3">Modelo de licenciamiento</h2>
-          <p class="text-nexo-light-text">Freemium B2C para agricultores · Enterprise B2B para cooperativas y SATs</p>
+          <h2 class="text-3xl font-bold text-brand-deep mb-3">Acceso durante el piloto</h2>
+          <p class="text-brand-light-text">Sin coste para participantes seleccionados del Poniente Almeriense</p>
         </div>
-        <div class="grid md:grid-cols-3 gap-6">
-          <div class="bg-white rounded-2xl p-8 border border-gray-100 hover:shadow-lg transition-all duration-300">
-            <p class="text-sm font-semibold text-nexo-green uppercase">Agricultor Free</p>
-            <p class="text-3xl font-bold text-nexo-deep mt-2">0€</p>
-            <p class="text-sm text-nexo-light-text mt-1">Scanner Field base</p>
-            <ul class="mt-6 space-y-2 text-sm text-nexo-dark-text">
-              <li><i class="fa-solid fa-check text-nexo-green mr-2"></i>IA offline básica</li>
-              <li><i class="fa-solid fa-check text-nexo-green mr-2"></i>Comunidad SIGPAC</li>
+        <div class="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+          <div class="bg-white rounded-2xl p-8 border-2 border-brand-green shadow-brand">
+            <p class="text-sm font-semibold text-brand-green uppercase">Agricultor</p>
+            <p class="text-3xl font-bold text-brand-deep mt-2">Gratis<span class="text-base font-normal text-brand-light-text"> en piloto</span></p>
+            <ul class="mt-6 space-y-2 text-sm text-brand-dark-text">
+              <li><i class="fa-solid fa-check text-brand-green mr-2"></i>PlagaScan offline</li>
+              <li><i class="fa-solid fa-check text-brand-green mr-2"></i>Vademécum MAPA + dosis</li>
+              <li><i class="fa-solid fa-check text-brand-green mr-2"></i>Mapa comarcal SIGPAC</li>
+              <li><i class="fa-solid fa-check text-brand-green mr-2"></i>Registro de tratamientos</li>
             </ul>
           </div>
-          <div class="bg-white rounded-2xl p-8 border-2 border-nexo-green shadow-nexo hover:scale-102 transition-all duration-300 relative">
-            <span class="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-0.5 bg-nexo-green text-white text-xs font-bold rounded-full">Popular</span>
-            <p class="text-sm font-semibold text-nexo-cyan uppercase">Agricultor Premium</p>
-            <p class="text-3xl font-bold text-nexo-deep mt-2">9,99€<span class="text-base font-normal text-nexo-light-text">/mes</span></p>
-            <p class="text-sm text-nexo-light-text mt-1">Field + Climate + SIEX lectura</p>
-            <ul class="mt-6 space-y-2 text-sm text-nexo-dark-text">
-              <li><i class="fa-solid fa-check text-nexo-green mr-2"></i>IA climática predictiva</li>
-              <li><i class="fa-solid fa-check text-nexo-green mr-2"></i>Historial SIEX</li>
-              <li><i class="fa-solid fa-check text-nexo-green mr-2"></i>7 días de prueba gratis</li>
-            </ul>
-          </div>
-          <div class="bg-nexo-deep rounded-2xl p-8 border border-nexo-cyan/20 hover:shadow-nexo-cyan hover:scale-102 transition-all duration-300">
-            <p class="text-sm font-semibold text-nexo-amber uppercase">Cooperativa Enterprise</p>
-            <p class="text-3xl font-bold text-white mt-2">A medida</p>
-            <p class="text-sm text-nexo-light-text mt-1">Licencia por número de socios</p>
+          <div class="bg-brand-deep rounded-2xl p-8 border border-brand-cyan/20">
+            <p class="text-sm font-semibold text-brand-cyan uppercase">Cooperativa / SAT</p>
+            <p class="text-3xl font-bold text-white mt-2">Piloto B2B</p>
             <ul class="mt-6 space-y-2 text-sm text-white/80">
-              <li><i class="fa-solid fa-check text-nexo-cyan mr-2"></i>Panel pericial completo</li>
-              <li><i class="fa-solid fa-check text-nexo-cyan mr-2"></i>Exportación SIEX masiva</li>
-              <li><i class="fa-solid fa-check text-nexo-cyan mr-2"></i>Firma digital cooperativa</li>
+              <li><i class="fa-solid fa-check text-brand-cyan mr-2"></i>Panel de validación pericial</li>
+              <li><i class="fa-solid fa-check text-brand-cyan mr-2"></i>Dashboard de alertas comarcales</li>
+              <li><i class="fa-solid fa-check text-brand-cyan mr-2"></i>Códigos de invitación para socios</li>
+              <li><i class="fa-solid fa-check text-brand-cyan mr-2"></i>Soporte prioritario piloto</li>
             </ul>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- ═══════════════════════════════════════════════════════════════════
-         F. FORMULARIO B2B — Captación cooperativas / SATs / peritos
-         Sección fondo Deep Blue con formulario estilizado
-         ═══════════════════════════════════════════════════════════════════ -->
-    <section id="demo" class="py-20 lg:py-28 bg-nexo-deep relative overflow-hidden">
+    <!-- F. FORMULARIO -->
+    <section id="contacto" class="py-20 lg:py-28 bg-brand-deep relative overflow-hidden">
       <div class="absolute inset-0 opacity-20" style="background: radial-gradient(ellipse at 70% 30%, rgba(0,210,196,0.2), transparent 60%);"></div>
       <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-start">
+        <div class="grid lg:grid-cols-2 gap-12 items-start">
           <div>
-            <h2 class="text-3xl lg:text-4xl font-bold text-white tracking-tight mb-4">Programa una presentación técnica</h2>
-            <p class="text-nexo-light-text text-lg leading-relaxed mb-8">
-              Cuéntanos sobre tu cooperativa, SAT o equipo pericial. Te mostraremos el flujo completo:
-              desde el escaneo offline del agricultor hasta la exportación SIEX firmada por tu perito.
+            <h2 class="text-3xl lg:text-4xl font-bold text-white tracking-tight mb-4">Solicita acceso al piloto</h2>
+            <p class="text-brand-light-text text-lg leading-relaxed mb-8">
+              Cuéntanos si eres agricultor, técnico o cooperativa del Poniente. Te respondemos en 24–48 h
+              con instrucciones de instalación y, si aplica, acceso al panel.
             </p>
-            <div class="space-y-4">
-              <div class="flex items-start gap-4">
-                <div class="w-10 h-10 rounded-lg bg-nexo-green/20 flex items-center justify-center shrink-0">
-                  <i class="fa-solid fa-video text-nexo-green"></i>
-                </div>
-                <div>
-                  <p class="text-white font-semibold">Demo personalizada 45 min</p>
-                  <p class="text-sm text-nexo-light-text">Panel web + app móvil en entorno piloto</p>
-                </div>
-              </div>
-              <div class="flex items-start gap-4">
-                <div class="w-10 h-10 rounded-lg bg-nexo-cyan/20 flex items-center justify-center shrink-0">
-                  <i class="fa-solid fa-file-contract text-nexo-cyan"></i>
-                </div>
-                <div>
-                  <p class="text-white font-semibold">Propuesta SIEX 2027</p>
-                  <p class="text-sm text-nexo-light-text">Plan de migración y formación peritos</p>
-                </div>
-              </div>
-            </div>
+            <p class="text-white font-semibold mb-2">agroplaga-ai.farm</p>
+            <p class="text-sm text-brand-light-text">Panel técnicos: <a href="/panel/" class="text-brand-cyan hover:underline">agroplaga-ai.farm/panel/</a></p>
           </div>
 
-          <!-- Formulario de captación -->
-          <form id="b2b-form" class="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10 shadow-2xl">
+          <form id="pilot-form" class="bg-white/5 backdrop-blur-sm rounded-2xl p-8 border border-white/10 shadow-2xl">
             <div class="space-y-5">
               <div>
-                <label for="nombre" class="block text-sm font-medium text-white mb-1.5">Nombre del perito / gerente</label>
+                <label for="nombre" class="block text-sm font-medium text-white mb-1.5">Nombre completo</label>
                 <input type="text" id="nombre" name="nombre" required placeholder="Ej. María García López"
-                  class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-nexo-light-text focus:outline-none focus:ring-2 focus:ring-nexo-green focus:border-transparent transition-all duration-300">
+                  class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-brand-light-text focus:outline-none focus:ring-2 focus:ring-brand-green transition-all duration-300">
               </div>
               <div>
-                <label for="cooperativa" class="block text-sm font-medium text-white mb-1.5">Nombre de la Cooperativa</label>
-                <input type="text" id="cooperativa" name="cooperativa" required placeholder="Ej. Coop. Agrícola Poniente Sur"
-                  class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-nexo-light-text focus:outline-none focus:ring-2 focus:ring-nexo-green focus:border-transparent transition-all duration-300">
+                <label for="organizacion" class="block text-sm font-medium text-white mb-1.5">Finca / Cooperativa / SAT</label>
+                <input type="text" id="organizacion" name="organizacion" required placeholder="Ej. Finca Los Claveles"
+                  class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-brand-light-text focus:outline-none focus:ring-2 focus:ring-brand-green transition-all duration-300">
               </div>
               <div class="grid sm:grid-cols-2 gap-5">
                 <div>
-                  <label for="socios" class="block text-sm font-medium text-white mb-1.5">Nº estimado de socios</label>
-                  <input type="number" id="socios" name="socios" min="1" required placeholder="150"
-                    class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-nexo-light-text focus:outline-none focus:ring-2 focus:ring-nexo-green focus:border-transparent transition-all duration-300">
+                  <label for="telefono" class="block text-sm font-medium text-white mb-1.5">Teléfono</label>
+                  <input type="tel" id="telefono" name="telefono" required placeholder="+34 600 000 000"
+                    class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-brand-light-text focus:outline-none focus:ring-2 focus:ring-brand-green transition-all duration-300">
                 </div>
                 <div>
-                  <label for="telefono" class="block text-sm font-medium text-white mb-1.5">Teléfono de contacto</label>
-                  <input type="tel" id="telefono" name="telefono" required placeholder="+34 600 000 000"
-                    class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-nexo-light-text focus:outline-none focus:ring-2 focus:ring-nexo-green focus:border-transparent transition-all duration-300">
+                  <label for="perfil" class="block text-sm font-medium text-white mb-1.5">Soy</label>
+                  <select id="perfil" name="perfil" required
+                    class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-brand-green transition-all duration-300">
+                    <option value="" disabled selected class="text-brand-dark-text">Selecciona</option>
+                    <option value="agricultor" class="text-brand-dark-text">Agricultor</option>
+                    <option value="tecnico" class="text-brand-dark-text">Técnico / perito</option>
+                    <option value="cooperativa" class="text-brand-dark-text">Cooperativa</option>
+                  </select>
                 </div>
               </div>
               <div>
                 <label for="interes" class="block text-sm font-medium text-white mb-1.5">Interés principal</label>
                 <select id="interes" name="interes" required
-                  class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-nexo-green focus:border-transparent transition-all duration-300">
-                  <option value="" disabled selected class="text-nexo-dark-text">Selecciona un módulo</option>
-                  <option value="siex" class="text-nexo-dark-text">SIEX — Cuaderno digital y exportación</option>
-                  <option value="field" class="text-nexo-dark-text">Control de plagas IA (NEXO Field)</option>
-                  <option value="climate" class="text-nexo-dark-text">IoT microclima (NEXO Climate)</option>
+                  class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white focus:outline-none focus:ring-2 focus:ring-brand-green transition-all duration-300">
+                  <option value="" disabled selected class="text-brand-dark-text">Selecciona</option>
+                  <option value="scan" class="text-brand-dark-text">Scanner IA offline</option>
+                  <option value="mapa" class="text-brand-dark-text">Mapa comarcal / alertas</option>
+                  <option value="panel" class="text-brand-dark-text">Panel cooperativa</option>
+                  <option value="mapa-dosis" class="text-brand-dark-text">Vademécum MAPA y dosis</option>
                 </select>
               </div>
               <button type="submit"
-                class="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-nexo-green text-white font-semibold text-base shadow-nexo hover:bg-emerald-500 hover:scale-102 transition-all duration-300 ease-in-out">
-                <i class="fa-solid fa-calendar-check"></i>
-                Programar Presentación Técnica
+                class="w-full flex items-center justify-center gap-2 py-4 rounded-xl bg-brand-green text-white font-semibold shadow-brand hover:bg-emerald-500 hover:scale-102 transition-all duration-300">
+                <i class="fa-solid fa-paper-plane"></i>
+                Enviar solicitud de piloto
               </button>
             </div>
-            <p id="form-success" class="hidden mt-4 text-center text-nexo-cyan text-sm font-medium">
-              <i class="fa-solid fa-circle-check mr-1"></i> Solicitud recibida. Te contactaremos en 24–48 h.
+            <p id="form-success" class="hidden mt-4 text-center text-brand-cyan text-sm font-medium">
+              <i class="fa-solid fa-circle-check mr-1"></i> Solicitud recibida. Te contactaremos pronto.
             </p>
           </form>
         </div>
@@ -580,71 +377,55 @@
     </section>
   </main>
 
-  <!-- Footer corporativo -->
   <footer class="bg-[#071018] py-12 border-t border-white/5">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex flex-col md:flex-row justify-between items-center gap-6">
         <div class="flex items-center gap-2">
-          <span class="text-lg font-extrabold text-white">NEXO</span>
-          <span class="text-lg font-light text-nexo-green">Agro</span>
+          <span class="text-lg font-extrabold text-white">AgroPlaga</span>
+          <span class="text-lg font-light text-brand-green">AI</span>
         </div>
-        <p class="text-sm text-nexo-light-text text-center">
-          Ecosistema de Inteligencia Agrícola Unificado · Poniente Almeriense · © 2026 Valentín Ruiz León
+        <p class="text-sm text-brand-light-text text-center">
+          Sanidad vegetal inteligente · Poniente Almeriense · © 2026 Valentín Ruiz León
         </p>
         <div class="flex gap-4">
-          <a href="/panel/" class="text-sm text-nexo-cyan hover:text-white transition-colors duration-300">Panel técnicos</a>
-          <a href="#demo" class="text-sm text-nexo-cyan hover:text-white transition-colors duration-300">Contacto B2B</a>
+          <a href="/panel/" class="text-sm text-brand-cyan hover:text-white transition-colors duration-300">Panel técnicos</a>
+          <a href="#contacto" class="text-sm text-brand-cyan hover:text-white transition-colors duration-300">Contacto</a>
         </div>
       </div>
     </div>
   </footer>
 
-  <!-- ═══════════════════════════════════════════════════════════════════
-       JavaScript vanilla — menú móvil, tabs perfiles, countdown, form
-       ═══════════════════════════════════════════════════════════════════ -->
   <script>
     (function () {
       'use strict';
-
-      /* ── Header scroll: fondo sólido al desplazarse ── */
       const header = document.getElementById('site-header');
-      const logoNexo = document.getElementById('logo-nexo');
+      const logoMain = document.getElementById('logo-main');
       const navLinks = document.querySelectorAll('.nav-link');
 
       function updateHeader() {
         const scrolled = window.scrollY > 40;
-        header.classList.toggle('bg-nexo-deep/95', scrolled);
+        header.classList.toggle('bg-brand-deep/95', scrolled);
         header.classList.toggle('backdrop-blur-lg', scrolled);
         header.classList.toggle('shadow-lg', scrolled);
-        header.classList.toggle('border-b', scrolled);
-        header.classList.toggle('border-white/5', scrolled);
-
-        /* Logo contrast en secciones claras: detectar si hero visible */
-        const heroBottom = document.getElementById('inicio').offsetHeight;
-        const onDark = window.scrollY < heroBottom - 80;
-        logoNexo.classList.toggle('text-white', onDark);
-        logoNexo.classList.toggle('text-nexo-deep', !onDark);
+        const onDark = window.scrollY < document.getElementById('inicio').offsetHeight - 80;
+        logoMain.classList.toggle('text-white', onDark);
+        logoMain.classList.toggle('text-brand-deep', !onDark);
         navLinks.forEach(function (link) {
           link.classList.toggle('text-white/90', onDark);
-          link.classList.toggle('text-nexo-dark-text', !onDark);
+          link.classList.toggle('text-brand-dark-text', !onDark);
         });
       }
       window.addEventListener('scroll', updateHeader, { passive: true });
       updateHeader();
 
-      /* ── Menú móvil colapsable ── */
       const menuBtn = document.getElementById('mobile-menu-btn');
       const mobileMenu = document.getElementById('mobile-menu');
       let menuOpen = false;
-
       menuBtn.addEventListener('click', function () {
         menuOpen = !menuOpen;
         mobileMenu.classList.toggle('hidden', !menuOpen);
-        menuBtn.innerHTML = menuOpen
-          ? '<i class="fa-solid fa-xmark text-xl"></i>'
-          : '<i class="fa-solid fa-bars text-xl"></i>';
+        menuBtn.innerHTML = menuOpen ? '<i class="fa-solid fa-xmark text-xl"></i>' : '<i class="fa-solid fa-bars text-xl"></i>';
       });
-
       document.querySelectorAll('.mobile-nav-link').forEach(function (link) {
         link.addEventListener('click', function () {
           menuOpen = false;
@@ -653,89 +434,43 @@
         });
       });
 
-      /* ── Selector de perfiles (tabs + tarjetas) ── */
       const profileTabs = document.querySelectorAll('.profile-tab');
       const profileCards = document.querySelectorAll('[data-profile-card]');
-
       function setProfile(profile) {
         profileTabs.forEach(function (tab) {
           const active = tab.dataset.profile === profile;
-          tab.classList.toggle('bg-nexo-green', active);
+          tab.classList.toggle('bg-brand-green', active);
           tab.classList.toggle('text-white', active);
-          tab.classList.toggle('shadow-nexo', active);
+          tab.classList.toggle('shadow-brand', active);
           tab.classList.toggle('bg-white', !active);
-          tab.classList.toggle('text-nexo-dark-text', !active);
+          tab.classList.toggle('text-brand-dark-text', !active);
           tab.classList.toggle('border', !active);
           tab.classList.toggle('border-gray-200', !active);
         });
         profileCards.forEach(function (card) {
           const active = card.dataset.profileCard === profile;
           card.classList.toggle('ring-2', active);
-          card.classList.toggle('ring-nexo-green', active && profile === 'agricultor');
-          card.classList.toggle('ring-nexo-cyan', active && profile === 'cooperativa');
+          card.classList.toggle('ring-brand-green', active && profile === 'agricultor');
+          card.classList.toggle('ring-brand-cyan', active && profile === 'cooperativa');
           card.classList.toggle('scale-102', active);
         });
       }
+      profileTabs.forEach(function (tab) { tab.addEventListener('click', function () { setProfile(tab.dataset.profile); }); });
+      profileCards.forEach(function (card) { card.addEventListener('click', function () { setProfile(card.dataset.profileCard); }); });
 
-      profileTabs.forEach(function (tab) {
-        tab.addEventListener('click', function () {
-          setProfile(tab.dataset.profile);
-        });
-      });
-
-      profileCards.forEach(function (card) {
-        card.addEventListener('click', function () {
-          setProfile(card.dataset.profileCard);
-        });
-      });
-
-      /* ── Cuenta atrás SIEX 2027 (1 enero 2027 00:00:00 CET) ── */
-      const target = new Date('2027-01-01T00:00:00+01:00').getTime();
-      const elDays = document.getElementById('cd-days');
-      const elHours = document.getElementById('cd-hours');
-      const elMinutes = document.getElementById('cd-minutes');
-      const elSeconds = document.getElementById('cd-seconds');
-
-      function pad(n) { return String(n).padStart(2, '0'); }
-
-      function tickCountdown() {
-        const now = Date.now();
-        let diff = Math.max(0, target - now);
-        const days = Math.floor(diff / 86400000);
-        diff -= days * 86400000;
-        const hours = Math.floor(diff / 3600000);
-        diff -= hours * 3600000;
-        const minutes = Math.floor(diff / 60000);
-        diff -= minutes * 60000;
-        const seconds = Math.floor(diff / 1000);
-        elDays.textContent = days;
-        elHours.textContent = pad(hours);
-        elMinutes.textContent = pad(minutes);
-        elSeconds.textContent = pad(seconds);
-      }
-      tickCountdown();
-      setInterval(tickCountdown, 1000);
-
-      /* ── Formulario B2B — captura local (sin backend) ── */
-      document.getElementById('b2b-form').addEventListener('submit', function (e) {
+      document.getElementById('pilot-form').addEventListener('submit', function (e) {
         e.preventDefault();
-        const data = Object.fromEntries(new FormData(e.target).entries());
-        console.info('[NEXO B2B Lead]', data);
+        console.info('[AgroPlaga Piloto]', Object.fromEntries(new FormData(e.target).entries()));
         document.getElementById('form-success').classList.remove('hidden');
         e.target.querySelector('button[type="submit"]').disabled = true;
-        e.target.querySelector('button[type="submit"]').classList.add('opacity-60', 'cursor-not-allowed');
       });
 
-      /* ── Scroll suave para anclas internas ── */
       document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {
         anchor.addEventListener('click', function (e) {
           const id = this.getAttribute('href');
           if (id === '#') return;
-          const targetEl = document.querySelector(id);
-          if (targetEl) {
-            e.preventDefault();
-            targetEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }
+          const el = document.querySelector(id);
+          if (el) { e.preventDefault(); el.scrollIntoView({ behavior: 'smooth', block: 'start' }); }
         });
       });
     })();
