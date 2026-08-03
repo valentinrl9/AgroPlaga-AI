@@ -1,0 +1,13 @@
+{
+  "label_train": "mildiu",
+  "scientific": "Phytophthora infestans / Peronospora spp.",
+  "eppo_code": "PHYTIN",
+  "eppo_photos_url": "https://gd.eppo.int/taxon/PHYTIN/photos",
+  "subfolders": {
+    "cromo": "Coloca aquí fotos EPPO filtradas por tag",
+    "dano_necrosis_hoja": "Coloca aquí fotos EPPO filtradas por tag",
+    "dano_tallo": "Coloca aquí fotos EPPO filtradas por tag",
+    "dano_fruto": "Coloca aquí fotos EPPO filtradas por tag"
+  },
+  "download_notes": "Solo uso educativo EPPO. Registrar fuente en manifest.csv."
+}

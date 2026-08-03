@@ -1,0 +1,12 @@
+{
+  "label_train": "fusarium",
+  "scientific": "Fusarium oxysporum",
+  "eppo_code": "FUSAOX",
+  "eppo_photos_url": "https://gd.eppo.int/taxon/FUSAOX/photos",
+  "subfolders": {
+    "cromo": "Coloca aquí fotos EPPO filtradas por tag",
+    "dano_marchitez": "Coloca aquí fotos EPPO filtradas por tag",
+    "dano_vascular": "Coloca aquí fotos EPPO filtradas por tag"
+  },
+  "download_notes": "Solo uso educativo EPPO. Registrar fuente en manifest.csv."
+}

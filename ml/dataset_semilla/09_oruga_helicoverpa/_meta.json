@@ -1,0 +1,13 @@
+{
+  "label_train": "oruga",
+  "scientific": "Helicoverpa armigera",
+  "eppo_code": "HELIAR",
+  "eppo_photos_url": "https://gd.eppo.int/taxon/HELIAR/photos",
+  "subfolders": {
+    "cromo": "Coloca aquí fotos EPPO filtradas por tag",
+    "larva": "Coloca aquí fotos EPPO filtradas por tag",
+    "dano_fruto": "Coloca aquí fotos EPPO filtradas por tag"
+  },
+  "download_notes": "Solo uso educativo EPPO. Registrar fuente en manifest.csv.",
+  "notes": "Se fusiona con 'oruga' en entreno v1; útil para diversidad sintética"
+}

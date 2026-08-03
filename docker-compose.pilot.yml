@@ -1,6 +1,3 @@
-# Piloto 24/7 — VPS con HTTPS (Caddy + Let's Encrypt)
-# Uso: docker compose -f docker-compose.pilot.yml --env-file deploy/pilot.env up -d --build
-
 services:
   db:
     image: postgis/postgis:16-3.4
@@ -23,6 +20,8 @@ services:
     restart: unless-stopped
     volumes:
       - scan_images:/data/scans
+      - climate_data:/data/climate
+      - mapa_data:/data/mapa
     environment:
       DATABASE_URL: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       SECRET_KEY: ${SECRET_KEY}
@@ -39,6 +38,13 @@ services:
       CORS_ORIGINS: ${CORS_ORIGINS:-}
       CORS_ORIGIN_REGEX: ${CORS_ORIGIN_REGEX:-}
       SCAN_IMAGES_DIR: /data/scans
+      CLIMATE_DATA_DIR: /data/climate
+      MAPA_DATA_DIR: /data/mapa
+      CLIMATE_PREVIEW_OPEN: ${CLIMATE_PREVIEW_OPEN:-false}
+      SIEX_PREVIEW_OPEN: ${SIEX_PREVIEW_OPEN:-false}
+      OPENMETEO_LAT: ${OPENMETEO_LAT:-36.77}
+      OPENMETEO_LON: ${OPENMETEO_LON:-2.81}
+      DEMO_SEED_USERS: ${DEMO_SEED_USERS:-false}
       PYTHONUNBUFFERED: "1"
     depends_on:
       db:
@@ -64,5 +70,7 @@ services:
 volumes:
   postgres_data:
   scan_images:
+  climate_data:
+  mapa_data:
   caddy_data:
   caddy_config:

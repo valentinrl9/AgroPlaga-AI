@@ -1,0 +1,13 @@
+{
+  "label_train": "esclerotinia",
+  "scientific": "Sclerotinia sclerotiorum",
+  "eppo_code": "SCLESC",
+  "eppo_photos_url": "https://gd.eppo.int/taxon/SCLESC/photos",
+  "subfolders": {
+    "cromo": "Coloca aquí fotos EPPO filtradas por tag",
+    "dano_tallo_algodon": "Coloca aquí fotos EPPO filtradas por tag",
+    "dano_moho_blanco": "Coloca aquí fotos EPPO filtradas por tag"
+  },
+  "download_notes": "Solo uso educativo EPPO. Registrar fuente en manifest.csv.",
+  "notes": "Clase nueva candidata v2"
+}

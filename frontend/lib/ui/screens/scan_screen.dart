@@ -185,7 +185,7 @@ class _ScanScreenState extends State<ScanScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("PlagaScan")),
+      appBar: AppBar(title: const Text("PlagaScan — orientación IA")),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(

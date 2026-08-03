@@ -1,0 +1,12 @@
+{
+  "label_train": "oruga",
+  "scientific": "Chrysodeixis chalcites",
+  "eppo_code": "CHRCHL",
+  "eppo_photos_url": "https://gd.eppo.int/taxon/CHRCHL/photos",
+  "subfolders": {
+    "cromo": "Coloca aquí fotos EPPO filtradas por tag",
+    "larva": "Coloca aquí fotos EPPO filtradas por tag",
+    "dano_defoliacion": "Coloca aquí fotos EPPO filtradas por tag"
+  },
+  "download_notes": "Solo uso educativo EPPO. Registrar fuente en manifest.csv."
+}

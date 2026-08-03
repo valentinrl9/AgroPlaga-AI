@@ -1,0 +1,12 @@
+{
+  "label_train": "clorosis viral",
+  "scientific": "Tomato yellow leaf curl virus",
+  "eppo_code": "TYLCV0",
+  "eppo_photos_url": "https://gd.eppo.int/taxon/TYLCV0/photos",
+  "subfolders": {
+    "cromo": "Coloca aquí fotos EPPO filtradas por tag",
+    "dano_sintoma_foliar": "Coloca aquí fotos EPPO filtradas por tag",
+    "dano_planta_entera": "Coloca aquí fotos EPPO filtradas por tag"
+  },
+  "download_notes": "Solo uso educativo EPPO. Registrar fuente en manifest.csv."
+}

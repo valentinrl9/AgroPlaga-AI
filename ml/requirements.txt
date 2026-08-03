@@ -3,3 +3,7 @@ tensorflow-datasets>=4.9.0
 tensorflow-metadata>=1.17,<1.18
 importlib_resources>=6.0
 numpy>=1.24.0
+certifi>=2024.0.0
+datasets>=2.18.0
+huggingface_hub>=0.20.0
+Pillow>=10.0.0

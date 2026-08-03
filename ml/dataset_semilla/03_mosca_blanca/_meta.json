@@ -1,0 +1,14 @@
+{
+  "label_train": "mosca blanca",
+  "scientific": "Bemisia tabaci",
+  "eppo_code": "BEMITA",
+  "eppo_photos_url": "https://gd.eppo.int/taxon/BEMITA/photos",
+  "subfolders": {
+    "cromo": "Coloca aquí fotos EPPO filtradas por tag",
+    "adulto": "Coloca aquí fotos EPPO filtradas por tag",
+    "ninfa_pupa": "Coloca aquí fotos EPPO filtradas por tag",
+    "dano_melaza": "Coloca aquí fotos EPPO filtradas por tag",
+    "dano_amarilleo": "Coloca aquí fotos EPPO filtradas por tag"
+  },
+  "download_notes": "Solo uso educativo EPPO. Registrar fuente en manifest.csv."
+}

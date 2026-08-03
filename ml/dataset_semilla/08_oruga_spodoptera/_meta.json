@@ -1,0 +1,15 @@
+{
+  "label_train": "oruga",
+  "scientific": "Spodoptera exigua",
+  "eppo_code": "SPODEX",
+  "eppo_photos_url": "https://gd.eppo.int/taxon/SPODEX/photos",
+  "subfolders": {
+    "cromo": "Coloca aquí fotos EPPO filtradas por tag",
+    "larva": "Coloca aquí fotos EPPO filtradas por tag",
+    "adulto": "Coloca aquí fotos EPPO filtradas por tag",
+    "dano_defoliacion": "Coloca aquí fotos EPPO filtradas por tag",
+    "dano_fruto": "Coloca aquí fotos EPPO filtradas por tag"
+  },
+  "download_notes": "Solo uso educativo EPPO. Registrar fuente en manifest.csv.",
+  "notes": "Etiqueta principal 'oruga' en catálogo v1.5"
+}

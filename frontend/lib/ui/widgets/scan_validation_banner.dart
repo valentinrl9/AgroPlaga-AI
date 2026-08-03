@@ -34,10 +34,10 @@ class ScanValidationBanner extends StatelessWidget {
     return _box(
       color: NexoColors.warningAmber,
       icon: Icons.warning_amber_outlined,
-      title: "Plaga no verificada por perito",
+      title: "Sospecha no verificada por perito",
       body: scan.shareWithTech
-          ? "Pendiente de revisión del perito. Puedes registrar tratamiento bajo tu responsabilidad o esperar la validación."
-          : "Solo IA de campo. Comparte la foto con tu perito o acepta responsabilidad al registrar un tratamiento.",
+          ? "Enviado a tu perito. Recibirá un aviso y lo revisará en cuanto pueda."
+          : "Orientación automática (IA). Comparte la foto con tu perito para validación.",
     );
   }
 

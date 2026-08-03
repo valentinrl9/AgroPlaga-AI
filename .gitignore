@@ -42,6 +42,15 @@ app.db
 ml/datasets/
 ml/extra_data/**/*.jpg
 ml/extra_data/**/*.png
+ml/dataset_semilla/**/*.jpg
+ml/dataset_semilla/**/*.jpeg
+ml/dataset_semilla/**/*.png
+ml/dataset_semilla/**/*.webp
+!ml/dataset_semilla/**/.gitkeep
+!ml/dataset_semilla/**/_meta.json
+!ml/dataset_semilla/manifest.csv
+!ml/dataset_semilla/plague_registry.json
+!ml/dataset_semilla/README.md
 
 # Docs temporales de extracción ODT
 docs/_odt_extract/

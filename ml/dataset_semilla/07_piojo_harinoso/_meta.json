@@ -1,0 +1,13 @@
+{
+  "label_train": "piojo harinoso",
+  "scientific": "Planococcus citri",
+  "eppo_code": "PLANCI",
+  "eppo_photos_url": "https://gd.eppo.int/taxon/PLANCI/photos",
+  "subfolders": {
+    "cromo": "Coloca aquí fotos EPPO filtradas por tag",
+    "adulto_ninfa": "Coloca aquí fotos EPPO filtradas por tag",
+    "dano_brote": "Coloca aquí fotos EPPO filtradas por tag",
+    "dano_melaza": "Coloca aquí fotos EPPO filtradas por tag"
+  },
+  "download_notes": "Solo uso educativo EPPO. Registrar fuente en manifest.csv."
+}

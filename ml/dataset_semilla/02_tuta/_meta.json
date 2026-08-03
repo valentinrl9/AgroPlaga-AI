@@ -1,0 +1,16 @@
+{
+  "label_train": "tuta absoluta",
+  "scientific": "Phthorimaea absoluta",
+  "eppo_code": "GNORAB",
+  "eppo_photos_url": "https://gd.eppo.int/taxon/GNORAB/photos",
+  "subfolders": {
+    "cromo": "Coloca aquí fotos EPPO filtradas por tag",
+    "huevo": "Coloca aquí fotos EPPO filtradas por tag",
+    "larva": "Coloca aquí fotos EPPO filtradas por tag",
+    "pupa": "Coloca aquí fotos EPPO filtradas por tag",
+    "adulto": "Coloca aquí fotos EPPO filtradas por tag",
+    "dano_galeria_hoja": "Coloca aquí fotos EPPO filtradas por tag",
+    "dano_fruto": "Coloca aquí fotos EPPO filtradas por tag"
+  },
+  "download_notes": "Solo uso educativo EPPO. Registrar fuente en manifest.csv."
+}

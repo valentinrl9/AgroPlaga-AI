@@ -51,6 +51,21 @@ export interface TechDashboard {
   critical_alerts: CriticalAlert[];
 }
 
+export interface TechNotificationSummary {
+  unread_count: number;
+  pending_scans: number;
+}
+
+export interface TechNotification {
+  id: number;
+  scan_id: number;
+  notification_type: string;
+  title: string;
+  body: string;
+  is_read: boolean;
+  created_at: string;
+}
+
 export interface OutbreakEvent {
   id: number;
   plague: string;

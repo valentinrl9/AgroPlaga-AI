@@ -1,0 +1,138 @@
+{
+  "version": "1.0",
+  "description": "Registro de plagas para dataset_semilla. Mapea carpetas locales → EPPO → etiqueta de entreno.",
+  "eppo_photos_base": "https://gd.eppo.int/taxon/{eppo_code}/photos",
+  "healthy_crops": ["tomate", "pimiento", "pepino", "calabacin", "berenjena", "lechuga"],
+  "plagues": [
+    {
+      "folder": "01_trips",
+      "label_train": "trips",
+      "scientific": "Frankliniella occidentalis",
+      "eppo_code": "FRIFOT",
+      "subfolders": ["cromo", "adulto", "ninfa", "dano_plateado"]
+    },
+    {
+      "folder": "02_tuta",
+      "label_train": "tuta absoluta",
+      "scientific": "Phthorimaea absoluta",
+      "eppo_code": "GNORAB",
+      "subfolders": ["cromo", "huevo", "larva", "pupa", "adulto", "dano_galeria_hoja", "dano_fruto"]
+    },
+    {
+      "folder": "03_mosca_blanca",
+      "label_train": "mosca blanca",
+      "scientific": "Bemisia tabaci",
+      "eppo_code": "BEMITA",
+      "subfolders": ["cromo", "adulto", "ninfa_pupa", "dano_melaza", "dano_amarilleo"]
+    },
+    {
+      "folder": "04_pulgon",
+      "label_train": "pulgón",
+      "scientific": "Aphis gossypii",
+      "eppo_code": "APHIGO",
+      "subfolders": ["cromo", "formas_aladas", "formas_apteras", "dano_enrollamiento"]
+    },
+    {
+      "folder": "05_arana_roja",
+      "label_train": "arañuela roja",
+      "scientific": "Tetranychus urticae",
+      "eppo_code": "TETRUR",
+      "subfolders": ["cromo", "acaro_adulto", "huevo", "dano_punteado", "dano_telarana"]
+    },
+    {
+      "folder": "06_minador",
+      "label_train": "minador",
+      "scientific": "Liriomyza trifolii",
+      "eppo_code": "LIRITF",
+      "subfolders": ["cromo", "larva", "adulto", "dano_mina_serpiente"]
+    },
+    {
+      "folder": "07_piojo_harinoso",
+      "label_train": "piojo harinoso",
+      "scientific": "Planococcus citri",
+      "eppo_code": "PLANCI",
+      "subfolders": ["cromo", "adulto_ninfa", "dano_brote", "dano_melaza"]
+    },
+    {
+      "folder": "08_oruga_spodoptera",
+      "label_train": "oruga",
+      "scientific": "Spodoptera exigua",
+      "eppo_code": "SPODEX",
+      "subfolders": ["cromo", "larva", "adulto", "dano_defoliacion", "dano_fruto"],
+      "notes": "Etiqueta principal 'oruga' en catálogo v1.5"
+    },
+    {
+      "folder": "09_oruga_helicoverpa",
+      "label_train": "oruga",
+      "scientific": "Helicoverpa armigera",
+      "eppo_code": "HELIAR",
+      "subfolders": ["cromo", "larva", "dano_fruto"],
+      "notes": "Se fusiona con 'oruga' en entreno v1; útil para diversidad sintética"
+    },
+    {
+      "folder": "10_oruga_plusia",
+      "label_train": "oruga",
+      "scientific": "Chrysodeixis chalcites",
+      "eppo_code": "CHRCHL",
+      "subfolders": ["cromo", "larva", "dano_defoliacion"]
+    },
+    {
+      "folder": "11_chinche_verde",
+      "label_train": "chinche verde",
+      "scientific": "Nezara viridula",
+      "eppo_code": "NEZAVI",
+      "subfolders": ["cromo", "adulto", "ninfa", "dano_necrosis_fruto"],
+      "notes": "Clase nueva candidata v2 — ampliación Poniente"
+    },
+    {
+      "folder": "12_mildiu",
+      "label_train": "mildiu",
+      "scientific": "Phytophthora infestans / Peronospora spp.",
+      "eppo_code": "PHYTIN",
+      "subfolders": ["cromo", "dano_necrosis_hoja", "dano_tallo", "dano_fruto"]
+    },
+    {
+      "folder": "13_oidio",
+      "label_train": "oídio",
+      "scientific": "Leveillula taurica / Oidium spp.",
+      "eppo_code": "LEVETA",
+      "subfolders": ["cromo", "dano_micelio", "dano_mancha_clorotica"]
+    },
+    {
+      "folder": "14_botritis",
+      "label_train": "botritis",
+      "scientific": "Botrytis cinerea",
+      "eppo_code": "BOTRCI",
+      "subfolders": ["cromo", "dano_moho_gris", "dano_flor", "dano_fruto"]
+    },
+    {
+      "folder": "15_mancha_bacteriana",
+      "label_train": "mancha bacteriana",
+      "scientific": "Pseudomonas syringae / Xanthomonas spp.",
+      "eppo_code": "PSDMMI",
+      "subfolders": ["cromo", "dano_mancha_foliar", "dano_fruto"]
+    },
+    {
+      "folder": "16_fusarium",
+      "label_train": "fusarium",
+      "scientific": "Fusarium oxysporum",
+      "eppo_code": "FUSAOX",
+      "subfolders": ["cromo", "dano_marchitez", "dano_vascular"]
+    },
+    {
+      "folder": "17_esclerotinia",
+      "label_train": "esclerotinia",
+      "scientific": "Sclerotinia sclerotiorum",
+      "eppo_code": "SCLESC",
+      "subfolders": ["cromo", "dano_tallo_algodon", "dano_moho_blanco"],
+      "notes": "Clase nueva candidata v2"
+    },
+    {
+      "folder": "18_clorosis_viral",
+      "label_train": "clorosis viral",
+      "scientific": "Tomato yellow leaf curl virus",
+      "eppo_code": "TYLCV0",
+      "subfolders": ["cromo", "dano_sintoma_foliar", "dano_planta_entera"]
+    }
+  ]
+}

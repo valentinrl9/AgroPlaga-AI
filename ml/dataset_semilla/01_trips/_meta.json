@@ -1,0 +1,13 @@
+{
+  "label_train": "trips",
+  "scientific": "Frankliniella occidentalis",
+  "eppo_code": "FRIFOT",
+  "eppo_photos_url": "https://gd.eppo.int/taxon/FRIFOT/photos",
+  "subfolders": {
+    "cromo": "Coloca aquí fotos EPPO filtradas por tag",
+    "adulto": "Coloca aquí fotos EPPO filtradas por tag",
+    "ninfa": "Coloca aquí fotos EPPO filtradas por tag",
+    "dano_plateado": "Coloca aquí fotos EPPO filtradas por tag"
+  },
+  "download_notes": "Solo uso educativo EPPO. Registrar fuente en manifest.csv."
+}

@@ -1,3 +1,5 @@
+import "dart:async";
+
 import "package:flutter/material.dart";
 
 import "../../core/nexo_colors.dart";
@@ -21,11 +23,27 @@ class _FieldHomeScreenState extends State<FieldHomeScreen> {
   String? _userName;
   Map<String, dynamic>? _techOverview;
   int _pendingScans = 0;
+  int _unreadNotifications = 0;
+  Timer? _techPollTimer;
+  int _lastPendingCount = 0;
 
   @override
   void initState() {
     super.initState();
     _loadProfile();
+  }
+
+  @override
+  void dispose() {
+    _techPollTimer?.cancel();
+    super.dispose();
+  }
+
+  void _startTechPolling() {
+    _techPollTimer?.cancel();
+    _techPollTimer = Timer.periodic(const Duration(seconds: 30), (_) {
+      _loadTechDashboard(notifyOnNew: true);
+    });
   }
 
   Future<void> _loadProfile() async {
@@ -37,18 +55,35 @@ class _FieldHomeScreenState extends State<FieldHomeScreen> {
         _userName = name;
       });
     }
-    if (isTech) await _loadTechDashboard();
+    if (isTech) {
+      await _loadTechDashboard();
+      _startTechPolling();
+    }
   }
 
-  Future<void> _loadTechDashboard() async {
+  Future<void> _loadTechDashboard({bool notifyOnNew = false}) async {
     try {
       final repo = TechDashboardRepository();
       final dash = await repo.fetchDashboard();
-      final scans = await repo.fetchPendingScans();
+      final summary = await repo.fetchNotificationSummary();
+      final pending = summary["pending_scans"] as int? ?? 0;
+      if (notifyOnNew && pending > _lastPendingCount && _lastPendingCount > 0 && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Nueva validación pendiente ($pending en cola)"),
+            action: SnackBarAction(
+              label: "Ver",
+              onPressed: () => Navigator.pushNamed(context, Routes.techScanValidation),
+            ),
+          ),
+        );
+      }
       if (!mounted) return;
       setState(() {
         _techOverview = dash["overview"] as Map<String, dynamic>?;
-        _pendingScans = scans.length;
+        _pendingScans = pending;
+        _unreadNotifications = summary["unread_count"] as int? ?? 0;
+        _lastPendingCount = pending;
       });
     } catch (_) {}
   }
@@ -117,6 +152,29 @@ class _FieldHomeScreenState extends State<FieldHomeScreen> {
                 ],
               ),
               const SizedBox(height: 14),
+              if (_pendingScans > 0)
+                Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: NexoColors.warningAmber.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: NexoColors.warningAmber.withValues(alpha: 0.5)),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.notifications_active, color: NexoColors.warningAmber),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          "$_pendingScans escaneo(s) pendientes de validar"
+                          "${_unreadNotifications > 0 ? " · $_unreadNotifications aviso(s) nuevo(s)" : ""}",
+                          style: const TextStyle(fontSize: 13),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               PrimaryButton(
                 label: "Validar escaneos ($_pendingScans)",
                 onPressed: () => Navigator.pushNamed(context, Routes.techScanValidation),

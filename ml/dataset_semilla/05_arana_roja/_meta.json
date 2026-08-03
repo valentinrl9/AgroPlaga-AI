@@ -1,0 +1,14 @@
+{
+  "label_train": "arañuela roja",
+  "scientific": "Tetranychus urticae",
+  "eppo_code": "TETRUR",
+  "eppo_photos_url": "https://gd.eppo.int/taxon/TETRUR/photos",
+  "subfolders": {
+    "cromo": "Coloca aquí fotos EPPO filtradas por tag",
+    "acaro_adulto": "Coloca aquí fotos EPPO filtradas por tag",
+    "huevo": "Coloca aquí fotos EPPO filtradas por tag",
+    "dano_punteado": "Coloca aquí fotos EPPO filtradas por tag",
+    "dano_telarana": "Coloca aquí fotos EPPO filtradas por tag"
+  },
+  "download_notes": "Solo uso educativo EPPO. Registrar fuente en manifest.csv."
+}

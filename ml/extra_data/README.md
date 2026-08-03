@@ -30,13 +30,16 @@ Objetivo: **≥50 imágenes por clase** de invernadero real antes del próximo e
 ## Importación automática
 
 ```powershell
-# PlantDoc (clona desde GitHub, ~2500 img en campo)
+# PlantDoc (~2500 img campo, GitHub automático)
 python ml/import_extra_data.py --plantdoc --max-per-class 80
+
+# PlantVillage (~54k img, enfermedades + sana; primera vez ~1 GB)
+python ml/import_extra_data.py --plantvillage --max-per-class 80
 
 # IP102 (descarga manual primero — ver abajo)
 python ml/import_extra_data.py --ip102 --max-per-class 50
 
-# Ambos
+# Los tres
 python ml/import_extra_data.py --all
 ```
 

@@ -129,6 +129,22 @@ body { margin: 0; background: var(--nexo-bg); }
   border-radius: 2px;
 }
 
+.nav-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.25rem;
+  height: 1.25rem;
+  margin-left: 0.35rem;
+  padding: 0 0.35rem;
+  border-radius: 999px;
+  background: var(--nexo-warning);
+  color: #0b192c;
+  font-size: 0.72rem;
+  font-weight: 800;
+  vertical-align: middle;
+}
+
 .content {
   padding: 1.5rem;
   background: var(--nexo-bg);

@@ -8,6 +8,7 @@ from app.models.scan import Scan
 from app.models.user import User
 from app.schemas.scan import PilotFarmerItem, ScanValidateRequest, TechScanQueueItem
 from app.services.outbreak_event_service import sync_scan_validation_to_outbreak
+from app.services.tech_notification_service import mark_read_for_scan
 
 
 def get_pending_scans(db: Session) -> list[TechScanQueueItem]:
@@ -114,6 +115,7 @@ def validate_scan(
     db.commit()
     db.refresh(scan)
     sync_scan_validation_to_outbreak(db, scan, validator)
+    mark_read_for_scan(db, scan.id)
     return scan
 
 

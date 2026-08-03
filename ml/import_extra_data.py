@@ -1,12 +1,14 @@
 """
-Importa imágenes de PlantDoc (GitHub) e IP102 (manual) a ml/extra_data/.
+Importa imágenes de PlantDoc, PlantVillage e IP102 a ml/extra_data/.
 
 Uso:
   python ml/import_extra_data.py --plantdoc
+  python ml/import_extra_data.py --plantvillage
   python ml/import_extra_data.py --ip102 --ip102-dir ml/datasets/ip102
   python ml/import_extra_data.py --all --max-per-class 80
 
 PlantDoc: descarga ZIP desde GitHub (CC BY 4.0).
+PlantVillage: ~54k imágenes vía tensorflow_datasets (primera vez descarga ~1 GB).
 IP102: descarga manual desde https://github.com/xpwu95/IP102 (Google Drive)
        y descomprime en ml/datasets/ip102/
 """
@@ -35,7 +37,7 @@ IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".webp", ".bmp"}
 
 sys.path.insert(0, str(ML_DIR))
 from dataset_mappings import IP102_CLASS_TO_LABEL, PLANTDOC_TO_LABEL  # noqa: E402
-from plague_catalog import LABELS  # noqa: E402
+from plague_catalog import LABELS, PLANT_VILLAGE_TO_LABEL  # noqa: E402
 
 
 def _ensure_label_dirs() -> None:
@@ -118,6 +120,102 @@ def import_plantdoc(max_per_class: int, seed: int) -> dict[str, int]:
                 if _copy_image(img, dest_dir, "plantdoc_", counts, max_per_class):
                     imported += 1
 
+    return dict(counts), imported
+
+
+def import_plantvillage(max_per_class: int, seed: int) -> tuple[dict[str, int], int]:
+    try:
+        return _import_plantvillage_hf(max_per_class, seed)
+    except Exception as exc:
+        print(f"PlantVillage HuggingFace falló ({exc}).")
+        raise
+
+
+def _import_plantvillage_hf(max_per_class: int, seed: int) -> tuple[dict[str, int], int]:
+    from datasets import load_dataset
+
+    print("Descargando PlantVillage desde HuggingFace (geraldmc/plantvillage-full)...")
+    counts: dict[str, int] = defaultdict(int)
+    imported = 0
+
+    ds = load_dataset("geraldmc/plantvillage-full", split="train", streaming=True)
+
+    for example in ds:
+        label_name = example["class_label"]
+        label = PLANT_VILLAGE_TO_LABEL.get(label_name)
+        if label is None:
+            continue
+        if counts[label] >= max_per_class:
+            continue
+
+        safe_name = _sanitize_path_part(label_name.replace("___", "_").replace(",", ""))
+        dest_dir = EXTRA_DIR / label
+        dest = dest_dir / f"plantvillage_{safe_name}_{counts[label]:04d}.jpg"
+        if dest.exists():
+            counts[label] += 1
+            continue
+
+        image = example["image"]
+        if hasattr(image, "convert"):
+            image = image.convert("RGB")
+            image.save(dest, format="JPEG", quality=92)
+        else:
+            raise RuntimeError("Formato de imagen PlantVillage no soportado")
+
+        counts[label] += 1
+        imported += 1
+
+    mapped = sorted({v for v in PLANT_VILLAGE_TO_LABEL.values()})
+    print(f"PlantVillage: clases AgroPlaga mapeadas: {', '.join(mapped)}")
+    return dict(counts), imported
+
+
+def _import_plantvillage_tfds(max_per_class: int, seed: int) -> tuple[dict[str, int], int]:
+    import numpy as np
+    import tensorflow as tf
+    import tensorflow_datasets as tfds
+
+    print("Descargando/preparando PlantVillage (tensorflow_datasets)...")
+    builder = tfds.builder("plant_village")
+    builder.download_and_prepare()
+
+    counts: dict[str, int] = defaultdict(int)
+    rng = random.Random(seed)
+    imported = 0
+
+    for split in ("train", "validation"):
+        split_name = "train" if split == "train" else "validation"
+        if split_name not in builder.info.splits:
+            continue
+        ds = builder.as_dataset(split=split_name, shuffle_files=False)
+        examples = list(tfds.as_numpy(ds))
+        rng.shuffle(examples)
+
+        for example in examples:
+            label_name = example["label"].decode("utf-8")
+            label = PLANT_VILLAGE_TO_LABEL.get(label_name)
+            if label is None:
+                continue
+            if counts[label] >= max_per_class:
+                continue
+
+            image = example["image"]
+            if image.dtype != np.uint8:
+                image = np.clip(image, 0, 255).astype(np.uint8)
+
+            safe_name = _sanitize_path_part(label_name.replace("___", "_").replace(",", ""))
+            dest_dir = EXTRA_DIR / label
+            dest = dest_dir / f"plantvillage_{safe_name}_{counts[label]:04d}.jpg"
+            if dest.exists():
+                counts[label] += 1
+                continue
+
+            dest.write_bytes(tf.io.encode_jpeg(image).numpy())
+            counts[label] += 1
+            imported += 1
+
+    mapped = sorted({v for v in PLANT_VILLAGE_TO_LABEL.values()})
+    print(f"PlantVillage: clases AgroPlaga mapeadas: {', '.join(mapped)}")
     return dict(counts), imported
 
 
@@ -224,9 +322,14 @@ def import_ip102(ip102_dir: Path, max_per_class: int, seed: int) -> tuple[dict[s
     return dict(counts), imported
 
 
-def print_summary(plantdoc_counts: dict[str, int], ip102_counts: dict[str, int], imported_total: int) -> None:
+def print_summary(
+    plantdoc_counts: dict[str, int],
+    plantvillage_counts: dict[str, int],
+    ip102_counts: dict[str, int],
+    imported_total: int,
+) -> None:
     merged: dict[str, int] = defaultdict(int)
-    for d in (plantdoc_counts, ip102_counts):
+    for d in (plantdoc_counts, plantvillage_counts, ip102_counts):
         for k, v in d.items():
             merged[k] += v
 
@@ -242,20 +345,22 @@ def print_summary(plantdoc_counts: dict[str, int], ip102_counts: dict[str, int],
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="Importar PlantDoc/IP102 → ml/extra_data")
+    parser = argparse.ArgumentParser(description="Importar PlantDoc/PlantVillage/IP102 → ml/extra_data")
     parser.add_argument("--plantdoc", action="store_true", help="Importar desde PlantDoc (descarga ZIP)")
+    parser.add_argument("--plantvillage", action="store_true", help="Importar desde PlantVillage (tfds)")
     parser.add_argument("--ip102", action="store_true", help="Importar desde IP102 local")
-    parser.add_argument("--all", action="store_true", help="PlantDoc + IP102 si está disponible")
+    parser.add_argument("--all", action="store_true", help="PlantDoc + PlantVillage + IP102 si está disponible")
     parser.add_argument("--ip102-dir", type=Path, default=DATASETS_DIR / "ip102")
     parser.add_argument("--max-per-class", type=int, default=80)
     parser.add_argument("--seed", type=int, default=42)
     args = parser.parse_args()
 
-    if not (args.plantdoc or args.ip102 or args.all):
-        parser.error("Indica --plantdoc, --ip102 o --all")
+    if not (args.plantdoc or args.plantvillage or args.ip102 or args.all):
+        parser.error("Indica --plantdoc, --plantvillage, --ip102 o --all")
 
     _ensure_label_dirs()
     plantdoc_counts: dict[str, int] = {}
+    plantvillage_counts: dict[str, int] = {}
     ip102_counts: dict[str, int] = {}
     imported_total = 0
 
@@ -264,6 +369,18 @@ def main() -> None:
         plantdoc_counts, n = import_plantdoc(args.max_per_class, args.seed)
         imported_total += n
         print(f"PlantDoc: {n} imágenes copiadas.")
+
+    if args.plantvillage or args.all:
+        print("\n--- PlantVillage ---")
+        try:
+            plantvillage_counts, n = import_plantvillage(args.max_per_class, args.seed)
+            imported_total += n
+            print(f"PlantVillage: {n} imágenes copiadas.")
+        except Exception as exc:
+            if args.all:
+                print(f"PlantVillage omitido: {exc}")
+            else:
+                raise
 
     if args.ip102 or args.all:
         print("\n--- IP102 ---")
@@ -277,7 +394,7 @@ def main() -> None:
             else:
                 raise
 
-    print_summary(plantdoc_counts, ip102_counts, imported_total)
+    print_summary(plantdoc_counts, plantvillage_counts, ip102_counts, imported_total)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,13 @@
+{
+  "label_train": "botritis",
+  "scientific": "Botrytis cinerea",
+  "eppo_code": "BOTRCI",
+  "eppo_photos_url": "https://gd.eppo.int/taxon/BOTRCI/photos",
+  "subfolders": {
+    "cromo": "Coloca aquí fotos EPPO filtradas por tag",
+    "dano_moho_gris": "Coloca aquí fotos EPPO filtradas por tag",
+    "dano_flor": "Coloca aquí fotos EPPO filtradas por tag",
+    "dano_fruto": "Coloca aquí fotos EPPO filtradas por tag"
+  },
+  "download_notes": "Solo uso educativo EPPO. Registrar fuente en manifest.csv."
+}

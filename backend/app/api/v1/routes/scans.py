@@ -139,6 +139,9 @@ async def create_scan_with_image(
     db.commit()
     db.refresh(scan)
     check_scan_badges(db, current_user.id)
+    from app.services.tech_notification_service import notify_scan_pending_validation
+
+    notify_scan_pending_validation(db, scan, current_user)
     return _scan_to_read(scan)
 
 

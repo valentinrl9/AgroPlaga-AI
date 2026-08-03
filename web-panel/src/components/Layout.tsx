@@ -1,12 +1,14 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router-dom";
-import { clearToken, fetchProfile } from "../api/client";
-import type { UserProfile } from "../types";
+import { clearToken, fetchProfile, fetchTechNotificationSummary } from "../api/client";
+import type { TechNotificationSummary, UserProfile } from "../types";
 import BrandWordmark from "./BrandWordmark";
 
 export default function Layout() {
   const navigate = useNavigate();
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [pendingScans, setPendingScans] = useState(0);
+  const lastPendingRef = useRef(0);
 
   useEffect(() => {
     fetchProfile()
@@ -23,6 +25,39 @@ export default function Layout() {
         navigate("/login");
       });
   }, [navigate]);
+
+  useEffect(() => {
+    if (!profile) return;
+
+    if ("Notification" in window && Notification.permission === "default") {
+      void Notification.requestPermission();
+    }
+
+    const poll = async () => {
+      try {
+        const summary: TechNotificationSummary = await fetchTechNotificationSummary();
+        if (
+          summary.pending_scans > lastPendingRef.current &&
+          lastPendingRef.current > 0 &&
+          typeof Notification !== "undefined" &&
+          Notification.permission === "granted"
+        ) {
+          new Notification("NEXO Agro — validación pendiente", {
+            body: `${summary.pending_scans} escaneo(s) esperan revisión del perito.`,
+            tag: "nexo-pending-scans",
+          });
+        }
+        lastPendingRef.current = summary.pending_scans;
+        setPendingScans(summary.pending_scans);
+      } catch {
+        /* ignore poll errors */
+      }
+    };
+
+    void poll();
+    const timer = window.setInterval(poll, 30000);
+    return () => window.clearInterval(timer);
+  }, [profile]);
 
   function logout() {
     clearToken();
@@ -46,7 +81,10 @@ export default function Layout() {
       </header>
       <nav className="nav">
         <NavLink to="/" end>Dashboard</NavLink>
-        <NavLink to="/validacion">Validar escaneos</NavLink>
+        <NavLink to="/validacion">
+          Validar escaneos
+          {pendingScans > 0 ? <span className="nav-badge">{pendingScans}</span> : null}
+        </NavLink>
         <NavLink to="/siex">Cuaderno SIEX</NavLink>
         <NavLink to="/agricultores">Agricultores</NavLink>
       </nav>

@@ -27,10 +27,11 @@ def test_register_requires_invite_when_invite_only(client, unique_email, monkeyp
 def test_register_with_valid_invite_assigns_role(client, unique_email, monkeypatch):
     monkeypatch.setattr("app.api.v1.routes.auth.settings.registration_mode", "invite_only")
     admin_headers = auth_headers(_admin_token(client))
+    invite_code = f"TEST-TECH-{uuid.uuid4().hex[:8].upper()}"
     create = client.post(
         "/api/v1/admin/invites",
         headers=admin_headers,
-        json={"code": "TEST-TECH-01", "role": "tech", "label": "Perito test"},
+        json={"code": invite_code, "role": "tech", "label": "Perito test"},
     )
     assert create.status_code == 201, create.text
 
@@ -41,7 +42,7 @@ def test_register_with_valid_invite_assigns_role(client, unique_email, monkeypat
             "name": "Perito",
             "email": email,
             "password": "secret123",
-            "invite_code": "TEST-TECH-01",
+            "invite_code": invite_code,
         },
     )
     assert response.status_code == 200, response.text
@@ -56,7 +57,7 @@ def test_register_with_valid_invite_assigns_role(client, unique_email, monkeypat
             "name": "Otro",
             "email": f"other_{uuid.uuid4().hex[:8]}@example.com",
             "password": "secret123",
-            "invite_code": "TEST-TECH-01",
+            "invite_code": invite_code,
         },
     )
     assert reuse.status_code == 400

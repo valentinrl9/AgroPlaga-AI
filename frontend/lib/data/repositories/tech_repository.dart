@@ -13,6 +13,19 @@ class TechDashboardRepository {
     return await _client.getList("/api/v1/tech/pending-scans");
   }
 
+  Future<Map<String, dynamic>> fetchNotificationSummary() async {
+    return await _client.get("/api/v1/tech/notifications/unread-count");
+  }
+
+  Future<List<dynamic>> fetchNotifications({bool unreadOnly = false}) async {
+    final q = unreadOnly ? "?unread_only=true" : "";
+    return await _client.getList("/api/v1/tech/notifications$q");
+  }
+
+  Future<void> markAllNotificationsRead() async {
+    await _client.patchAuth("/api/v1/tech/notifications/read-all", {});
+  }
+
   Future<List<dynamic>> fetchFarmers() async {
     return await _client.getList("/api/v1/tech/farmers");
   }

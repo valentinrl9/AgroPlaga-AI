@@ -78,6 +78,48 @@ def test_pending_scans_visible_to_admin(client, unique_email):
     assert scan_id in ids
 
 
+def test_scan_share_creates_tech_notification(client, unique_email):
+    farmer_token = register_and_login(client, unique_email)
+    farmer_headers = auth_headers(farmer_token)
+    admin_headers = _admin_headers(client)
+
+    files = {"image": ("leaf.jpg", _jpeg_bytes(), "image/jpeg")}
+    data = {
+        "crop": "Tomate",
+        "plague": "tuta absoluta",
+        "severity": "Moderado",
+        "confidence": "0.66",
+        "share_with_tech": "true",
+    }
+    created = client.post(
+        "/api/v1/scans/with-image",
+        headers=farmer_headers,
+        data=data,
+        files=files,
+    )
+    assert created.status_code == 201
+    scan_id = created.json()["id"]
+
+    summary = client.get("/api/v1/tech/notifications/unread-count", headers=admin_headers)
+    assert summary.status_code == 200
+    assert summary.json()["unread_count"] >= 1
+    assert summary.json()["pending_scans"] >= 1
+
+    notifications = client.get("/api/v1/tech/notifications?unread_only=true", headers=admin_headers)
+    assert notifications.status_code == 200
+    assert any(n["scan_id"] == scan_id for n in notifications.json())
+
+    validated = client.patch(
+        f"/api/v1/scans/{scan_id}/validate",
+        headers=admin_headers,
+        json={"action": "confirm"},
+    )
+    assert validated.status_code == 200
+
+    after = client.get("/api/v1/tech/notifications/unread-count", headers=admin_headers)
+    assert after.json()["pending_scans"] == summary.json()["pending_scans"] - 1
+
+
 def test_validate_scan_confirm(client, unique_email):
     farmer_token = register_and_login(client, unique_email)
     farmer_headers = auth_headers(farmer_token)

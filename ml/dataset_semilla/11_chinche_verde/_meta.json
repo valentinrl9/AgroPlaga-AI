@@ -1,0 +1,14 @@
+{
+  "label_train": "chinche verde",
+  "scientific": "Nezara viridula",
+  "eppo_code": "NEZAVI",
+  "eppo_photos_url": "https://gd.eppo.int/taxon/NEZAVI/photos",
+  "subfolders": {
+    "cromo": "Coloca aquí fotos EPPO filtradas por tag",
+    "adulto": "Coloca aquí fotos EPPO filtradas por tag",
+    "ninfa": "Coloca aquí fotos EPPO filtradas por tag",
+    "dano_necrosis_fruto": "Coloca aquí fotos EPPO filtradas por tag"
+  },
+  "download_notes": "Solo uso educativo EPPO. Registrar fuente en manifest.csv.",
+  "notes": "Clase nueva candidata v2 — ampliación Poniente"
+}

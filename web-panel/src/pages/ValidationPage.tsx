@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import {
   fetchPendingScans,
   fetchScanImageBlobUrl,
+  markAllTechNotificationsRead,
   validateScan,
 } from "../api/client";
 import type { TechScanQueueItem } from "../types";
@@ -52,6 +53,7 @@ export default function ValidationPage() {
 
   useEffect(() => {
     reload();
+    void markAllTechNotificationsRead();
     return () => {
       Object.values(imageUrls).forEach((url) => URL.revokeObjectURL(url));
     };
