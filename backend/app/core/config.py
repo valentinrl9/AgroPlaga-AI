@@ -27,4 +27,13 @@ class Settings:
     )
     scan_images_dir: str = os.getenv("SCAN_IMAGES_DIR", str(_DEFAULT_SCAN_DIR))
 
+    contact_notify_email: str = os.getenv("CONTACT_NOTIFY_EMAIL", "valentinruizleon@gmail.com").strip()
+    smtp_host: str = os.getenv("SMTP_HOST", "").strip()
+    smtp_port: int = int(os.getenv("SMTP_PORT", "587"))
+    smtp_user: str = os.getenv("SMTP_USER", "").strip()
+    smtp_password: str = os.getenv("SMTP_PASSWORD", "").strip()
+    smtp_from: str = os.getenv("SMTP_FROM", "").strip()
+    smtp_use_tls: bool = os.getenv("SMTP_USE_TLS", "true").strip().lower() in {"1", "true", "yes"}
+
+
 settings = Settings()

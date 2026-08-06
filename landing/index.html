@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AgroPlaga AI — Sanidad vegetal inteligente para el Poniente</title>
-  <meta name="description" content="Escanea plagas offline en el invernadero, calcula dosis con el MAPA, comparte alertas comarcales SIGPAC y conecta con tu cooperativa. Piloto Poniente Almeriense.">
+  <title>AgroPlaga — Mapa de plagas en el sur de Almería</title>
+  <meta name="description" content="Mira en el mapa qué plagas se mueven en tu comarca antes de que lleguen al invernadero. App para agricultores del sur de Almería. Tu finca no se publica.">
   <link rel="icon" type="image/png" href="/assets/app_logo.png">
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -67,10 +67,11 @@
 
         <nav class="hidden lg:flex items-center gap-8">
           <a href="#inicio" class="nav-link text-sm font-medium text-white/90 hover:text-brand-cyan transition-colors duration-300">Inicio</a>
-          <a href="#funciones" class="nav-link text-sm font-medium text-white/90 hover:text-brand-cyan transition-colors duration-300">Funcionalidades</a>
+          <a href="#mapa-comarcal" class="nav-link text-sm font-medium text-white/90 hover:text-brand-cyan transition-colors duration-300">Mapa comarcal</a>
           <a href="#funciona" class="nav-link text-sm font-medium text-white/90 hover:text-brand-cyan transition-colors duration-300">Cómo funciona</a>
+          <a href="#funciones" class="nav-link text-sm font-medium text-white/90 hover:text-brand-cyan transition-colors duration-300">La app</a>
           <a href="#perfiles" class="nav-link text-sm font-medium text-white/90 hover:text-brand-cyan transition-colors duration-300">Cooperativas</a>
-          <a href="#piloto" class="nav-link text-sm font-medium text-white/90 hover:text-brand-cyan transition-colors duration-300">Piloto</a>
+          <a href="#piloto" class="nav-link text-sm font-medium text-white/90 hover:text-brand-cyan transition-colors duration-300">Prueba gratis</a>
           <a href="#contacto" class="nav-link text-sm font-medium text-white/90 hover:text-brand-cyan transition-colors duration-300">Contacto</a>
         </nav>
 
@@ -89,10 +90,11 @@
     <div id="mobile-menu" class="lg:hidden hidden border-t border-white/10 bg-brand-deep/98 backdrop-blur-lg">
       <nav class="max-w-7xl mx-auto px-4 py-4 flex flex-col gap-1">
         <a href="#inicio" class="mobile-nav-link px-4 py-3 rounded-lg text-white/90 hover:bg-white/5">Inicio</a>
-        <a href="#funciones" class="mobile-nav-link px-4 py-3 rounded-lg text-white/90 hover:bg-white/5">Funcionalidades</a>
+        <a href="#mapa-comarcal" class="mobile-nav-link px-4 py-3 rounded-lg text-white/90 hover:bg-white/5">Mapa comarcal</a>
         <a href="#funciona" class="mobile-nav-link px-4 py-3 rounded-lg text-white/90 hover:bg-white/5">Cómo funciona</a>
+        <a href="#funciones" class="mobile-nav-link px-4 py-3 rounded-lg text-white/90 hover:bg-white/5">La app</a>
         <a href="#perfiles" class="mobile-nav-link px-4 py-3 rounded-lg text-white/90 hover:bg-white/5">Cooperativas</a>
-        <a href="#piloto" class="mobile-nav-link px-4 py-3 rounded-lg text-white/90 hover:bg-white/5">Piloto</a>
+        <a href="#piloto" class="mobile-nav-link px-4 py-3 rounded-lg text-white/90 hover:bg-white/5">Prueba gratis</a>
         <a href="#contacto" class="mobile-nav-link px-4 py-3 rounded-lg text-white/90 hover:bg-white/5">Contacto</a>
         <a href="/panel/" class="mx-4 py-3 rounded-xl border border-brand-cyan text-brand-cyan text-center font-semibold">Panel técnicos</a>
       </nav>
@@ -114,65 +116,63 @@
           <div>
           <div class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-brand-cyan text-xs font-semibold uppercase tracking-wider mb-6">
             <span class="w-2 h-2 rounded-full bg-brand-green animate-pulse"></span>
-            Piloto abierto · Poniente Almeriense
+            Prueba abierta · Sur de Almería
           </div>
 
           <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-[1.1] tracking-tight mb-6">
-            Plagas en el invernadero,
-            <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-green to-brand-cyan"> respuesta en segundos</span>
-            — sin depender de la cobertura
+            Antes de que la plaga llegue a tu invernadero,
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-green to-brand-cyan"> mírala en el mapa de la comarca</span>
           </h1>
 
           <p class="text-lg sm:text-xl text-brand-light-text leading-relaxed max-w-3xl mb-10">
-            <strong class="text-white font-semibold">AgroPlaga AI</strong> une IA offline en el móvil, el
-            <strong class="text-white font-semibold">vademécum MAPA</strong>, un mapa comarcal anónimo (SIGPAC) y un
-            <strong class="text-white font-semibold">panel para técnicos y cooperativas</strong>.
-            Hecho para el plástico del Poniente.
+            Los agricultores del sur de Almería van contando qué ven en su zona.
+            Tú ves dónde se concentra el problema <strong class="text-white font-semibold">sin enseñar tu parcela</strong> — solo el paraje.
+            Así puedes avisar a tu técnico a tiempo y actuar antes.
           </p>
 
           <div class="flex flex-col sm:flex-row gap-4">
             <a href="#contacto" class="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-brand-green text-white font-semibold text-base shadow-brand hover:bg-emerald-500 hover:scale-102 transition-all duration-300 ease-in-out">
               <i class="fa-solid fa-handshake"></i>
-              Solicitar acceso al piloto
+              Quiero probar la app
             </a>
             <a href="/panel/" class="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl border-2 border-brand-cyan text-brand-cyan font-semibold text-base hover:bg-brand-cyan/10 hover:scale-102 transition-all duration-300 ease-in-out">
               <i class="fa-solid fa-user-shield"></i>
-              Acceso cooperativas
+              Soy técnico o cooperativa
             </a>
           </div>
 
           <div class="mt-14 flex flex-wrap gap-3 pt-8 border-t border-white/10">
-            <span class="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-white text-sm">PlagaScan offline</span>
-            <span class="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-white text-sm">15 plagas Poniente</span>
-            <span class="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-white text-sm">Mapa SIGPAC</span>
-            <span class="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-white text-sm">Validación con foto</span>
+            <span class="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-white text-sm">Mapa de la comarca</span>
+            <span class="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-white text-sm">Avisos de brotes</span>
+            <span class="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-white text-sm">Tu finca no se publica</span>
+            <span class="px-4 py-2 rounded-full bg-white/5 border border-white/10 text-white text-sm">Foto de hoja con el móvil</span>
           </div>
           </div>
 
-          <!-- Imagen principal: invernadero Poniente -->
+          <!-- Mapa sur de Almería (coordenadas reales) -->
           <div class="relative hidden lg:block">
             <div class="absolute -inset-4 bg-gradient-to-br from-brand-green/20 to-brand-cyan/10 rounded-3xl blur-2xl"></div>
-            <div class="relative bg-white/5 border border-white/10 rounded-2xl p-3 shadow-2xl backdrop-blur-sm hover:scale-102 transition-transform duration-300 ease-in-out">
+            <div class="relative bg-white/5 border border-white/10 rounded-2xl p-3 shadow-2xl backdrop-blur-sm">
               <img
-                src="/assets/hero-invernadero.jpg"
-                alt="Invernadero en Almería — AgroPlaga AI"
-                class="w-full h-[320px] lg:h-[420px] object-cover rounded-xl"
+                src="/assets/mapa-calor-sur-almeria-3d.png"
+                alt="Mapa de calor de brotes en el sur de Almería — El Ejido, Adra, Roquetas, Almería, Níjar, Levante"
+                class="w-full h-auto rounded-xl"
                 loading="eager"
-                width="900"
-                height="600"
+                width="1024"
+                height="682"
               >
-              <p class="mt-3 text-center text-xs text-brand-light-text">Sanidad vegetal bajo el plástico del Poniente</p>
+              <p class="mt-3 text-center text-xs text-brand-light-text">Datos agregados por municipio · ejemplo ilustrativo de brotes</p>
             </div>
           </div>
         </div>
 
-        <!-- Imagen hero en móvil -->
+        <!-- Mapa en móvil -->
         <div class="lg:hidden mt-10">
           <div class="bg-white/5 border border-white/10 rounded-2xl p-2 shadow-xl">
             <img
-              src="/assets/hero-invernadero.jpg"
-              alt="Invernadero en Almería"
-              class="w-full h-56 object-cover rounded-xl"
+              src="/assets/mapa-calor-sur-almeria-3d.png"
+              alt="Mapa de calor sur de Almería"
+              class="w-full h-auto rounded-xl"
               loading="eager"
             >
           </div>
@@ -180,12 +180,66 @@
       </div>
     </section>
 
+    <!-- MAPA COMARCAL — protagonista -->
+    <section id="mapa-comarcal" class="py-20 lg:py-28 bg-brand-deep relative overflow-hidden">
+      <div class="absolute inset-0 opacity-20" style="background: radial-gradient(ellipse at 30% 50%, rgba(0,168,107,0.25), transparent 60%);"></div>
+      <div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center max-w-3xl mx-auto mb-12">
+          <p class="text-brand-cyan font-semibold text-sm uppercase tracking-wider mb-3">Lo más importante de AgroPlaga</p>
+          <h2 class="text-3xl lg:text-4xl font-bold text-white tracking-tight mb-4">El mapa de calor de la comarca</h2>
+          <p class="text-brand-light-text text-lg leading-relaxed">
+            No es un mapa de tu finca. Es la foto de lo que está pasando <strong class="text-white">alrededor</strong> — 
+            de Adra a Garrucha, todo el sur de Almería.
+          </p>
+        </div>
+
+        <div class="grid lg:grid-cols-3 gap-8 mb-12">
+          <article class="bg-white/5 border border-white/10 rounded-2xl p-6">
+            <div class="w-12 h-12 rounded-xl bg-brand-green/20 flex items-center justify-center mb-4">
+              <i class="fa-solid fa-eye text-brand-green text-xl"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-2">Ves la comarca, no solo tu nave</h3>
+            <p class="text-sm text-brand-light-text leading-relaxed">Si en El Ejido o Roquetas sube la tuta o los trips, lo ves antes en el mapa. Te enteras antes de que entre en tu invernadero.</p>
+          </article>
+          <article class="bg-white/5 border border-white/10 rounded-2xl p-6">
+            <div class="w-12 h-12 rounded-xl bg-brand-cyan/20 flex items-center justify-center mb-4">
+              <i class="fa-solid fa-shield-halved text-brand-cyan text-xl"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-2">Tu finca no sale en público</h3>
+            <p class="text-sm text-brand-light-text leading-relaxed">Solo se muestra la zona del pueblo o paraje. Nadie sabe dónde está tu invernadero exactamente.</p>
+          </article>
+          <article class="bg-white/5 border border-white/10 rounded-2xl p-6">
+            <div class="w-12 h-12 rounded-xl bg-brand-amber/20 flex items-center justify-center mb-4">
+              <i class="fa-solid fa-people-group text-brand-amber text-xl"></i>
+            </div>
+            <h3 class="text-lg font-bold text-white mb-2">Entre todos avisamos antes</h3>
+            <p class="text-sm text-brand-light-text leading-relaxed">Cuando tú marcas un foco y tu vecino otro, el mapa se calienta y avisa a más gente de la zona.</p>
+          </article>
+        </div>
+
+        <div class="rounded-2xl overflow-hidden border border-white/10 shadow-2xl">
+          <img
+            src="/assets/mapa-calor-sur-almeria-3d.png"
+            alt="Mapa de calor con municipios reales del sur de Almería"
+            class="w-full h-auto"
+            loading="lazy"
+            width="1024"
+            height="682"
+          >
+        </div>
+        <p class="text-center text-sm text-brand-light-text mt-4 max-w-2xl mx-auto">
+          El mapa no sustituye a tu técnico: te orienta para llamarle o tratar a tiempo.
+          Los pueblos están situados según su ubicación real en el sur de Almería.
+        </p>
+      </div>
+    </section>
+
     <!-- C. PERFILES -->
     <section id="perfiles" class="py-20 lg:py-28 bg-brand-slate">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center max-w-3xl mx-auto mb-14">
-          <h2 class="text-3xl lg:text-4xl font-bold text-brand-deep tracking-tight mb-4">¿Agricultor o cooperativa?</h2>
-          <p class="text-brand-light-text text-lg">La misma plataforma conecta el campo con el almacén. Elige tu perfil.</p>
+          <h2 class="text-3xl lg:text-4xl font-bold text-brand-deep tracking-tight mb-4">¿Eres agricultor o cooperativa?</h2>
+          <p class="text-brand-light-text text-lg">La misma app conecta el campo con el almacén. Elige tu perfil.</p>
         </div>
 
         <div class="flex flex-col sm:flex-row justify-center gap-3 mb-10">
@@ -203,12 +257,12 @@
               <i class="fa-solid fa-camera text-2xl text-brand-green"></i>
             </div>
             <h3 class="text-2xl font-bold text-brand-deep mb-3">App móvil · Agricultor</h3>
-            <p class="text-brand-light-text mb-6">Operativa diaria bajo el plástico, con o sin cobertura.</p>
+            <p class="text-brand-light-text mb-6">Para el día a día bajo el plástico, con o sin cobertura.</p>
             <ul class="space-y-4 text-sm">
-              <li class="flex gap-3"><i class="fa-solid fa-wifi text-brand-green mt-1"></i><div><strong class="text-brand-dark-text block">PlagaScan IA offline</strong><span class="text-brand-light-text">Foto de hoja → plaga + confianza. Sincroniza al recuperar señal.</span></div></li>
-              <li class="flex gap-3"><i class="fa-solid fa-flask text-brand-green mt-1"></i><div><strong class="text-brand-dark-text block">Dosis MAPA automática</strong><span class="text-brand-light-text">Productos vigentes filtrados por plaga y cultivo detectados.</span></div></li>
-              <li class="flex gap-3"><i class="fa-solid fa-clock text-brand-amber mt-1"></i><div><strong class="text-brand-dark-text block">Plazo de carencia</strong><span class="text-brand-light-text">Cronómetro visual para evitar rechazos en el almacén.</span></div></li>
-              <li class="flex gap-3"><i class="fa-solid fa-map text-brand-green mt-1"></i><div><strong class="text-brand-dark-text block">Mapa comarcal anónimo</strong><span class="text-brand-light-text">Alertas de brotes cercanos sin exponer tu parcela exacta.</span></div></li>
+              <li class="flex gap-3"><i class="fa-solid fa-fire-flame-curved text-brand-amber mt-1"></i><div><strong class="text-brand-dark-text block">Mapa de calor y avisos</strong><span class="text-brand-light-text">Mira qué plagas se mueven en tu comarca antes de que lleguen a tu nave.</span></div></li>
+              <li class="flex gap-3"><i class="fa-solid fa-camera text-brand-green mt-1"></i><div><strong class="text-brand-dark-text block">Foto de la hoja sin internet</strong><span class="text-brand-light-text">Haces foto en el invernadero; el móvil te orienta. Tu técnico lo confirma si quieres.</span></div></li>
+              <li class="flex gap-3"><i class="fa-solid fa-flask text-brand-green mt-1"></i><div><strong class="text-brand-dark-text block">Productos autorizados y dosis</strong><span class="text-brand-light-text">Consulta qué puedes echar según plaga y cultivo (registro oficial).</span></div></li>
+              <li class="flex gap-3"><i class="fa-solid fa-clock text-brand-amber mt-1"></i><div><strong class="text-brand-dark-text block">Plazo de carencia</strong><span class="text-brand-light-text">Te avisa cuándo puedes recoger sin problemas en el almacén.</span></div></li>
             </ul>
           </article>
 
@@ -217,12 +271,12 @@
               <i class="fa-solid fa-building-columns text-2xl text-brand-cyan"></i>
             </div>
             <h3 class="text-2xl font-bold text-brand-deep mb-3">Panel web · Cooperativa</h3>
-            <p class="text-brand-light-text mb-6">Supervisión pericial y visión agregada de los socios.</p>
+            <p class="text-brand-light-text mb-6">Para el técnico o la cooperativa: supervisión de socios.</p>
             <ul class="space-y-4 text-sm">
-              <li class="flex gap-3"><i class="fa-solid fa-user-check text-brand-cyan mt-1"></i><div><strong class="text-brand-dark-text block">Validación con foto</strong><span class="text-brand-light-text">Aprueba o corrige diagnósticos de socios con imagen HD y paraje.</span></div></li>
-              <li class="flex gap-3"><i class="fa-solid fa-map-location-dot text-brand-cyan mt-1"></i><div><strong class="text-brand-dark-text block">Mapa de calor comarcal</strong><span class="text-brand-light-text">Detecta brotes antes de que lleguen al almacén.</span></div></li>
-              <li class="flex gap-3"><i class="fa-solid fa-clipboard-list text-brand-cyan mt-1"></i><div><strong class="text-brand-dark-text block">Historial de tratamientos</strong><span class="text-brand-light-text">Registro centralizado de aplicaciones fitosanitarias de socios.</span></div></li>
-              <li class="flex gap-3"><i class="fa-solid fa-chart-line text-brand-cyan mt-1"></i><div><strong class="text-brand-dark-text block">Dashboard de alertas</strong><span class="text-brand-light-text">Escaneos pendientes, brotes activos y actividad reciente.</span></div></li>
+              <li class="flex gap-3"><i class="fa-solid fa-map-location-dot text-brand-cyan mt-1"></i><div><strong class="text-brand-dark-text block">Mapa de toda la comarca</strong><span class="text-brand-light-text">Detecta brotes antes de que lleguen al almacén.</span></div></li>
+              <li class="flex gap-3"><i class="fa-solid fa-user-check text-brand-cyan mt-1"></i><div><strong class="text-brand-dark-text block">Lo revisa tu técnico con la foto</strong><span class="text-brand-light-text">Aprueba o corrige lo que mandan los socios, con aviso cuando hay uno nuevo.</span></div></li>
+              <li class="flex gap-3"><i class="fa-solid fa-clipboard-list text-brand-cyan mt-1"></i><div><strong class="text-brand-dark-text block">Historial de tratamientos</strong><span class="text-brand-light-text">Registro de lo que se ha aplicado en las fincas de los socios.</span></div></li>
+              <li class="flex gap-3"><i class="fa-solid fa-chart-line text-brand-cyan mt-1"></i><div><strong class="text-brand-dark-text block">Resumen de alertas</strong><span class="text-brand-light-text">Escaneos pendientes, brotes activos y actividad reciente.</span></div></li>
             </ul>
             <a href="/panel/" class="mt-8 inline-flex items-center gap-2 text-brand-cyan font-semibold hover:text-brand-green transition-colors duration-300">
               Entrar al panel <i class="fa-solid fa-arrow-right text-sm"></i>
@@ -236,17 +290,35 @@
     <section id="funciona" class="py-20 lg:py-28 bg-white">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center max-w-3xl mx-auto mb-14">
-          <p class="text-brand-green font-semibold text-sm uppercase tracking-wider mb-3">Flujo de trabajo</p>
+          <p class="text-brand-green font-semibold text-sm uppercase tracking-wider mb-3">Así se usa</p>
           <h2 class="text-3xl lg:text-4xl font-bold text-brand-deep tracking-tight mb-4">Cómo funciona</h2>
-          <p class="text-brand-light-text text-lg">Del escaneo en el invernadero al mapa comarcal y al panel de la cooperativa.</p>
+          <p class="text-brand-light-text text-lg">Primero miras el mapa. Si hace falta, escaneas la hoja y tu técnico lo confirma.</p>
         </div>
 
         <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 lg:gap-5">
+          <figure class="group bg-brand-slate rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:scale-102 transition-all duration-300 ease-in-out border border-gray-100 ring-2 ring-brand-amber/40">
+            <div class="overflow-hidden bg-brand-deep p-2">
+              <img
+                src="/assets/mapa-calor-sur-almeria-3d.png"
+                alt="Mapa de calor de plagas en el sur de Almería"
+                class="w-full h-48 sm:h-52 object-contain rounded-lg"
+                loading="lazy"
+                width="1024"
+                height="682"
+              >
+            </div>
+            <figcaption class="p-4 lg:p-5">
+              <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-brand-amber text-brand-deep text-sm font-bold mb-3">1</span>
+              <p class="text-brand-dark-text font-semibold mb-1">Miras el mapa de la comarca</p>
+              <p class="text-sm text-brand-light-text leading-relaxed">Ves dónde se concentran los brotes en el sur de Almería. Tu finca no aparece.</p>
+            </figcaption>
+          </figure>
+
           <figure class="group bg-brand-slate rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:scale-102 transition-all duration-300 ease-in-out border border-gray-100">
             <div class="overflow-hidden">
               <img
                 src="/assets/paso-escaneo.jpg"
-                alt="Agricultor escaneando hoja en invernadero con AgroPlaga AI"
+                alt="Agricultor haciendo foto de hoja en invernadero"
                 class="w-full h-48 sm:h-52 object-cover group-hover:scale-105 transition-transform duration-300"
                 loading="lazy"
                 width="800"
@@ -254,9 +326,9 @@
               >
             </div>
             <figcaption class="p-4 lg:p-5">
-              <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-brand-green text-white text-sm font-bold mb-3">1</span>
-              <p class="text-brand-dark-text font-semibold mb-1">Escanea la hoja</p>
-              <p class="text-sm text-brand-light-text leading-relaxed">Fotografía la hoja afectada en el invernadero. Funciona offline, bajo el plástico.</p>
+              <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-brand-green text-white text-sm font-bold mb-3">2</span>
+              <p class="text-brand-dark-text font-semibold mb-1">Haces foto de la hoja</p>
+              <p class="text-sm text-brand-light-text leading-relaxed">En el invernadero, sin internet. El móvil te da una orientación.</p>
             </figcaption>
           </figure>
 
@@ -264,7 +336,7 @@
             <div class="overflow-hidden">
               <img
                 src="/assets/paso-diagnostico.jpg"
-                alt="IA analizando plaga en hoja — diagnóstico simbólico AgroPlaga"
+                alt="Orientación del móvil sobre la plaga"
                 class="w-full h-48 sm:h-52 object-contain bg-gradient-to-br from-brand-slate to-white p-3 group-hover:scale-105 transition-transform duration-300"
                 loading="lazy"
                 width="800"
@@ -272,9 +344,9 @@
               >
             </div>
             <figcaption class="p-4 lg:p-5">
-              <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-brand-green text-white text-sm font-bold mb-3">2</span>
-              <p class="text-brand-dark-text font-semibold mb-1">Diagnóstico instantáneo</p>
-              <p class="text-sm text-brand-light-text leading-relaxed">Plaga identificada, confianza IA, severidad y productos MAPA con dosis calculada.</p>
+              <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-brand-green text-white text-sm font-bold mb-3">3</span>
+              <p class="text-brand-dark-text font-semibold mb-1">El móvil te orienta</p>
+              <p class="text-sm text-brand-light-text leading-relaxed">No es un diagnóstico oficial. Te ayuda a decidir si llamas al técnico.</p>
             </figcaption>
           </figure>
 
@@ -282,7 +354,7 @@
             <div class="overflow-hidden">
               <img
                 src="/assets/paso-validacion.jpg"
-                alt="Sello de validación oficial del perito cooperativa"
+                alt="El técnico revisa la foto del agricultor"
                 class="w-full h-48 sm:h-52 object-contain bg-gradient-to-br from-brand-slate to-white p-3 group-hover:scale-105 transition-transform duration-300"
                 loading="lazy"
                 width="800"
@@ -290,27 +362,9 @@
               >
             </div>
             <figcaption class="p-4 lg:p-5">
-              <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-brand-cyan text-white text-sm font-bold mb-3">3</span>
-              <p class="text-brand-dark-text font-semibold mb-1">Validación del perito</p>
-              <p class="text-sm text-brand-light-text leading-relaxed">El técnico revisa la foto, corrige si hace falta y sella el caso como validado.</p>
-            </figcaption>
-          </figure>
-
-          <figure class="group bg-brand-slate rounded-2xl overflow-hidden shadow-sm hover:shadow-lg hover:scale-102 transition-all duration-300 ease-in-out border border-gray-100">
-            <div class="overflow-hidden">
-              <img
-                src="/assets/paso-mapa-calor.jpg"
-                alt="Mapa 3D comarcal con puntos de calor de plagas SIGPAC"
-                class="w-full h-48 sm:h-52 object-contain bg-gradient-to-br from-brand-slate to-white p-3 group-hover:scale-105 transition-transform duration-300"
-                loading="lazy"
-                width="800"
-                height="533"
-              >
-            </div>
-            <figcaption class="p-4 lg:p-5">
-              <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-brand-amber text-brand-deep text-sm font-bold mb-3">4</span>
-              <p class="text-brand-dark-text font-semibold mb-1">Mapa de calor comarcal</p>
-              <p class="text-sm text-brand-light-text leading-relaxed">Contribuye de forma anónima por zona SIGPAC. Alertas tempranas cuando la plaga se mueve en la comarca.</p>
+              <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-brand-cyan text-white text-sm font-bold mb-3">4</span>
+              <p class="text-brand-dark-text font-semibold mb-1">Tu técnico lo confirma</p>
+              <p class="text-sm text-brand-light-text leading-relaxed">Si compartes la foto, recibe aviso y la revisa desde el móvil o el ordenador.</p>
             </figcaption>
           </figure>
 
@@ -318,7 +372,7 @@
             <div class="overflow-hidden">
               <img
                 src="/assets/paso-dashboard.jpg"
-                alt="Dashboard isométrico cooperativa — alertas y socios"
+                alt="Panel de la cooperativa con alertas"
                 class="w-full h-48 sm:h-52 object-contain bg-gradient-to-br from-brand-slate to-white p-3 group-hover:scale-105 transition-transform duration-300"
                 loading="lazy"
                 width="800"
@@ -327,8 +381,8 @@
             </div>
             <figcaption class="p-4 lg:p-5">
               <span class="inline-flex items-center justify-center w-8 h-8 rounded-full bg-brand-deep text-white text-sm font-bold mb-3">5</span>
-              <p class="text-brand-dark-text font-semibold mb-1">Dashboard cooperativa</p>
-              <p class="text-sm text-brand-light-text leading-relaxed">Escaneos pendientes, mapa de focos, validaciones y alertas agregadas de todos los socios.</p>
+              <p class="text-brand-dark-text font-semibold mb-1">Registras el tratamiento</p>
+              <p class="text-sm text-brand-light-text leading-relaxed">Producto autorizado, dosis y plazo de carencia. Todo queda anotado.</p>
             </figcaption>
           </figure>
         </div>
@@ -339,9 +393,9 @@
     <section id="funciones" class="py-20 lg:py-28 bg-brand-slate">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center max-w-3xl mx-auto mb-14">
-          <p class="text-brand-green font-semibold text-sm uppercase tracking-wider mb-3">Qué incluye el piloto</p>
-          <h2 class="text-3xl lg:text-4xl font-bold text-brand-deep tracking-tight mb-4">Sanidad vegetal de punta a punta</h2>
-          <p class="text-brand-light-text text-lg">Desde la foto bajo el plástico hasta la validación en tu cooperativa.</p>
+          <p class="text-brand-green font-semibold text-sm uppercase tracking-wider mb-3">Qué incluye la app</p>
+          <h2 class="text-3xl lg:text-4xl font-bold text-brand-deep tracking-tight mb-4">Todo lo que necesitas en el campo</h2>
+          <p class="text-brand-light-text text-lg">Desde el mapa de la comarca hasta el tratamiento y la carencia.</p>
         </div>
 
         <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -349,29 +403,29 @@
             <div class="w-12 h-12 rounded-xl bg-brand-green flex items-center justify-center mb-5 shadow-brand">
               <i class="fa-solid fa-leaf text-xl text-white"></i>
             </div>
-            <h3 class="font-bold text-brand-deep mb-2">PlagaScan offline</h3>
-            <p class="text-sm text-brand-light-text leading-relaxed">IA en el móvil sin internet. 15 plagas del Poniente con modelo ONNX optimizado.</p>
+            <h3 class="font-bold text-brand-deep mb-2">Mapa de la comarca</h3>
+            <p class="text-sm text-brand-light-text leading-relaxed">Mapa de calor con avisos de brotes. Datos agregados por zona, sin enseñar tu parcela.</p>
+          </article>
+          <article class="group bg-brand-slate rounded-2xl p-7 hover:border-brand-green/30 hover:shadow-brand hover:scale-102 border border-transparent transition-all duration-300">
+            <div class="w-12 h-12 rounded-xl bg-brand-green flex items-center justify-center mb-5 shadow-brand">
+              <i class="fa-solid fa-leaf text-xl text-white"></i>
+            </div>
+            <h3 class="font-bold text-brand-deep mb-2">Foto de hoja sin internet</h3>
+            <p class="text-sm text-brand-light-text leading-relaxed">Orientación en el móvil bajo el plástico. Tu técnico confirma el resultado.</p>
           </article>
           <article class="group bg-brand-slate rounded-2xl p-7 hover:border-brand-green/30 hover:shadow-brand hover:scale-102 border border-transparent transition-all duration-300">
             <div class="w-12 h-12 rounded-xl bg-brand-green flex items-center justify-center mb-5 shadow-brand">
               <i class="fa-solid fa-prescription-bottle text-xl text-white"></i>
             </div>
-            <h3 class="font-bold text-brand-deep mb-2">Vademécum MAPA</h3>
-            <p class="text-sm text-brand-light-text leading-relaxed">Productos fitosanitarios vigentes cruzados con plaga y cultivo. Cálculo de dosis por m².</p>
-          </article>
-          <article class="group bg-brand-slate rounded-2xl p-7 hover:border-brand-cyan/30 hover:shadow-brand-cyan hover:scale-102 border border-transparent transition-all duration-300">
-            <div class="w-12 h-12 rounded-xl bg-brand-cyan flex items-center justify-center mb-5">
-              <i class="fa-solid fa-fire-flame-curved text-xl text-white"></i>
-            </div>
-            <h3 class="font-bold text-brand-deep mb-2">Mapa comarcal</h3>
-            <p class="text-sm text-brand-light-text leading-relaxed">Heatmap anónimo SIGPAC. Privacidad de parcela con utilidad colectiva.</p>
+            <h3 class="font-bold text-brand-deep mb-2">Productos autorizados</h3>
+            <p class="text-sm text-brand-light-text leading-relaxed">Qué puedes aplicar según plaga y cultivo, con dosis calculada por metros del invernadero.</p>
           </article>
           <article class="group bg-brand-deep rounded-2xl p-7 hover:scale-102 border border-brand-cyan/20 transition-all duration-300">
             <div class="w-12 h-12 rounded-xl bg-brand-cyan flex items-center justify-center mb-5">
               <i class="fa-solid fa-user-shield text-xl text-white"></i>
             </div>
-            <h3 class="font-bold text-white mb-2">Panel B2B</h3>
-            <p class="text-sm text-brand-light-text leading-relaxed">Peritos validan escaneos, gestionan alertas y supervisan la red de socios.</p>
+            <h3 class="font-bold text-white mb-2">Panel de la cooperativa</h3>
+            <p class="text-sm text-brand-light-text leading-relaxed">El técnico valida fotos, ve alertas y supervisa a los socios desde el ordenador.</p>
           </article>
         </div>
       </div>
@@ -465,6 +519,11 @@
                   class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-brand-light-text focus:outline-none focus:ring-2 focus:ring-brand-green transition-all duration-300">
               </div>
               <div>
+                <label for="email" class="block text-sm font-medium text-white mb-1.5">Email</label>
+                <input type="email" id="email" name="email" required placeholder="tu@email.com"
+                  class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-brand-light-text focus:outline-none focus:ring-2 focus:ring-brand-green transition-all duration-300">
+              </div>
+              <div>
                 <label for="organizacion" class="block text-sm font-medium text-white mb-1.5">Finca / Cooperativa / SAT</label>
                 <input type="text" id="organizacion" name="organizacion" required placeholder="Ej. Finca Los Claveles"
                   class="w-full px-4 py-3 rounded-xl bg-white/10 border border-white/20 text-white placeholder:text-brand-light-text focus:outline-none focus:ring-2 focus:ring-brand-green transition-all duration-300">
@@ -505,6 +564,9 @@
             </div>
             <p id="form-success" class="hidden mt-4 text-center text-brand-cyan text-sm font-medium">
               <i class="fa-solid fa-circle-check mr-1"></i> Solicitud recibida. Te contactaremos pronto.
+            </p>
+            <p id="form-error" class="hidden mt-4 text-center text-red-400 text-sm font-medium">
+              <i class="fa-solid fa-circle-exclamation mr-1"></i> No se pudo enviar. Inténtalo de nuevo o escríbenos a valentinruizleon@gmail.com
             </p>
           </form>
         </div>
@@ -603,11 +665,39 @@
       profileTabs.forEach(function (tab) { tab.addEventListener('click', function () { setProfile(tab.dataset.profile); }); });
       profileCards.forEach(function (card) { card.addEventListener('click', function () { setProfile(card.dataset.profileCard); }); });
 
-      document.getElementById('pilot-form').addEventListener('submit', function (e) {
+      document.getElementById('pilot-form').addEventListener('submit', async function (e) {
         e.preventDefault();
-        console.info('[AgroPlaga Piloto]', Object.fromEntries(new FormData(e.target).entries()));
-        document.getElementById('form-success').classList.remove('hidden');
-        e.target.querySelector('button[type="submit"]').disabled = true;
+        var form = e.target;
+        var btn = form.querySelector('button[type="submit"]');
+        var success = document.getElementById('form-success');
+        var error = document.getElementById('form-error');
+        success.classList.add('hidden');
+        error.classList.add('hidden');
+        btn.disabled = true;
+
+        var payload = {
+          name: form.nombre.value.trim(),
+          email: form.email.value.trim(),
+          organization: form.organizacion.value.trim(),
+          phone: form.telefono.value.trim(),
+          role: form.perfil.value,
+          interest: form.interes.value
+        };
+
+        try {
+          var res = await fetch('/api/v1/contact', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+          });
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          success.classList.remove('hidden');
+          form.reset();
+        } catch (err) {
+          console.error('[AgroPlaga Piloto]', err);
+          error.classList.remove('hidden');
+          btn.disabled = false;
+        }
       });
 
       document.querySelectorAll('a[href^="#"]').forEach(function (anchor) {

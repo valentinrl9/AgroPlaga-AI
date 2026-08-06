@@ -7,7 +7,9 @@ class ContactCreate(BaseModel):
     name: str = Field(min_length=2, max_length=120)
     email: str = Field(min_length=5, max_length=200, pattern=r"^[^@\s]+@[^@\s]+\.[^@\s]+$")
     role: str = Field(min_length=2, max_length=40)
-    message: str = Field(min_length=10, max_length=2000)
+    organization: str = Field(min_length=2, max_length=200)
+    phone: str = Field(min_length=6, max_length=40)
+    interest: str = Field(min_length=2, max_length=80)
 
 
 class ContactRead(BaseModel):

@@ -45,6 +45,13 @@ services:
       OPENMETEO_LAT: ${OPENMETEO_LAT:-36.77}
       OPENMETEO_LON: ${OPENMETEO_LON:-2.81}
       DEMO_SEED_USERS: ${DEMO_SEED_USERS:-false}
+      CONTACT_NOTIFY_EMAIL: ${CONTACT_NOTIFY_EMAIL:-valentinruizleon@gmail.com}
+      SMTP_HOST: ${SMTP_HOST:-}
+      SMTP_PORT: ${SMTP_PORT:-587}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-}
+      SMTP_FROM: ${SMTP_FROM:-}
+      SMTP_USE_TLS: ${SMTP_USE_TLS:-true}
       PYTHONUNBUFFERED: "1"
     depends_on:
       db:
