@@ -1,9 +1,9 @@
 # NEXO Agro — Roadmap de Desarrollo
 
 **Autor:** Valentín Ruiz León  
-**Actualizado:** 12 jul 2026  
+**Actualizado:** 3 ago 2026  
 **Rama:** `nexoagro`  
-**Estado:** ✅ **Fase 0 cerrada** — unificación validada en local · producción sigue en AgroPlaga piloto
+**Estado:** ✅ **MVP 1.B desplegado** en `https://agroplaga-ai.farm` (Field Pro + notificaciones perito)
 
 ---
 
@@ -99,6 +99,8 @@
 ### Experiencia perito móvil (ex v1.6 / Fase 11)
 - [x] Home "Centro de mando" para rol `tech` (KPIs + CTAs)
 - [x] Cola validación con foto (`TechScanValidationScreen` → `/api/v1/tech/pending-scans`)
+- [x] Notificaciones in-app perito al compartir escaneo (polling panel + app; migración `0016`)
+- [ ] **Catálogo extendido perito:** autocomplete con filtro al escribir sobre catálogo amplio (EPPO + `plague_registry`), no limitado a las 15 plagas de la IA; opción «otra plaga»; cola de sugerencias revisable por admin → alimentar catálogo y dataset semilla
 - [ ] Mapa técnico con capas (calor, pendientes, validados) — presets parciales vía mapa existente
 - [ ] Modo visita a finca + informe PDF
 
@@ -211,7 +213,7 @@ Fase 0 (ahora)
 | jul 2026 | Decisión unificación → rama `nexoagro` |
 | jul 2026 | Fase 0: backend Climate PostgreSQL + shell Nexo + UI Climate B+ |
 | jul 2026 | Fase 0 validada: checklist manual E2E + commit `14947d9` (mapa validado, migración 0012) |
-| jul 2026 | Fases 1–2 parcial: Climate riesgo/PDF/refresh, perito móvil, carencia + biocidas stub (`0013`) |
+| ago 2026 | MVP 1.B (Field Pro) en producción: notificaciones perito, SIEX/Climate/MAPA, migración `0016` |
 
 ---
 
