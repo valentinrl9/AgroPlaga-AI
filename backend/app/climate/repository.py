@@ -19,13 +19,14 @@ def _clean(value):
     return value
 
 
-def _load_daily(db: Session, df: pd.DataFrame) -> None:
+def _load_daily(db: Session, station_id: int, df: pd.DataFrame) -> None:
     if df.empty:
         return
-    db.query(ClimateDaily).delete()
+    db.query(ClimateDaily).filter(ClimateDaily.station_id == station_id).delete()
     for row in df.itertuples(index=False):
         db.add(
             ClimateDaily(
+                station_id=station_id,
                 fecha=row.fecha,
                 et0_diaria=_clean(row.et0_diaria),
                 radiacion_diaria=_clean(row.radiacion_diaria),
@@ -38,13 +39,14 @@ def _load_daily(db: Session, df: pd.DataFrame) -> None:
         )
 
 
-def _load_weekly(db: Session, df: pd.DataFrame) -> None:
+def _load_weekly(db: Session, station_id: int, df: pd.DataFrame) -> None:
     if df.empty:
         return
-    db.query(ClimateWeekly).delete()
+    db.query(ClimateWeekly).filter(ClimateWeekly.station_id == station_id).delete()
     for row in df.itertuples(index=False):
         db.add(
             ClimateWeekly(
+                station_id=station_id,
                 semana_id=row.semana_id,
                 et0_semanal=_clean(row.et0_semanal),
                 radiacion_semanal=_clean(row.radiacion_semanal),
@@ -57,13 +59,14 @@ def _load_weekly(db: Session, df: pd.DataFrame) -> None:
         )
 
 
-def _load_monthly(db: Session, df: pd.DataFrame) -> None:
+def _load_monthly(db: Session, station_id: int, df: pd.DataFrame) -> None:
     if df.empty:
         return
-    db.query(ClimateMonthly).delete()
+    db.query(ClimateMonthly).filter(ClimateMonthly.station_id == station_id).delete()
     for row in df.itertuples(index=False):
         db.add(
             ClimateMonthly(
+                station_id=station_id,
                 mes=row.mes,
                 et0_mensual=_clean(row.et0_mensual),
                 radiacion_mensual=_clean(row.radiacion_mensual),
@@ -76,20 +79,30 @@ def _load_monthly(db: Session, df: pd.DataFrame) -> None:
         )
 
 
-def load_aggregates(db: Session, diario: pd.DataFrame, semanal: pd.DataFrame, mensual: pd.DataFrame) -> None:
-    _load_daily(db, diario)
-    _load_weekly(db, semanal)
-    _load_monthly(db, mensual)
+def load_aggregates(
+    db: Session,
+    station_id: int,
+    diario: pd.DataFrame,
+    semanal: pd.DataFrame,
+    mensual: pd.DataFrame,
+) -> None:
+    _load_daily(db, station_id, diario)
+    _load_weekly(db, station_id, semanal)
+    _load_monthly(db, station_id, mensual)
     db.commit()
 
 
-def count_daily(db: Session) -> int:
-    return db.query(ClimateDaily).count()
+def count_daily(db: Session, station_id: int | None = None) -> int:
+    query = db.query(ClimateDaily)
+    if station_id is not None:
+        query = query.filter(ClimateDaily.station_id == station_id)
+    return query.count()
 
 
-def get_last_n_daily(db: Session, n: int) -> list[dict]:
+def get_last_n_daily(db: Session, station_id: int, n: int) -> list[dict]:
     rows = (
         db.query(ClimateDaily)
+        .filter(ClimateDaily.station_id == station_id)
         .order_by(ClimateDaily.fecha.desc())
         .limit(n)
         .all()
@@ -98,18 +111,27 @@ def get_last_n_daily(db: Session, n: int) -> list[dict]:
     return [_daily_to_dict(r) for r in rows]
 
 
-def get_daily_between(db: Session, start, end) -> list[dict]:
+def get_daily_between(db: Session, station_id: int, start, end) -> list[dict]:
     rows = (
         db.query(ClimateDaily)
-        .filter(ClimateDaily.fecha >= start, ClimateDaily.fecha <= end)
+        .filter(
+            ClimateDaily.station_id == station_id,
+            ClimateDaily.fecha >= start,
+            ClimateDaily.fecha <= end,
+        )
         .order_by(ClimateDaily.fecha.asc())
         .all()
     )
     return [_daily_to_dict(r) for r in rows]
 
 
-def get_max_fecha(db: Session):
-    row = db.query(ClimateDaily.fecha).order_by(ClimateDaily.fecha.desc()).first()
+def get_max_fecha(db: Session, station_id: int):
+    row = (
+        db.query(ClimateDaily.fecha)
+        .filter(ClimateDaily.station_id == station_id)
+        .order_by(ClimateDaily.fecha.desc())
+        .first()
+    )
     return row[0] if row else None
 
 

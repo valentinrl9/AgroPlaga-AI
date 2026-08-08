@@ -13,17 +13,17 @@ from sqlalchemy.orm import Session
 
 from app.climate.config import (
     CLIMATE_PREVIEW_OPEN,
-    DATASET_FINAL_CSV,
     ETL_INTERVAL_SECONDS,
     ETL_LAST_RUN_JSON,
-    LAT,
-    LON,
-    REALTIME_CSV,
+    station_csv_paths,
 )
 from app.climate.metrics import calc_dew_point_c, calc_dpv_kpa, dpv_status
 from app.climate.openmeteo_transform import calc_estres_termico
 from app.climate.repository import get_daily_between, get_last_n_daily, get_max_fecha, count_daily
+from app.climate.stations import list_active_stations, resolve_station, station_to_dict
+from app.models.climate_station import ClimateStation
 from app.models.user import User
+from app.models.zone import AgriZone
 
 
 def user_has_climate_access(user: User) -> bool:
@@ -34,13 +34,35 @@ def user_has_climate_access(user: User) -> bool:
     return CLIMATE_PREVIEW_OPEN
 
 
-def get_health(db: Session) -> dict:
+def _station_context(db: Session, zone_id: int | None) -> tuple[ClimateStation, dict]:
+    station = resolve_station(db, zone_id)
+    zone_name = None
+    if station.zone_id is not None:
+        zone = db.query(AgriZone).filter(AgriZone.id == station.zone_id).first()
+        zone_name = zone.name if zone else None
+    return station, station_to_dict(station, zone_name=zone_name)
+
+
+def get_stations(db: Session) -> list[dict]:
+    rows = list_active_stations(db)
+    result = []
+    for station in rows:
+        zone_name = None
+        if station.zone_id is not None:
+            zone = db.query(AgriZone).filter(AgriZone.id == station.zone_id).first()
+            zone_name = zone.name if zone else None
+        result.append(station_to_dict(station, zone_name=zone_name))
+    return result
+
+
+def get_health(db: Session, zone_id: int | None = None) -> dict:
+    station, station_info = _station_context(db, zone_id)
     return {
-        "status": "ok" if count_daily(db) > 0 else "degraded",
+        "status": "ok" if count_daily(db, station.id) > 0 else "degraded",
         "postgres": True,
-        "climate_daily_rows": count_daily(db),
-        "realtime_csv": REALTIME_CSV.exists(),
-        "ubicacion": {"lat": LAT, "lon": LON},
+        "climate_daily_rows": count_daily(db, station.id),
+        "stations_active": len(list_active_stations(db)),
+        "station": station_info,
         "preview_open": CLIMATE_PREVIEW_OPEN,
     }
 
@@ -66,11 +88,12 @@ def get_etl_status() -> dict:
     }
 
 
-def _metricas_dia(ts) -> dict | None:
+def _metricas_dia(station: ClimateStation, ts) -> dict | None:
     hoy = pd.to_datetime(ts).date()
-    if not DATASET_FINAL_CSV.exists():
+    dataset_csv = station_csv_paths(station.slug)["dataset"]
+    if not dataset_csv.exists():
         return None
-    df = pd.read_csv(DATASET_FINAL_CSV)
+    df = pd.read_csv(dataset_csv)
     df["timestamp"] = pd.to_datetime(df["timestamp"])
     df = df[df["timestamp"].dt.date == hoy].sort_values("timestamp")
     if df.empty:
@@ -111,14 +134,15 @@ def dew_point_status(dew_point_c: float, temp_c: float) -> str:
     return "optimal"
 
 
-def get_actual(db: Session) -> dict:
-    del db
+def get_actual(db: Session, zone_id: int | None = None) -> dict:
+    station, station_info = _station_context(db, zone_id)
+    realtime_csv = station_csv_paths(station.slug)["realtime"]
     try:
-        df = pd.read_csv(REALTIME_CSV)
+        df = pd.read_csv(realtime_csv)
     except Exception as exc:
-        return {"error": f"No se pudo leer realtime: {exc}"}
+        return {"error": f"No se pudo leer realtime ({station.slug}): {exc}"}
     if df.empty:
-        return {"error": "Realtime vacío. Ejecuta ETL primero."}
+        return {"error": f"Realtime vacío para {station.name}. Ejecuta ETL primero."}
 
     row = df.iloc[-1]
     ts = row["timestamp"]
@@ -128,6 +152,7 @@ def get_actual(db: Session) -> dict:
     dew = calc_dew_point_c(t, rh)
 
     salida = {
+        "station": station_info,
         "timestamp": str(ts),
         "et0_hora": round(float(row["et0_fao_evapotranspiration"]), 2),
         "temperatura": t,
@@ -154,7 +179,7 @@ def get_actual(db: Session) -> dict:
             2,
         ),
     }
-    metricas = _metricas_dia(ts)
+    metricas = _metricas_dia(station, ts)
     if metricas:
         salida.update(metricas)
     else:
@@ -165,10 +190,11 @@ def get_actual(db: Session) -> dict:
     return salida
 
 
-def get_prediccion(db: Session, dias: int = 7) -> list[dict] | dict:
-    rows = get_last_n_daily(db, 14)
+def get_prediccion(db: Session, dias: int = 7, zone_id: int | None = None) -> list[dict] | dict:
+    station, _ = _station_context(db, zone_id)
+    rows = get_last_n_daily(db, station.id, 14)
     if not rows:
-        return {"error": "No hay datos en climate_daily. Ejecuta ETL."}
+        return {"error": f"No hay datos en climate_daily para {station.name}. Ejecuta ETL."}
 
     df = pd.DataFrame(rows)
     df["fecha"] = pd.to_datetime(df["fecha"])
@@ -233,15 +259,16 @@ def _evaluar_dia(d: dict) -> tuple[int, list[str]]:
     return nivel, condiciones
 
 
-def get_alertas(db: Session) -> dict:
-    reales = get_last_n_daily(db, 7)
+def get_alertas(db: Session, zone_id: int | None = None) -> dict:
+    station, station_info = _station_context(db, zone_id)
+    reales = get_last_n_daily(db, station.id, 7)
     alertas_reales = []
     for d in reales:
         nivel, condiciones = _evaluar_dia(d)
         if nivel >= 2:
             alertas_reales.append(f"[{d['fecha']}] " + " · ".join(condiciones))
 
-    pred = get_prediccion(db, 7)
+    pred = get_prediccion(db, 7, zone_id=zone_id)
     alertas_pred = []
     if isinstance(pred, list):
         for d in pred:
@@ -249,7 +276,7 @@ def get_alertas(db: Session) -> dict:
             if nivel >= 2:
                 alertas_pred.append(f"[{d['fecha']}] Previsto: " + " · ".join(condiciones))
 
-    riesgo = get_riesgo_semanal(db, dias=7)
+    riesgo = get_riesgo_semanal(db, dias=7, zone_id=zone_id)
     combinado = []
     if isinstance(riesgo, dict) and riesgo.get("diario"):
         high_days = [d for d in riesgo["diario"] if d.get("riesgo_pct", 0) >= 55]
@@ -264,6 +291,7 @@ def get_alertas(db: Session) -> dict:
         )
 
     return {
+        "station": station_info,
         "resumen": f"{len(alertas_reales)} día(s) con alertas recientes",
         "alertas_reales": alertas_reales,
         "alertas_prediccion": alertas_pred,
@@ -278,13 +306,14 @@ def get_alertas(db: Session) -> dict:
     }
 
 
-def get_recomendaciones(db: Session, dias: int = 7) -> dict:
-    pred = get_prediccion(db, dias)
+def get_recomendaciones(db: Session, dias: int = 7, zone_id: int | None = None) -> dict:
+    station, station_info = _station_context(db, zone_id)
+    pred = get_prediccion(db, dias, zone_id=zone_id)
     if not isinstance(pred, list):
         return pred
 
     diario = []
-    for i, dia in enumerate(pred):
+    for dia in pred:
         et0 = dia["et0_diaria"]
         estres = dia["estres_termico_medio"]
         humedad = dia["humedad_media"]
@@ -321,11 +350,11 @@ def get_recomendaciones(db: Session, dias: int = 7) -> dict:
         "recomendacion_general": "Mantén estrategia de ventilación según alertas.",
     }
 
-    fecha_max = get_max_fecha(db)
+    fecha_max = get_max_fecha(db, station.id)
     resumen_mensual = {"informacion": ["Sin datos mensuales"], "nivel_riesgo": "—", "recomendacion_general": "—"}
     if fecha_max:
         inicio = fecha_max - timedelta(days=30)
-        mes_rows = get_daily_between(db, inicio, fecha_max)
+        mes_rows = get_daily_between(db, station.id, inicio, fecha_max)
         if mes_rows:
             lluvia_total = sum(float(r.get("precipitacion_diaria") or 0) for r in mes_rows)
             resumen_mensual = {
@@ -338,11 +367,17 @@ def get_recomendaciones(db: Session, dias: int = 7) -> dict:
                 "recomendacion_general": "Revisa ventilación si humedad persistente > 85%.",
             }
 
-    return {"diario": diario, "resumen_semanal": resumen_semanal, "resumen_mensual": resumen_mensual}
+    return {
+        "station": station_info,
+        "diario": diario,
+        "resumen_semanal": resumen_semanal,
+        "resumen_mensual": resumen_mensual,
+    }
 
 
-def get_riesgo_semanal(db: Session, dias: int = 7) -> dict:
-    pred = get_prediccion(db, dias)
+def get_riesgo_semanal(db: Session, dias: int = 7, zone_id: int | None = None) -> dict:
+    station, station_info = _station_context(db, zone_id)
+    pred = get_prediccion(db, dias, zone_id=zone_id)
     if not isinstance(pred, list):
         return pred
 
@@ -361,6 +396,7 @@ def get_riesgo_semanal(db: Session, dias: int = 7) -> dict:
         })
 
     return {
+        "station": station_info,
         "score_pct": int(round(sum(scores) / len(scores))) if scores else 0,
         "diario": diario,
     }

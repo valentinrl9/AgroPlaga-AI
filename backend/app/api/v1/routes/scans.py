@@ -24,6 +24,8 @@ def _scan_to_read(scan: Scan) -> ScanRead:
         confidence=scan.confidence,
         severity=scan.severity,
         location=scan.location,
+        latitude=scan.latitude,
+        longitude=scan.longitude,
         farm_id=scan.farm_id,
         created_at=scan.created_at,
         share_with_tech=scan.share_with_tech,
@@ -89,6 +91,8 @@ def create_scan(
         confidence=scan_data.confidence,
         severity=scan_data.severity,
         location=scan_data.location,
+        latitude=scan_data.latitude,
+        longitude=scan_data.longitude,
         farm_id=scan_data.farm_id,
         share_with_tech=False,
     )
@@ -107,11 +111,18 @@ async def create_scan_with_image(
     severity: str = Form(...),
     share_with_tech: bool = Form(...),
     location: str | None = Form(None),
+    latitude: float | None = Form(None),
+    longitude: float | None = Form(None),
     farm_id: int | None = Form(None),
     image: UploadFile = File(...),
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
+    if (latitude is None) ^ (longitude is None):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="latitude y longitude deben enviarse juntos",
+        )
     if not share_with_tech:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -127,6 +138,8 @@ async def create_scan_with_image(
         confidence=confidence,
         severity=severity,
         location=location,
+        latitude=latitude,
+        longitude=longitude,
         farm_id=farm_id,
         share_with_tech=True,
         tech_status="pending",

@@ -1,4 +1,6 @@
-from sqlalchemy import Boolean, Column, Integer, String
+from datetime import datetime
+
+from sqlalchemy import Boolean, Column, DateTime, Integer, String
 
 from app.db.base import Base
 
@@ -12,6 +14,7 @@ class User(Base):
     hashed_password = Column(String, nullable=False)
     role = Column(String, default="farmer")
     contribution_count = Column(Integer, default=0, nullable=False)
+    consent_accepted_at = Column(DateTime(timezone=True), nullable=True)
     has_field_premium = Column(Boolean, default=False, nullable=False)
     has_climate_module = Column(Boolean, default=False, nullable=False)
     has_siex_module = Column(Boolean, default=False, nullable=False)

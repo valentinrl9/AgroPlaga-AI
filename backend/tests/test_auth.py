@@ -4,7 +4,7 @@ from tests.conftest import auth_headers, register_and_login
 def test_register_returns_token(client, unique_email):
     response = client.post(
         "/api/v1/auth/register",
-        json={"name": "Farmer", "email": unique_email, "password": "secret123"},
+        json={"name": "Farmer", "email": unique_email, "password": "secret123", "consent_map_anonymous": True},
     )
     assert response.status_code == 200
     data = response.json()
@@ -13,7 +13,12 @@ def test_register_returns_token(client, unique_email):
 
 
 def test_register_duplicate_email(client, unique_email):
-    payload = {"name": "Farmer", "email": unique_email, "password": "secret123"}
+    payload = {
+        "name": "Farmer",
+        "email": unique_email,
+        "password": "secret123",
+        "consent_map_anonymous": True,
+    }
     assert client.post("/api/v1/auth/register", json=payload).status_code == 200
     response = client.post("/api/v1/auth/register", json=payload)
     assert response.status_code == 400
@@ -23,7 +28,12 @@ def test_login_valid_credentials(client, unique_email):
     password = "secret123"
     client.post(
         "/api/v1/auth/register",
-        json={"name": "Farmer", "email": unique_email, "password": password},
+        json={
+            "name": "Farmer",
+            "email": unique_email,
+            "password": password,
+            "consent_map_anonymous": True,
+        },
     )
     response = client.post(
         "/api/v1/auth/login",
@@ -36,7 +46,7 @@ def test_login_valid_credentials(client, unique_email):
 def test_login_invalid_password(client, unique_email):
     client.post(
         "/api/v1/auth/register",
-        json={"name": "Farmer", "email": unique_email, "password": "secret123"},
+        json={"name": "Farmer", "email": unique_email, "password": "secret123", "consent_map_anonymous": True},
     )
     response = client.post(
         "/api/v1/auth/login",
@@ -49,7 +59,12 @@ def test_oauth2_token_endpoint(client, unique_email):
     password = "secret123"
     client.post(
         "/api/v1/auth/register",
-        json={"name": "Farmer", "email": unique_email, "password": password},
+        json={
+            "name": "Farmer",
+            "email": unique_email,
+            "password": password,
+            "consent_map_anonymous": True,
+        },
     )
     response = client.post(
         "/api/v1/auth/token",

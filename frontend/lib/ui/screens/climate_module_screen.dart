@@ -4,6 +4,8 @@ import "package:flutter/material.dart";
 
 import "../../../core/nexo_colors.dart";
 import "../../../data/repositories/climate_repository.dart";
+import "../../../data/repositories/farm_repository.dart";
+import "../../../models/farm.dart";
 import "../widgets/primary_button.dart";
 import "../widgets/nexo_lock_screen.dart";
 import "climate/climate_advisor.dart";
@@ -19,6 +21,7 @@ class ClimateModuleScreen extends StatefulWidget {
 
 class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTickerProviderStateMixin {
   final _repo = ClimateRepository();
+  final _farmRepo = FarmRepository();
   late TabController _tabs;
   Timer? _refreshTimer;
 
@@ -26,6 +29,9 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
   bool _loading = true;
   String? _error;
   String? _lastSync;
+  List<Farm> _farms = [];
+  int? _selectedZoneId;
+  String? _stationLabel;
 
   Map<String, dynamic>? _actual;
   Map<String, dynamic>? _recomendaciones;
@@ -64,12 +70,27 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
         if (mounted) setState(() => _unlocked = false);
         return;
       }
+
+      if (_farms.isEmpty) {
+        final farms = await _farmRepo.fetchFarms();
+        if (mounted) {
+          setState(() {
+            _farms = farms;
+            _selectedZoneId ??= farms.where((f) => f.zoneId != null).map((f) => f.zoneId).cast<int?>().firstWhere(
+                  (id) => id != null,
+                  orElse: () => null,
+                );
+          });
+        }
+      }
+
+      final zoneId = _selectedZoneId;
       final results = await Future.wait([
-        _repo.fetchActual(),
-        _repo.fetchRecomendaciones(),
-        _repo.fetchRecomendaciones(dias: 30),
-        _repo.fetchAlertas(),
-        _repo.fetchRiesgo(),
+        _repo.fetchActual(zoneId: zoneId),
+        _repo.fetchRecomendaciones(zoneId: zoneId),
+        _repo.fetchRecomendaciones(dias: 30, zoneId: zoneId),
+        _repo.fetchAlertas(zoneId: zoneId),
+        _repo.fetchRiesgo(zoneId: zoneId),
         _repo.fetchEtlStatus(),
       ]);
       if (!mounted) return;
@@ -79,6 +100,7 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
       final alertas = results[3] as Map<String, dynamic>;
       final riesgo = results[4] as Map<String, dynamic>;
       final etl = results[5] as Map<String, dynamic>;
+      final station = actual["station"] as Map<String, dynamic>? ?? recs["station"] as Map<String, dynamic>?;
       setState(() {
         _unlocked = true;
         _actual = actual;
@@ -86,6 +108,7 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
         _recomendaciones30 = recs30;
         _alertas = alertas;
         _riesgo = riesgo;
+        _stationLabel = station?["name"] as String? ?? "Sur de Almería";
         _consejos = ClimateAdvisor.generate(actual: actual, recomendaciones: recs);
         _lastSync = etl["last_run"]?.toString() ?? DateTime.now().toIso8601String();
         _loading = false;
@@ -97,6 +120,40 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
         _loading = false;
       });
     }
+  }
+
+  void _onZoneChanged(int? zoneId) {
+    setState(() => _selectedZoneId = zoneId);
+    _bootstrap();
+  }
+
+  Widget _farmSelector() {
+    final withZone = _farms.where((f) => f.zoneId != null).toList();
+    if (withZone.isEmpty) {
+      return Text(
+        _stationLabel ?? "Estación Poniente (fallback)",
+        style: const TextStyle(color: NexoColors.textSecondary, fontSize: 13),
+      );
+    }
+
+    final zoneFarms = <int, Farm>{};
+    for (final farm in withZone) {
+      zoneFarms.putIfAbsent(farm.zoneId!, () => farm);
+    }
+
+    return DropdownButtonFormField<int>(
+      value: zoneFarms.containsKey(_selectedZoneId) ? _selectedZoneId : zoneFarms.keys.first,
+      decoration: const InputDecoration(labelText: "Finca / municipio"),
+      items: zoneFarms.entries
+          .map(
+            (e) => DropdownMenuItem(
+              value: e.key,
+              child: Text("${e.value.name} · ${e.value.crop}", overflow: TextOverflow.ellipsis),
+            ),
+          )
+          .toList(),
+      onChanged: _loading ? null : _onZoneChanged,
+    );
   }
 
   List<Map<String, dynamic>> _chartSeries() {
@@ -199,10 +256,18 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
         padding: const EdgeInsets.all(16),
         children: [
           const Text(
-            "El Ejido, Almería · Clima en tiempo real",
+            "Estación meteorológica según tu finca",
             style: TextStyle(color: NexoColors.textSecondary, fontSize: 13),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 8),
+          _farmSelector(),
+          if (_stationLabel != null) ...[
+            const SizedBox(height: 8),
+            Text(
+              "Datos: $_stationLabel",
+              style: const TextStyle(color: NexoColors.bioGreen, fontSize: 13, fontWeight: FontWeight.w600),
+            ),
+          ],
           if (_actual != null) ...[
             ClimateMetricCard(
               emoji: "🌡️",

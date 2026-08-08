@@ -1,6 +1,6 @@
 """NEXO Climate — tablas agregadas Open-Meteo (PostgreSQL)."""
 
-from sqlalchemy import Column, Date, Float, String
+from sqlalchemy import Column, Date, Float, ForeignKey, Integer, String
 
 from app.db.base import Base
 
@@ -8,6 +8,7 @@ from app.db.base import Base
 class ClimateDaily(Base):
     __tablename__ = "climate_daily"
 
+    station_id = Column(Integer, ForeignKey("climate_stations.id"), primary_key=True)
     fecha = Column(Date, primary_key=True)
     et0_diaria = Column(Float, nullable=True)
     radiacion_diaria = Column(Float, nullable=True)
@@ -21,6 +22,7 @@ class ClimateDaily(Base):
 class ClimateWeekly(Base):
     __tablename__ = "climate_weekly"
 
+    station_id = Column(Integer, ForeignKey("climate_stations.id"), primary_key=True)
     semana_id = Column(String(10), primary_key=True)
     et0_semanal = Column(Float, nullable=True)
     radiacion_semanal = Column(Float, nullable=True)
@@ -34,6 +36,7 @@ class ClimateWeekly(Base):
 class ClimateMonthly(Base):
     __tablename__ = "climate_monthly"
 
+    station_id = Column(Integer, ForeignKey("climate_stations.id"), primary_key=True)
     mes = Column(String(7), primary_key=True)
     et0_mensual = Column(Float, nullable=True)
     radiacion_mensual = Column(Float, nullable=True)

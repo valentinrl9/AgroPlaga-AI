@@ -2,6 +2,7 @@ class Routes {
   static const splash = "/";
   static const login = "/login";
   static const register = "/register";
+  static const onboarding = "/onboarding";
   static const home = "/home";
   static const scan = "/scan";
   static const result = "/result";
@@ -11,6 +12,8 @@ class Routes {
   static const alerts = "/alerts";
   static const contribute = "/contribute";
   static const community = "/community";
+  static const incidents = "/incidents";
+  static const incidentDetail = "/incident-detail";
   static const farms = "/farms";
   static const techValidation = "/tech-validation";
   static const techScanValidation = "/tech-scan-validation";

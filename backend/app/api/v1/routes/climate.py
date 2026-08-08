@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db
@@ -20,9 +20,18 @@ def _require_climate(user: User = Depends(get_current_active_user)) -> User:
     return user
 
 
+@router.get("/stations")
+def list_stations(db: Session = Depends(get_db), _user: User = Depends(_require_climate)):
+    return climate_service.get_stations(db)
+
+
 @router.get("/health")
-def climate_health(db: Session = Depends(get_db), _user: User = Depends(_require_climate)):
-    return climate_service.get_health(db)
+def climate_health(
+    zone_id: int | None = Query(default=None),
+    db: Session = Depends(get_db),
+    _user: User = Depends(_require_climate),
+):
+    return climate_service.get_health(db, zone_id=zone_id)
 
 
 @router.get("/etl/status")
@@ -43,34 +52,57 @@ def etl_run(
 
 
 @router.get("/actual")
-def actual(db: Session = Depends(get_db), _user: User = Depends(_require_climate)):
-    data = climate_service.get_actual(db)
+def actual(
+    zone_id: int | None = Query(default=None),
+    db: Session = Depends(get_db),
+    _user: User = Depends(_require_climate),
+):
+    data = climate_service.get_actual(db, zone_id=zone_id)
     if data.get("error"):
         raise HTTPException(status_code=503, detail=data["error"])
     return data
 
 
 @router.get("/prediccion")
-def prediccion(dias: int = 7, db: Session = Depends(get_db), _user: User = Depends(_require_climate)):
-    result = climate_service.get_prediccion(db, dias=dias)
+def prediccion(
+    dias: int = 7,
+    zone_id: int | None = Query(default=None),
+    db: Session = Depends(get_db),
+    _user: User = Depends(_require_climate),
+):
+    result = climate_service.get_prediccion(db, dias=dias, zone_id=zone_id)
     if isinstance(result, dict) and result.get("error"):
         raise HTTPException(status_code=503, detail=result["error"])
     return result
 
 
 @router.get("/recomendaciones")
-def recomendaciones(dias: int = 7, db: Session = Depends(get_db), _user: User = Depends(_require_climate)):
-    return climate_service.get_recomendaciones(db, dias=dias)
+def recomendaciones(
+    dias: int = 7,
+    zone_id: int | None = Query(default=None),
+    db: Session = Depends(get_db),
+    _user: User = Depends(_require_climate),
+):
+    return climate_service.get_recomendaciones(db, dias=dias, zone_id=zone_id)
 
 
 @router.get("/alertas")
-def alertas(db: Session = Depends(get_db), _user: User = Depends(_require_climate)):
-    return climate_service.get_alertas(db)
+def alertas(
+    zone_id: int | None = Query(default=None),
+    db: Session = Depends(get_db),
+    _user: User = Depends(_require_climate),
+):
+    return climate_service.get_alertas(db, zone_id=zone_id)
 
 
 @router.get("/riesgo")
-def riesgo(dias: int = 7, db: Session = Depends(get_db), _user: User = Depends(_require_climate)):
-    result = climate_service.get_riesgo_semanal(db, dias=dias)
+def riesgo(
+    dias: int = 7,
+    zone_id: int | None = Query(default=None),
+    db: Session = Depends(get_db),
+    _user: User = Depends(_require_climate),
+):
+    result = climate_service.get_riesgo_semanal(db, dias=dias, zone_id=zone_id)
     if isinstance(result, dict) and result.get("error"):
         raise HTTPException(status_code=503, detail=result["error"])
     return result

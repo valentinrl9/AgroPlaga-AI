@@ -18,6 +18,9 @@ import "ui/screens/tech_validation_screen.dart";
 import "ui/screens/login_screen.dart";
 import "ui/screens/map_screen.dart";
 import "ui/screens/map_screen_args.dart";
+import "ui/screens/incident_detail_screen.dart";
+import "ui/screens/incidents_screen.dart";
+import "ui/screens/onboarding_wizard_screen.dart";
 import "ui/screens/register_screen.dart";
 import "ui/screens/result_screen.dart";
 import "ui/screens/scan_screen.dart";
@@ -44,12 +47,14 @@ class NexoAgroApp extends StatelessWidget {
         Routes.splash: (context) => const SplashScreen(),
         Routes.login: (context) => const LoginScreen(),
         Routes.register: (context) => const RegisterScreen(),
+        Routes.onboarding: (context) => const OnboardingWizardScreen(),
         Routes.home: (context) => const NexoShellScreen(),
         Routes.scan: (context) => const ScanScreen(),
         Routes.history: (context) => const HistoryScreen(),
         Routes.alerts: (context) => const AlertsScreen(),
         Routes.community: (context) => const CommunityScreen(),
         Routes.farms: (context) => const FarmsScreen(),
+        Routes.incidents: (context) => const IncidentsScreen(),
         Routes.techValidation: (context) => const TechValidationScreen(),
         Routes.techScanValidation: (context) => const TechScanValidationScreen(),
         Routes.analytics: (context) => const AnalyticsScreen(),
@@ -80,6 +85,14 @@ class NexoAgroApp extends StatelessWidget {
         if (settings.name == Routes.registerTreatment) {
           final scan = settings.arguments as Scan?;
           return MaterialPageRoute(builder: (context) => RegisterTreatmentScreen(scan: scan));
+        }
+        if (settings.name == Routes.incidentDetail) {
+          final incidentId = settings.arguments as int?;
+          if (incidentId != null) {
+            return MaterialPageRoute(
+              builder: (context) => IncidentDetailScreen(incidentId: incidentId),
+            );
+          }
         }
         return null;
       },

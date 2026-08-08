@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 
+import "../../core/onboarding_gate.dart";
 import "../../core/nexo_colors.dart";
 import "../../core/routes.dart";
 import "../../core/session.dart";
@@ -22,7 +23,7 @@ class _SplashScreenState extends State<SplashScreen> {
   }
 
   Future<void> _bootstrap() async {
-    var goHome = false;
+    var nextRoute = Routes.login;
 
     if (await Session.restore()) {
       try {
@@ -35,14 +36,16 @@ class _SplashScreenState extends State<SplashScreen> {
           hasSiexModule: profile.hasSiexModule,
           hasSiexEnterprise: profile.hasSiexEnterprise,
         );
-        goHome = await Session.hasToken();
+        if (await Session.hasToken()) {
+          nextRoute = await OnboardingGate.postAuthRoute();
+        }
       } catch (_) {
         await Session.clear();
       }
     }
 
     if (!mounted) return;
-    Navigator.pushReplacementNamed(context, goHome ? Routes.home : Routes.login);
+    Navigator.pushReplacementNamed(context, nextRoute);
   }
 
   @override

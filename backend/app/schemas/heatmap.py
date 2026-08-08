@@ -19,3 +19,6 @@ class HeatmapResponse(BaseModel):
     min_severity: int
     plague: str | None
     cells: list[HeatmapCellRead]
+    historical_enabled: bool = False
+    max_hours: int = 24
+    allowed_hours: list[int] = Field(default_factory=lambda: [24])

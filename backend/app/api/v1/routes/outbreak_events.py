@@ -9,6 +9,7 @@ from app.models.outbreak_event import OutbreakEvent
 from app.models.user import User
 from app.models.zone import AgriZone
 from app.schemas.outbreak_event import OutbreakEventCreate, OutbreakEventRead, OutbreakEventValidate
+from app.services.heatmap_access import enforce_map_hours
 from app.services.alert_engine import evaluate_zone_plague
 from app.services.outbreak_event_service import (
     create_anonymous_event,
@@ -58,6 +59,7 @@ def list_outbreak_events(
     if zone_id is not None:
         query = query.filter(OutbreakEvent.zone_id == zone_id)
     if hours is not None:
+        hours = enforce_map_hours(_current_user, hours)
         since = datetime.now(timezone.utc) - timedelta(hours=hours)
         query = query.filter(OutbreakEvent.reported_at >= since)
     if min_severity > 1:

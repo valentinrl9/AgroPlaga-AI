@@ -1,6 +1,11 @@
-"""Cuentas demo fijas para pruebas locales (upsert en cada arranque)."""
+"""Cuentas demo fijas para pruebas locales y piloto (upsert en cada arranque).
+
+Activar con DEMO_SEED_USERS=true (local por defecto; pilot via deploy/pilot.env).
+Contraseña: DEMO_USERS_PASSWORD (default nexo1234 en local).
+"""
 
 import os
+from datetime import datetime, timezone
 
 from app.core.security import get_password_hash
 from app.db.session import SessionLocal
@@ -50,6 +55,7 @@ def seed_local_demo_users() -> None:
     db = SessionLocal()
     try:
         hashed = get_password_hash(password)
+        now = datetime.now(timezone.utc)
         for spec in LOCAL_DEMO_USERS:
             email = spec["email"].strip().lower()
             existing = db.query(User).filter(User.email == email).first()
@@ -61,6 +67,8 @@ def seed_local_demo_users() -> None:
                 existing.has_climate_module = spec["has_climate_module"]
                 existing.has_siex_module = spec["has_siex_module"]
                 existing.has_siex_enterprise = spec["has_siex_enterprise"]
+                if existing.consent_accepted_at is None:
+                    existing.consent_accepted_at = now
             else:
                 db.add(
                     User(
@@ -72,6 +80,7 @@ def seed_local_demo_users() -> None:
                         has_climate_module=spec["has_climate_module"],
                         has_siex_module=spec["has_siex_module"],
                         has_siex_enterprise=spec["has_siex_enterprise"],
+                        consent_accepted_at=now,
                     )
                 )
         db.commit()

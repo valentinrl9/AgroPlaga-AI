@@ -25,6 +25,7 @@ def get_heatmap_grid(
     weighted_count = func.sum(
         case(
             (OutbreakEvent.status == "validated", VALIDATED_BOOST),
+            (OutbreakEvent.status == "active", 1.0),
             (OutbreakEvent.status == "pending", PENDING_WEIGHT),
             else_=0.0,
         )
@@ -54,7 +55,7 @@ def get_heatmap_grid(
         .join(OutbreakEvent, OutbreakEvent.zone_id == AgriZone.id)
         .filter(OutbreakEvent.reported_at >= since)
         .filter(OutbreakEvent.severity >= min_severity)
-        .filter(OutbreakEvent.status != "rejected")
+        .filter(OutbreakEvent.status.notin_(["rejected", "closed"]))
         .group_by(
             AgriZone.id,
             AgriZone.sigpac_code,

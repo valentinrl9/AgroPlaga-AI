@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import math
+import shutil
 from datetime import date
+from pathlib import Path
 
 import pandas as pd
 import requests
@@ -16,6 +18,7 @@ from app.climate.config import (
     LAT,
     LON,
     REALTIME_CSV,
+    station_csv_paths,
 )
 
 COLUMNS = [
@@ -74,14 +77,34 @@ def _fill_et0(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def fetch_historico(force: bool = False) -> pd.DataFrame:
-    if HISTORICO_CSV.exists() and not force:
-        return _normalize_hourly_df(pd.read_csv(HISTORICO_CSV))
+def _ensure_legacy_files_for_poniente() -> None:
+    """Migra CSV legacy (single-point) a carpeta estación poniente."""
+    paths = station_csv_paths("poniente")
+    paths["historico"].parent.mkdir(parents=True, exist_ok=True)
+    if HISTORICO_CSV.exists() and not paths["historico"].exists():
+        shutil.copy2(HISTORICO_CSV, paths["historico"])
+    if REALTIME_CSV.exists() and not paths["realtime"].exists():
+        shutil.copy2(REALTIME_CSV, paths["realtime"])
+    if DATASET_FINAL_CSV.exists() and not paths["dataset"].exists():
+        shutil.copy2(DATASET_FINAL_CSV, paths["dataset"])
+
+
+def fetch_historico(
+    lat: float = LAT,
+    lon: float = LON,
+    paths: dict[str, Path] | None = None,
+    force: bool = False,
+) -> pd.DataFrame:
+    if paths is None:
+        paths = station_csv_paths("poniente")
+    historico_csv = paths["historico"]
+    if historico_csv.exists() and not force:
+        return _normalize_hourly_df(pd.read_csv(historico_csv))
 
     end_date = date.today().isoformat()
     url = (
         "https://archive-api.open-meteo.com/v1/archive"
-        f"?latitude={LAT}&longitude={LON}"
+        f"?latitude={lat}&longitude={lon}"
         f"&start_date={HISTORICO_START}&end_date={end_date}"
         "&hourly=temperature_2m,relative_humidity_2m,precipitation,"
         "wind_speed_10m,wind_direction_10m,shortwave_radiation,"
@@ -97,15 +120,22 @@ def fetch_historico(force: bool = False) -> pd.DataFrame:
     df = pd.DataFrame(hourly).rename(columns={"time": "timestamp"})
     df = _normalize_hourly_df(df)
     df = _fill_et0(df)
-    HISTORICO_CSV.parent.mkdir(parents=True, exist_ok=True)
-    df.to_csv(HISTORICO_CSV, index=False, encoding="utf-8")
+    historico_csv.parent.mkdir(parents=True, exist_ok=True)
+    df.to_csv(historico_csv, index=False, encoding="utf-8")
     return df
 
 
-def fetch_realtime() -> pd.DataFrame:
+def fetch_realtime(
+    lat: float = LAT,
+    lon: float = LON,
+    paths: dict[str, Path] | None = None,
+) -> pd.DataFrame:
+    if paths is None:
+        paths = station_csv_paths("poniente")
+    realtime_csv = paths["realtime"]
     url = (
         "https://api.open-meteo.com/v1/forecast"
-        f"?latitude={LAT}&longitude={LON}"
+        f"?latitude={lat}&longitude={lon}"
         "&current=temperature_2m,relative_humidity_2m,precipitation,"
         "wind_speed_10m,wind_direction_10m,shortwave_radiation,pressure_msl,"
         "et0_fao_evapotranspiration,cloud_cover"
@@ -120,8 +150,8 @@ def fetch_realtime() -> pd.DataFrame:
     df = pd.DataFrame([current]).rename(columns={"time": "timestamp"})
     df = _normalize_hourly_df(df)
     df = _fill_et0(df)
-    REALTIME_CSV.parent.mkdir(parents=True, exist_ok=True)
-    df.to_csv(REALTIME_CSV, index=False, encoding="utf-8")
+    realtime_csv.parent.mkdir(parents=True, exist_ok=True)
+    df.to_csv(realtime_csv, index=False, encoding="utf-8")
     return df
 
 
@@ -142,13 +172,20 @@ def _limpiar_snapshots_hoy(df: pd.DataFrame) -> pd.DataFrame:
     return limpio.drop_duplicates(subset=["timestamp"], keep="last").sort_values("timestamp")
 
 
-def merge_datasets(historico: pd.DataFrame, realtime: pd.DataFrame) -> pd.DataFrame:
+def merge_datasets(
+    historico: pd.DataFrame,
+    realtime: pd.DataFrame,
+    paths: dict[str, Path] | None = None,
+) -> pd.DataFrame:
+    if paths is None:
+        paths = station_csv_paths("poniente")
     df = pd.concat([historico, realtime], ignore_index=True)
     df["timestamp"] = pd.to_datetime(df["timestamp"])
     df = df.sort_values("timestamp")
     df = df.drop_duplicates(subset=["timestamp"], keep="last")
     df = _limpiar_snapshots_hoy(df)
     df = _fill_et0(df)
-    df.to_csv(HISTORICO_CSV, index=False, encoding="utf-8")
-    df.to_csv(DATASET_FINAL_CSV, index=False, encoding="utf-8")
+    paths["historico"].parent.mkdir(parents=True, exist_ok=True)
+    df.to_csv(paths["historico"], index=False, encoding="utf-8")
+    df.to_csv(paths["dataset"], index=False, encoding="utf-8")
     return df.reset_index(drop=True)

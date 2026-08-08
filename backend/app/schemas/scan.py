@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 
 class ScanCreate(BaseModel):
@@ -10,8 +10,16 @@ class ScanCreate(BaseModel):
     confidence: float
     severity: str
     location: str | None = None
+    latitude: float | None = Field(default=None, ge=-90, le=90)
+    longitude: float | None = Field(default=None, ge=-180, le=180)
     farm_id: int | None = None
     share_with_tech: bool = False
+
+    @model_validator(mode="after")
+    def gps_pair(self):
+        if (self.latitude is None) ^ (self.longitude is None):
+            raise ValueError("latitude y longitude deben enviarse juntos")
+        return self
 
 
 class ScanRead(BaseModel):
@@ -21,6 +29,8 @@ class ScanRead(BaseModel):
     confidence: float
     severity: str
     location: str | None = None
+    latitude: float | None = None
+    longitude: float | None = None
     farm_id: int | None = None
     created_at: datetime | None = None
     share_with_tech: bool = False

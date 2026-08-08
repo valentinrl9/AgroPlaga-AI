@@ -3,9 +3,9 @@ import "package:flutter/material.dart";
 import "../../core/nexo_colors.dart";
 import "../../core/navigation.dart";
 import "../../core/routes.dart";
-import "../../core/session.dart";
 import "../../data/repositories/analytics_repository.dart";
 import "../../data/repositories/feedback_repository.dart";
+import "../../data/repositories/incident_repository.dart";
 import "../../models/analytics.dart";
 import "../../models/scan.dart";
 import "../widgets/card_scan.dart";
@@ -24,10 +24,18 @@ class ResultScreen extends StatefulWidget {
 class _ResultScreenState extends State<ResultScreen> {
   final _feedbackRepo = FeedbackRepository();
   final _analyticsRepo = AnalyticsRepository();
+  final _incidentRepo = IncidentRepository();
   late Future<PlagaRecommendation> _recommendationFuture;
   bool _feedbackSent = false;
   bool _sending = false;
-  bool _alreadyContributed = false;
+  bool _openingIncident = false;
+  bool _incidentOpened = false;
+  String? _incidentError;
+
+  bool get _isTrackablePlague {
+    final plague = widget.scan.effectivePlague.trim().toLowerCase();
+    return plague.isNotEmpty && plague != "sana";
+  }
 
   @override
   void initState() {
@@ -38,12 +46,29 @@ class _ResultScreenState extends State<ResultScreen> {
       crop: scan.crop,
       severity: scan.severity,
     );
-    _loadContributionState();
   }
 
-  Future<void> _loadContributionState() async {
-    final contributed = await Session.hasContributed(widget.scan.id);
-    if (mounted) setState(() => _alreadyContributed = contributed);
+  Future<void> _openIncident() async {
+    setState(() {
+      _openingIncident = true;
+      _incidentError = null;
+    });
+    try {
+      await _incidentRepo.openFromScan(widget.scan.id);
+      if (!mounted) return;
+      setState(() => _incidentOpened = true);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Incidencia abierta. Aparece en el mapa comunitario de tu municipio."),
+          backgroundColor: NexoColors.bioGreen,
+        ),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      setState(() => _incidentError = error.toString());
+    } finally {
+      if (mounted) setState(() => _openingIncident = false);
+    }
   }
 
   Future<void> _sendUsefulnessFeedback({required bool isHelpful}) async {
@@ -158,36 +183,56 @@ class _ResultScreenState extends State<ResultScreen> {
               },
             ),
             const SizedBox(height: 16),
-            if (_alreadyContributed) ...[
-              const Icon(Icons.check_circle, color: NexoColors.bioGreen, size: 32),
-              const SizedBox(height: 8),
-              const Text(
-                "Ya contribuiste este escaneo al mapa comunitario.",
-                style: TextStyle(fontSize: 15, fontWeight: FontWeight.w600, color: NexoColors.bioGreen),
-                textAlign: TextAlign.center,
+            Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: NexoColors.bioGreen.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(8),
               ),
-              const SizedBox(height: 12),
-              OutlinedButton(
-                onPressed: () => Navigator.pushNamed(context, Routes.map),
-                child: const Text("Ver mapa de focos"),
-              ),
-            ] else ...[
-              const Text(
-                "¿Quieres contribuir al mapa de plagas de tu zona?",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                textAlign: TextAlign.center,
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                "Tu aporte es anónimo y ayuda a otros agricultores de la comarca.",
+              child: const Text(
+                "Participas en el mapa comunitario anónimo según aceptaste al registrarte. "
+                "Las incidencias fitosanitarias abiertas alimentarán el mapa de calor.",
                 style: TextStyle(fontSize: 13, color: NexoColors.textPrimary),
                 textAlign: TextAlign.center,
               ),
-              const SizedBox(height: 16),
-              PrimaryButton(
-                label: "Sí, contribuir",
-                onPressed: () => Navigator.pushNamed(context, Routes.contribute, arguments: scan),
-              ),
+            ),
+            const SizedBox(height: 12),
+            OutlinedButton(
+              onPressed: () => Navigator.pushNamed(context, Routes.map),
+              child: const Text("Ver mapa de focos"),
+            ),
+            if (_isTrackablePlague) ...[
+              const SizedBox(height: 12),
+              if (_incidentOpened)
+                const Text(
+                  "Incidencia fitosanitaria abierta. Sigue el seguimiento en Mis incidencias.",
+                  style: TextStyle(color: NexoColors.bioGreen, fontWeight: FontWeight.w600),
+                  textAlign: TextAlign.center,
+                )
+              else ...[
+                PrimaryButton(
+                  label: _openingIncident ? "Abriendo incidencia..." : "Abrir incidencia fitosanitaria",
+                  onPressed: _openingIncident ? null : _openIncident,
+                ),
+                if (widget.scan.farmId == null)
+                  const Padding(
+                    padding: EdgeInsets.only(top: 8),
+                    child: Text(
+                      "Vincula el escaneo a una finca con municipio para abrir incidencia.",
+                      style: TextStyle(fontSize: 12, color: NexoColors.warningAmber),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                if (_incidentError != null)
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: Text(
+                      _incidentError!,
+                      style: const TextStyle(color: NexoColors.errorRed, fontSize: 12),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+              ],
             ],
             const SizedBox(height: 12),
             if (!scan.isRejectedByTech)
@@ -220,7 +265,7 @@ class _ResultScreenState extends State<ResultScreen> {
                 padding: const EdgeInsets.symmetric(vertical: 16),
                 side: const BorderSide(color: NexoColors.bioGreen),
               ),
-              child: Text(_alreadyContributed ? "Volver al inicio" : "No ahora"),
+              child: Text("Volver al inicio"),
             ),
             const SizedBox(height: 8),
           ],

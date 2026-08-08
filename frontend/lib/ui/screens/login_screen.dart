@@ -1,6 +1,7 @@
 import "package:flutter/material.dart";
 
 import "../../core/api_config.dart";
+import "../../core/app_version.dart";
 import "../../core/nexo_colors.dart";
 import "../../core/routes.dart";
 import "../../data/repositories/auth_repository.dart";
@@ -36,7 +37,9 @@ class _LoginScreenState extends State<LoginScreen> {
 
       if (success) {
         if (!mounted) return;
-        Navigator.pushReplacementNamed(context, Routes.home);
+        final nextRoute = await _authRepository.postLoginRoute();
+        if (!mounted) return;
+        Navigator.pushReplacementNamed(context, nextRoute);
         return;
       }
 
@@ -95,6 +98,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   "Bienvenido al ecosistema agrícola unificado",
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 14, color: NexoColors.textSecondary),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  appVersionLabel,
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: NexoColors.techCyan.withValues(alpha: 0.9),
+                    fontWeight: FontWeight.w600,
+                  ),
                 ),
                 const SizedBox(height: 28),
                 Container(

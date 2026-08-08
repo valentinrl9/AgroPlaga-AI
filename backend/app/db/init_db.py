@@ -8,11 +8,12 @@ from sqlalchemy import text
 
 from app.core.config import settings
 from app.core.security import get_password_hash
-from app.db.seed_zones import SIGPAC_ZONES
+from app.db.seed_zones import load_almeria_municipalities
 from app.db.session import SessionLocal, engine
 from app.db.seed_pilot_invites import seed_pilot_invites
+from app.db.seed_climate_stations import seed_climate_stations
 from app.db.seed_demo_users import seed_local_demo_users
-from app.models import user, scan, feedback, zone, outbreak_event, alert, alert_preference, user_badge, farm, contribution_log, pilot_invite, climate, farm_treatment, biocide_product, siex_entry
+from app.models import user, scan, feedback, zone, outbreak_event, alert, alert_preference, user_badge, farm, contribution_log, pilot_invite, climate, climate_station, pest_incident, farm_treatment, biocide_product, siex_entry
 from app.models.user import User
 from app.models.zone import AgriZone
 from app.services.geo_service import point_wkt
@@ -41,18 +42,28 @@ def run_migrations() -> None:
 def seed_sigpac_zones() -> None:
     db = SessionLocal()
     try:
-        if db.query(AgriZone).count() > 0:
-            return
-        for entry in SIGPAC_ZONES:
-            db.add(
-                AgriZone(
-                    sigpac_code=entry["sigpac_code"],
-                    name=entry["name"],
-                    province=entry["province"],
-                    municipality_code=entry["municipality_code"],
-                    centroid=point_wkt(entry["lon"], entry["lat"]),
-                )
+        for entry in load_almeria_municipalities():
+            zone = (
+                db.query(AgriZone)
+                .filter(AgriZone.municipality_code == entry["municipality_code"])
+                .first()
             )
+            centroid = point_wkt(entry["lon"], entry["lat"])
+            if zone:
+                zone.sigpac_code = entry["sigpac_code"]
+                zone.name = entry["name"]
+                zone.province = entry["province"]
+                zone.centroid = centroid
+            else:
+                db.add(
+                    AgriZone(
+                        sigpac_code=entry["sigpac_code"],
+                        name=entry["name"],
+                        province=entry["province"],
+                        municipality_code=entry["municipality_code"],
+                        centroid=centroid,
+                    )
+                )
         db.commit()
     finally:
         db.close()
@@ -120,9 +131,56 @@ def seed_master_user() -> None:
         db.close()
 
 
+def seed_mapa_biocide_stubs() -> None:
+    """Garantiza productos MAPA de demo para CRM/tratamientos (upsert mínimo)."""
+    from app.models.biocide_product import BiocideProduct
+
+    stubs = [
+        ("ES-00001", "Spintor 480 SC", "spinosad", "tuta absoluta", "tomate", 0.06, 0.09, 72),
+        ("ES-00002", "Confidor 200 SL", "imidacloprid", "mosca blanca", "tomate", 0.3, 0.5, 48),
+        ("ES-00003", "Vertimec 1.8 EC", "abamectina", "arañuela roja", "tomate", 0.2, 0.3, 48),
+        ("ES-00004", "Previcur Energy", "propamocarb", "mildiu", "tomate", 1.5, 2.0, 120),
+        ("ES-00005", "Amistar", "azoxistrobin", "oídio", "tomate", 0.6, 0.8, 96),
+    ]
+
+    db = SessionLocal()
+    try:
+        for reg, name, substance, plague, crop, dmin, dmax, safety in stubs:
+            existing = (
+                db.query(BiocideProduct)
+                .filter(
+                    BiocideProduct.registry_no == reg,
+                    BiocideProduct.plague == plague,
+                    BiocideProduct.crop == crop,
+                )
+                .first()
+            )
+            if existing is not None:
+                continue
+            db.add(
+                BiocideProduct(
+                    registry_no=reg,
+                    name=name,
+                    active_substance=substance,
+                    plague=plague,
+                    crop=crop,
+                    dose_min_l_ha=dmin,
+                    dose_max_l_ha=dmax,
+                    safety_hours=safety,
+                    product_status="vigente",
+                    source="mapa_cex",
+                )
+            )
+        db.commit()
+    finally:
+        db.close()
+
+
 def init_db() -> None:
     run_migrations()
     seed_sigpac_zones()
+    seed_mapa_biocide_stubs()
+    seed_climate_stations()
     seed_admin_user()
     seed_master_user()
     seed_local_demo_users()

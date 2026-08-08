@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 
+import "../../core/onboarding_gate.dart";
 import "../../core/nexo_colors.dart";
 import "../../core/routes.dart";
 import "../../data/repositories/auth_repository.dart";
@@ -22,6 +23,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _inviteCodeController = TextEditingController();
   final _authRepository = AuthRepository();
   bool _isLoading = false;
+  bool _consentAccepted = false;
   String? _errorMessage;
 
   Future<void> _register() async {
@@ -52,6 +54,13 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
+    if (!_consentAccepted) {
+      setState(() {
+        _errorMessage = "Debes aceptar el mapa anónimo y las condiciones para registrarte.";
+      });
+      return;
+    }
+
     setState(() {
       _isLoading = true;
       _errorMessage = null;
@@ -63,11 +72,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
         email,
         password,
         inviteCode: inviteCode,
+        consentMapAnonymous: true,
       );
 
       if (success) {
         if (!mounted) return;
-        Navigator.pushReplacementNamed(context, Routes.home);
+        final nextRoute = await OnboardingGate.postAuthRoute();
+        if (!mounted) return;
+        Navigator.pushReplacementNamed(context, nextRoute);
         return;
       }
 
@@ -141,6 +153,20 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 decoration: const InputDecoration(labelText: "Confirmar contraseña"),
               ),
               const SizedBox(height: 24),
+              CheckboxListTile(
+                value: _consentAccepted,
+                onChanged: _isLoading
+                    ? null
+                    : (value) => setState(() => _consentAccepted = value ?? false),
+                controlAffinity: ListTileControlAffinity.leading,
+                contentPadding: EdgeInsets.zero,
+                title: const Text(
+                  "Acepto participar en el mapa comunitario anónimo de plagas "
+                  "(solo municipio, sin parcela ni coordenadas exactas) y las condiciones de uso.",
+                  style: TextStyle(fontSize: 13),
+                ),
+              ),
+              const SizedBox(height: 16),
               if (_errorMessage != null)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 16.0),

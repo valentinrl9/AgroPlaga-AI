@@ -1,4 +1,5 @@
 import "../api_client.dart";
+import "../../core/onboarding_gate.dart";
 import "../../core/session.dart";
 import "../../models/user_profile.dart";
 import "user_repository.dart";
@@ -44,7 +45,13 @@ class AuthRepository {
     return true;
   }
 
-  Future<bool> register(String name, String email, String password, {String? inviteCode}) async {
+  Future<bool> register(
+    String name,
+    String email,
+    String password, {
+    String? inviteCode,
+    required bool consentMapAnonymous,
+  }) async {
     if (name.isEmpty || email.isEmpty || password.isEmpty) {
       return false;
     }
@@ -53,6 +60,7 @@ class AuthRepository {
       "name": name,
       "email": email,
       "password": password,
+      "consent_map_anonymous": consentMapAnonymous,
     };
     if (inviteCode != null && inviteCode.trim().isNotEmpty) {
       body["invite_code"] = inviteCode.trim();
@@ -79,6 +87,8 @@ class AuthRepository {
   Future<void> logout() async {
     await Session.clear();
   }
+
+  Future<String> postLoginRoute() => OnboardingGate.postAuthRoute();
 
   Future<bool> hasStoredSession() => Session.hasToken();
 }

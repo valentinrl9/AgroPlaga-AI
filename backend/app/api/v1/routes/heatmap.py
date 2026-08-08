@@ -5,6 +5,7 @@ from app.api.deps import get_db
 from app.core.security import get_current_active_user
 from app.models.user import User
 from app.schemas.heatmap import HeatmapResponse
+from app.services.heatmap_access import enforce_map_hours, map_access_profile
 from app.services.heatmap_service import get_heatmap_grid
 
 router = APIRouter()
@@ -13,22 +14,29 @@ router = APIRouter()
 @router.get("", response_model=HeatmapResponse)
 def read_heatmap(
     plague: str | None = Query(default=None),
-    hours: int = Query(default=168, ge=1, le=720),
+    hours: int | None = Query(default=None, ge=1, le=720),
     min_severity: int = Query(default=1, ge=1, le=3),
     validated_only: bool = Query(default=False),
-    _current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
+    profile = map_access_profile(current_user)
+    requested = hours if hours is not None else profile["default_hours"]
+    effective_hours = enforce_map_hours(current_user, requested)
+
     cells = get_heatmap_grid(
         db,
         plague=plague,
-        hours=hours,
+        hours=effective_hours,
         min_severity=min_severity,
         validated_only=validated_only,
     )
     return HeatmapResponse(
-        hours=hours,
+        hours=effective_hours,
         min_severity=min_severity,
         plague=plague.strip().lower() if plague else None,
         cells=cells,
+        historical_enabled=profile["historical_enabled"],
+        max_hours=profile["max_hours"],
+        allowed_hours=profile["allowed_hours"],
     )

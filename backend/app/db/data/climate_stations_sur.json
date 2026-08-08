@@ -1,0 +1,13 @@
+[
+  {"slug": "poniente", "name": "Poniente (La Mojonera)", "municipality": "El Ejido", "lat": 36.77, "lon": -2.81},
+  {"slug": "adra", "name": "Adra", "municipality": "Adra", "lat": 36.748, "lon": -3.021},
+  {"slug": "roquetas", "name": "Roquetas de Mar", "municipality": "Roquetas de Mar", "lat": 36.827, "lon": -2.867},
+  {"slug": "almeria", "name": "Almería capital", "municipality": "Almería", "lat": 36.783, "lon": -2.463},
+  {"slug": "vicar", "name": "Vícar", "municipality": "Vícar", "lat": 36.764, "lon": -2.615},
+  {"slug": "nijar", "name": "Níjar", "municipality": "Níjar", "lat": 36.967, "lon": -2.206},
+  {"slug": "berja", "name": "Berja", "municipality": "Berja", "lat": 36.846, "lon": -2.949},
+  {"slug": "carboneras", "name": "Carboneras", "municipality": "Carboneras", "lat": 36.998, "lon": -1.893},
+  {"slug": "cuevas", "name": "Cuevas del Almanzora", "municipality": "Cuevas del Almanzora", "lat": 37.299, "lon": -1.882},
+  {"slug": "garrucha", "name": "Garrucha", "municipality": "Garrucha", "lat": 37.181, "lon": -1.822},
+  {"slug": "vera", "name": "Vera", "municipality": "Vera", "lat": 37.247, "lon": -1.865}
+]

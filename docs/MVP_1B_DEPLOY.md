@@ -9,7 +9,7 @@
 ## Checklist pre-deploy
 
 - [ ] Backup PostgreSQL producción
-- [ ] `deploy/pilot.env` actualizado (sin `DEMO_SEED_USERS`, previews en `false`)
+- [ ] `deploy/pilot.env` actualizado (previews en `false`; `DEMO_SEED_USERS=true` si compartes demos externas)
 - [ ] Panel compilado: `bash deploy/build-panel.sh`
 - [ ] APK Nexo: `flutter build apk --release --dart-define=API_BASE_URL=https://TU_DOMINIO`
 

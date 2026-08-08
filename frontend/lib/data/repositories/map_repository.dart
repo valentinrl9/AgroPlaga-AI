@@ -1,5 +1,6 @@
 import "../api_client.dart";
 import "../../models/heatmap_cell.dart";
+import "../../models/heatmap_result.dart";
 import "../../models/outbreak_event.dart";
 import "outbreak_event_repository.dart";
 
@@ -47,16 +48,23 @@ class MapRepository {
     );
   }
 
-  Future<List<HeatmapCell>> fetchHeatmap({MapFilters? filters}) async {
+  Future<HeatmapResult> fetchHeatmap({MapFilters? filters}) async {
     final params = (filters ?? const MapFilters()).queryParams;
     final query = params.entries.map((e) => "${e.key}=${Uri.encodeComponent(e.value)}").join("&");
     final response = await _client.get("/api/v1/heatmap?$query");
-    final cells = response["cells"];
-    if (cells is List) {
-      return cells
-          .map((item) => HeatmapCell.fromJson(Map<String, dynamic>.from(item as Map)))
-          .toList();
-    }
-    return [];
+    final cellsRaw = response["cells"];
+    final cells = cellsRaw is List
+        ? cellsRaw
+            .map((item) => HeatmapCell.fromJson(Map<String, dynamic>.from(item as Map)))
+            .toList()
+        : <HeatmapCell>[];
+    final allowed = response["allowed_hours"];
+    return HeatmapResult(
+      cells: cells,
+      hours: response["hours"] as int? ?? (filters?.hours ?? 24),
+      historicalEnabled: response["historical_enabled"] as bool? ?? false,
+      maxHours: response["max_hours"] as int? ?? 24,
+      allowedHours: allowed is List ? allowed.map((e) => e as int).toList() : [24],
+    );
   }
 }

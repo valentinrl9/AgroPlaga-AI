@@ -1,0 +1,146 @@
+{
+  "version": "v1",
+  "region": "Almería (horticultura bajo plástico y campo)",
+  "crops": [
+    {
+      "id": "tomate",
+      "name": "Tomate",
+      "aliases": ["tomates", "tomate cherry", "tomate rama", "tomate pera"],
+      "category": "solanacea",
+      "stages": ["plantación", "crecimiento", "floración", "cuajado", "maduración", "cosecha"]
+    },
+    {
+      "id": "pimiento",
+      "name": "Pimiento",
+      "aliases": ["pimientos", "pimentón", "pimenton", "pimiento california", "pimiento lamuyo"],
+      "category": "solanacea",
+      "stages": ["plantación", "crecimiento", "floración", "cuajado", "maduración", "cosecha"]
+    },
+    {
+      "id": "pepino",
+      "name": "Pepino",
+      "aliases": ["pepinos", "pepino almería", "pepino holandés"],
+      "category": "cucurbitacea",
+      "stages": ["plantación", "crecimiento", "floración", "cuajado", "cosecha"]
+    },
+    {
+      "id": "calabacin",
+      "name": "Calabacín",
+      "aliases": ["calabacín", "calabacin", "calabaza", "zucchini"],
+      "category": "cucurbitacea",
+      "stages": ["plantación", "crecimiento", "floración", "cuajado", "cosecha"]
+    },
+    {
+      "id": "berenjena",
+      "name": "Berenjena",
+      "aliases": ["berenjenas"],
+      "category": "solanacea",
+      "stages": ["plantación", "crecimiento", "floración", "cuajado", "cosecha"]
+    },
+    {
+      "id": "lechuga",
+      "name": "Lechuga",
+      "aliases": ["lechugas", "lechuga iceberg", "lechuga romana", "lechuga hoja"],
+      "category": "hoja",
+      "stages": ["plantación", "crecimiento", "formación", "cosecha"]
+    },
+    {
+      "id": "melon",
+      "name": "Melón",
+      "aliases": ["melones", "melón cantalupo", "melón galia"],
+      "category": "cucurbitacea",
+      "stages": ["plantación", "crecimiento", "floración", "cuajado", "maduración", "cosecha"]
+    },
+    {
+      "id": "sandia",
+      "name": "Sandía",
+      "aliases": ["sandías", "sandia", "sandía sin pepita"],
+      "category": "cucurbitacea",
+      "stages": ["plantación", "crecimiento", "floración", "cuajado", "maduración", "cosecha"]
+    },
+    {
+      "id": "fresa",
+      "name": "Fresa",
+      "aliases": ["fresas", "fresa almería"],
+      "category": "frutal",
+      "stages": ["plantación", "floración", "cuajado", "maduración", "cosecha"]
+    },
+    {
+      "id": "judia",
+      "name": "Judía",
+      "aliases": ["judías", "judia", "judía verde", "habichuela"],
+      "category": "leguminosa",
+      "stages": ["plantación", "floración", "cuajado", "cosecha"]
+    },
+    {
+      "id": "apio",
+      "name": "Apio",
+      "aliases": ["apios", "apio verde", "apio nabo"],
+      "category": "hoja",
+      "stages": ["plantación", "crecimiento", "formación", "cosecha"]
+    },
+    {
+      "id": "col",
+      "name": "Col",
+      "aliases": ["coliflor", "brócoli", "brocoli", "col repollo", "col china"],
+      "category": "brassica",
+      "stages": ["plantación", "crecimiento", "formación", "cosecha"]
+    },
+    {
+      "id": "zanahoria",
+      "name": "Zanahoria",
+      "aliases": ["zanahorias"],
+      "category": "raiz",
+      "stages": ["siembra", "crecimiento", "engorde", "cosecha"]
+    },
+    {
+      "id": "cebolla",
+      "name": "Cebolla",
+      "aliases": ["cebollas", "cebolleta", "cebolla dulce"],
+      "category": "bulbo",
+      "stages": ["siembra", "crecimiento", "bulbificación", "cosecha"]
+    },
+    {
+      "id": "patata",
+      "name": "Patata",
+      "aliases": ["patatas", "papa"],
+      "category": "tuberculo",
+      "stages": ["siembra", "brotación", "crecimiento", "floración", "cosecha"]
+    },
+    {
+      "id": "olivo",
+      "name": "Olivo",
+      "aliases": ["olivos", "olivar"],
+      "category": "frutal",
+      "stages": ["floración", "cuajado", "engorde", "maduración", "cosecha"]
+    },
+    {
+      "id": "citricos",
+      "name": "Cítricos",
+      "aliases": ["cítricos", "citricos", "naranjo", "limonero", "mandarino", "pomelo"],
+      "category": "frutal",
+      "stages": ["floración", "cuajado", "engorde", "maduración", "cosecha"]
+    },
+    {
+      "id": "almendro",
+      "name": "Almendro",
+      "aliases": ["almendros", "almendro"],
+      "category": "frutal",
+      "stages": ["floración", "cuajado", "engorde", "maduración", "cosecha"]
+    },
+    {
+      "id": "uva",
+      "name": "Uva de mesa",
+      "aliases": ["uva", "uvas", "parra", "vid"],
+      "category": "frutal",
+      "stages": ["brotación", "floración", "cuajado", "engorde", "maduración", "cosecha"]
+    },
+    {
+      "id": "aloe",
+      "name": "Aloe vera",
+      "aliases": ["aloe", "aloe vera", "sábila"],
+      "category": "industrial",
+      "stages": ["plantación", "crecimiento", "cosecha"]
+    }
+  ]
+}

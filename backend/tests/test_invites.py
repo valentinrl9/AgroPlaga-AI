@@ -18,7 +18,12 @@ def test_register_requires_invite_when_invite_only(client, unique_email, monkeyp
     monkeypatch.setattr("app.api.v1.routes.auth.settings.registration_mode", "invite_only")
     response = client.post(
         "/api/v1/auth/register",
-        json={"name": "Farmer", "email": unique_email, "password": "secret123"},
+        json={
+            "name": "Farmer",
+            "email": unique_email,
+            "password": "secret123",
+            "consent_map_anonymous": True,
+        },
     )
     assert response.status_code == 400
     assert "invitación" in response.json()["detail"].lower()
@@ -43,6 +48,7 @@ def test_register_with_valid_invite_assigns_role(client, unique_email, monkeypat
             "email": email,
             "password": "secret123",
             "invite_code": invite_code,
+            "consent_map_anonymous": True,
         },
     )
     assert response.status_code == 200, response.text
@@ -58,6 +64,7 @@ def test_register_with_valid_invite_assigns_role(client, unique_email, monkeypat
             "email": f"other_{uuid.uuid4().hex[:8]}@example.com",
             "password": "secret123",
             "invite_code": invite_code,
+            "consent_map_anonymous": True,
         },
     )
     assert reuse.status_code == 400

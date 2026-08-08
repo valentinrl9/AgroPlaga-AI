@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from fastapi.security import OAuth2PasswordRequestForm
 from sqlalchemy.orm import Session
@@ -48,6 +50,7 @@ def register(user_data: UserCreate, request: Request, db: Session = Depends(get_
         email=user_data.email,
         hashed_password=get_password_hash(user_data.password),
         role=role,
+        consent_accepted_at=datetime.now(timezone.utc),
     )
     db.add(user)
     db.flush()

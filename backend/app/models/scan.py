@@ -16,6 +16,8 @@ class Scan(Base):
     confidence = Column(Float, default=0.0)
     severity = Column(String, nullable=False)
     location = Column(String, nullable=True)
+    latitude = Column(Float, nullable=True)
+    longitude = Column(Float, nullable=True)
     farm_id = Column(Integer, ForeignKey("farms.id"), nullable=True, index=True)
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow, nullable=False, index=True)
     image_path = Column(String(255), nullable=True)

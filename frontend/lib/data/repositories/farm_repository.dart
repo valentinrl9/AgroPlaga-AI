@@ -14,6 +14,10 @@ class FarmRepository {
     required String crop,
     required String farmType,
     int? zoneId,
+    String? nave,
+    String? sector,
+    String? cropStage,
+    String? cropVariant,
     double? surfaceM2,
     String? sigpacCode,
   }) async {
@@ -22,14 +26,36 @@ class FarmRepository {
       "crop": crop,
       "farm_type": farmType,
       if (zoneId != null) "zone_id": zoneId,
+      if (nave != null && nave.trim().isNotEmpty) "nave": nave.trim(),
+      if (sector != null && sector.trim().isNotEmpty) "sector": sector.trim(),
+      if (cropStage != null && cropStage.trim().isNotEmpty) "crop_stage": cropStage.trim(),
+      if (cropVariant != null && cropVariant.trim().isNotEmpty) "crop_variant": cropVariant.trim(),
       if (surfaceM2 != null) "surface_m2": surfaceM2,
       if (sigpacCode != null && sigpacCode.trim().isNotEmpty) "sigpac_code": sigpacCode.trim(),
     });
     return Farm.fromJson(json);
   }
 
-  Future<Farm> updateFarm(int id, {String? sigpacCode, double? surfaceM2}) async {
+  Future<Farm> updateFarm(
+    int id, {
+    String? name,
+    String? crop,
+    int? zoneId,
+    String? nave,
+    String? sector,
+    String? cropStage,
+    String? cropVariant,
+    String? sigpacCode,
+    double? surfaceM2,
+  }) async {
     final json = await _client.patchAuth("/api/v1/farms/$id", {
+      if (name != null) "name": name,
+      if (crop != null) "crop": crop,
+      if (zoneId != null) "zone_id": zoneId,
+      if (nave != null) "nave": nave,
+      if (sector != null) "sector": sector,
+      if (cropStage != null) "crop_stage": cropStage,
+      if (cropVariant != null) "crop_variant": cropVariant,
       if (sigpacCode != null) "sigpac_code": sigpacCode,
       if (surfaceM2 != null) "surface_m2": surfaceM2,
     });

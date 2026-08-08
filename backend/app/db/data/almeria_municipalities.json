@@ -1,0 +1,826 @@
+[
+  {
+    "municipality_code": "04001",
+    "sigpac_code": "04-001",
+    "name": "Abla",
+    "province": "Almería",
+    "lon": -2.4597,
+    "lat": 36.8381
+  },
+  {
+    "municipality_code": "04002",
+    "sigpac_code": "04-002",
+    "name": "Abrucena",
+    "province": "Almería",
+    "lon": -3.0203,
+    "lat": 36.7486
+  },
+  {
+    "municipality_code": "04003",
+    "sigpac_code": "04-003",
+    "name": "Adra",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04004",
+    "sigpac_code": "04-004",
+    "name": "Albanchez",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04005",
+    "sigpac_code": "04-005",
+    "name": "Alboloduy",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04006",
+    "sigpac_code": "04-006",
+    "name": "Albox",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04007",
+    "sigpac_code": "04-007",
+    "name": "Alcolea",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04009",
+    "sigpac_code": "04-009",
+    "name": "Alcudia de Monteagud",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04008",
+    "sigpac_code": "04-008",
+    "name": "Alcóntar",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04010",
+    "sigpac_code": "04-010",
+    "name": "Alhabia",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04011",
+    "sigpac_code": "04-011",
+    "name": "Alhama de Almería",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04012",
+    "sigpac_code": "04-012",
+    "name": "Alicún",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04013",
+    "sigpac_code": "04-013",
+    "name": "Almería",
+    "province": "Almería",
+    "lon": -3.1333,
+    "lat": 36.7833
+  },
+  {
+    "municipality_code": "04014",
+    "sigpac_code": "04-014",
+    "name": "Almócita",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04015",
+    "sigpac_code": "04-015",
+    "name": "Alsodux",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04016",
+    "sigpac_code": "04-016",
+    "name": "Antas",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04017",
+    "sigpac_code": "04-017",
+    "name": "Arboleas",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04018",
+    "sigpac_code": "04-018",
+    "name": "Armuña de Almanzora",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04019",
+    "sigpac_code": "04-019",
+    "name": "Bacares",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04904",
+    "sigpac_code": "04-904",
+    "name": "Balanegra",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04021",
+    "sigpac_code": "04-021",
+    "name": "Bayarque",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04020",
+    "sigpac_code": "04-020",
+    "name": "Bayárcal",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04023",
+    "sigpac_code": "04-023",
+    "name": "Beires",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04024",
+    "sigpac_code": "04-024",
+    "name": "Benahadux",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04026",
+    "sigpac_code": "04-026",
+    "name": "Benitagla",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04027",
+    "sigpac_code": "04-027",
+    "name": "Benizalón",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04028",
+    "sigpac_code": "04-028",
+    "name": "Bentarique",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04029",
+    "sigpac_code": "04-029",
+    "name": "Berja",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04022",
+    "sigpac_code": "04-022",
+    "name": "Bédar",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04030",
+    "sigpac_code": "04-030",
+    "name": "Canjáyar",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04031",
+    "sigpac_code": "04-031",
+    "name": "Cantoria",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04032",
+    "sigpac_code": "04-032",
+    "name": "Carboneras",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04033",
+    "sigpac_code": "04-033",
+    "name": "Castro de Filabres",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04036",
+    "sigpac_code": "04-036",
+    "name": "Chercos",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04037",
+    "sigpac_code": "04-037",
+    "name": "Chirivel",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04035",
+    "sigpac_code": "04-035",
+    "name": "Cuevas del Almanzora",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04034",
+    "sigpac_code": "04-034",
+    "name": "Cóbdar",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04038",
+    "sigpac_code": "04-038",
+    "name": "Dalías",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04902",
+    "sigpac_code": "04-902",
+    "name": "El Ejido",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04041",
+    "sigpac_code": "04-041",
+    "name": "Enix",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04043",
+    "sigpac_code": "04-043",
+    "name": "Felix",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04044",
+    "sigpac_code": "04-044",
+    "name": "Fines",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04045",
+    "sigpac_code": "04-045",
+    "name": "Fiñana",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04046",
+    "sigpac_code": "04-046",
+    "name": "Fondón",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04049",
+    "sigpac_code": "04-049",
+    "name": "Garrucha",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04047",
+    "sigpac_code": "04-047",
+    "name": "Gádor",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04050",
+    "sigpac_code": "04-050",
+    "name": "Gérgal",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04051",
+    "sigpac_code": "04-051",
+    "name": "Huécija",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04052",
+    "sigpac_code": "04-052",
+    "name": "Huércal de Almería",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04053",
+    "sigpac_code": "04-053",
+    "name": "Huércal-Overa",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04055",
+    "sigpac_code": "04-055",
+    "name": "Instinción",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04903",
+    "sigpac_code": "04-903",
+    "name": "La Mojonera",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04056",
+    "sigpac_code": "04-056",
+    "name": "Laroya",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04901",
+    "sigpac_code": "04-901",
+    "name": "Las Tres Villas",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04057",
+    "sigpac_code": "04-057",
+    "name": "Laujar de Andarax",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04048",
+    "sigpac_code": "04-048",
+    "name": "Los Gallardos",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04059",
+    "sigpac_code": "04-059",
+    "name": "Lubrín",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04060",
+    "sigpac_code": "04-060",
+    "name": "Lucainena de las Torres",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04058",
+    "sigpac_code": "04-058",
+    "name": "Líjar",
+    "province": "Almería",
+    "lon": -2.905,
+    "lat": 36.74
+  },
+  {
+    "municipality_code": "04061",
+    "sigpac_code": "04-061",
+    "name": "Lúcar",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04062",
+    "sigpac_code": "04-062",
+    "name": "Macael",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04063",
+    "sigpac_code": "04-063",
+    "name": "María",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04064",
+    "sigpac_code": "04-064",
+    "name": "Mojácar",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04065",
+    "sigpac_code": "04-065",
+    "name": "Nacimiento",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04066",
+    "sigpac_code": "04-066",
+    "name": "Níjar",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04067",
+    "sigpac_code": "04-067",
+    "name": "Ohanes",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04068",
+    "sigpac_code": "04-068",
+    "name": "Olula de Castro",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04069",
+    "sigpac_code": "04-069",
+    "name": "Olula del Río",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04070",
+    "sigpac_code": "04-070",
+    "name": "Oria",
+    "province": "Almería",
+    "lon": -2.9494,
+    "lat": 36.8461
+  },
+  {
+    "municipality_code": "04071",
+    "sigpac_code": "04-071",
+    "name": "Padules",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04072",
+    "sigpac_code": "04-072",
+    "name": "Partaloa",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04073",
+    "sigpac_code": "04-073",
+    "name": "Paterna del Río",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04074",
+    "sigpac_code": "04-074",
+    "name": "Pechina",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04075",
+    "sigpac_code": "04-075",
+    "name": "Pulpí",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04076",
+    "sigpac_code": "04-076",
+    "name": "Purchena",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04078",
+    "sigpac_code": "04-078",
+    "name": "Rioja",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04079",
+    "sigpac_code": "04-079",
+    "name": "Roquetas de Mar",
+    "province": "Almería",
+    "lon": -2.8667,
+    "lat": 36.8267
+  },
+  {
+    "municipality_code": "04077",
+    "sigpac_code": "04-077",
+    "name": "Rágol",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04080",
+    "sigpac_code": "04-080",
+    "name": "Santa Cruz de Marchena",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04081",
+    "sigpac_code": "04-081",
+    "name": "Santa Fe de Mondújar",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04082",
+    "sigpac_code": "04-082",
+    "name": "Senés",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04083",
+    "sigpac_code": "04-083",
+    "name": "Serón",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04084",
+    "sigpac_code": "04-084",
+    "name": "Sierro",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04085",
+    "sigpac_code": "04-085",
+    "name": "Somontín",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04086",
+    "sigpac_code": "04-086",
+    "name": "Sorbas",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04087",
+    "sigpac_code": "04-087",
+    "name": "Suflí",
+    "province": "Almería",
+    "lon": -2.8144,
+    "lat": 36.7763
+  },
+  {
+    "municipality_code": "04088",
+    "sigpac_code": "04-088",
+    "name": "Tabernas",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04089",
+    "sigpac_code": "04-089",
+    "name": "Taberno",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04090",
+    "sigpac_code": "04-090",
+    "name": "Tahal",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04091",
+    "sigpac_code": "04-091",
+    "name": "Terque",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04093",
+    "sigpac_code": "04-093",
+    "name": "Turre",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04094",
+    "sigpac_code": "04-094",
+    "name": "Turrillas",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04092",
+    "sigpac_code": "04-092",
+    "name": "Tíjola",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04095",
+    "sigpac_code": "04-095",
+    "name": "Uleila del Campo",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04096",
+    "sigpac_code": "04-096",
+    "name": "Urrácal",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04097",
+    "sigpac_code": "04-097",
+    "name": "Velefique",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04100",
+    "sigpac_code": "04-100",
+    "name": "Vera",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04101",
+    "sigpac_code": "04-101",
+    "name": "Viator",
+    "province": "Almería",
+    "lon": -2.5444,
+    "lat": 36.7444
+  },
+  {
+    "municipality_code": "04098",
+    "sigpac_code": "04-098",
+    "name": "Vélez-Blanco",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04099",
+    "sigpac_code": "04-099",
+    "name": "Vélez-Rubio",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04102",
+    "sigpac_code": "04-102",
+    "name": "Vícar",
+    "province": "Almería",
+    "lon": -2.6154,
+    "lat": 36.764
+  },
+  {
+    "municipality_code": "04103",
+    "sigpac_code": "04-103",
+    "name": "Zurgena",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  },
+  {
+    "municipality_code": "04054",
+    "sigpac_code": "04-054",
+    "name": "Íllar",
+    "province": "Almería",
+    "lon": -2.45,
+    "lat": 37.15
+  }
+]

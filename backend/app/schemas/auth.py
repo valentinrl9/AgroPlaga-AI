@@ -1,4 +1,7 @@
-from pydantic import BaseModel
+from datetime import datetime
+from typing import Literal
+
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 
 class Token(BaseModel):
@@ -25,3 +28,11 @@ class UserCreate(BaseModel):
     email: str
     password: str
     invite_code: str | None = None
+    consent_map_anonymous: bool = False
+
+    @field_validator("consent_map_anonymous")
+    @classmethod
+    def require_map_consent(cls, value: bool) -> bool:
+        if not value:
+            raise ValueError("Debes aceptar el mapa anónimo para registrarte")
+        return value

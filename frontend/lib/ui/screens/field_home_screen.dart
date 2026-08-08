@@ -264,6 +264,11 @@ class _FieldHomeScreenState extends State<FieldHomeScreen> {
                   label: "Mis fincas",
                   onTap: () => Navigator.pushNamed(context, Routes.farms),
                 ),
+                NexoActionTile(
+                  icon: Icons.bug_report_outlined,
+                  label: "Incidencias",
+                  onTap: () => Navigator.pushNamed(context, Routes.incidents),
+                ),
               ]),
             ],
           ),

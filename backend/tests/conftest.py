@@ -48,7 +48,12 @@ def unique_email():
 def register_and_login(client: TestClient, email: str, password: str = "testpass1") -> str:
     response = client.post(
         "/api/v1/auth/register",
-        json={"name": "Test Farmer", "email": email, "password": password},
+        json={
+            "name": "Test Farmer",
+            "email": email,
+            "password": password,
+            "consent_map_anonymous": True,
+        },
     )
     assert response.status_code == 200, response.text
     return response.json()["access_token"]

@@ -18,3 +18,16 @@ LON = float(os.getenv("OPENMETEO_LON", "-2.81"))
 HISTORICO_START = os.getenv("OPENMETEO_HISTORICO_START", "2020-01-01")
 DEFAULT_PRESSURE_HPA = float(os.getenv("DEFAULT_PRESSURE_HPA", "1013.25"))
 CLIMATE_PREVIEW_OPEN = os.getenv("CLIMATE_PREVIEW_OPEN", "true").strip().lower() in ("1", "true", "yes")
+
+
+def station_data_dir(slug: str) -> Path:
+    return DATA_DIR / "stations" / slug
+
+
+def station_csv_paths(slug: str) -> dict[str, Path]:
+    base = station_data_dir(slug)
+    return {
+        "historico": base / "openmeteo_historico.csv",
+        "realtime": base / "openmeteo_realtime.csv",
+        "dataset": base / "openmeteo_dataset_final.csv",
+    }

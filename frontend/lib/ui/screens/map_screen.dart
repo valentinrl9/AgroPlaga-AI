@@ -31,10 +31,12 @@ class _MapScreenState extends State<MapScreen> {
 
   static const _ponienteCenter = LatLng(36.77, -2.78);
 
-  int _hours = 168;
+  int _hours = 24;
   int _minSeverity = 1;
   String? _plagueFilter;
   bool _validatedOnly = false;
+  bool _historicalEnabled = false;
+  List<int> _allowedHours = const [24];
   _MapViewMode _viewMode = _MapViewMode.both;
   List<String> _plagueOptions = [];
   bool _isLoading = false;
@@ -69,6 +71,11 @@ class _MapScreenState extends State<MapScreen> {
             _isLoading = false;
             _plagueOptions = data.plagueOptions;
             _data = data;
+            _historicalEnabled = data.historicalEnabled;
+            _allowedHours = data.allowedHours;
+            if (_hours != data.effectiveHours) {
+              _hours = data.effectiveHours;
+            }
           });
           _focusInitialZoneIfNeeded(data);
         }
@@ -95,11 +102,14 @@ class _MapScreenState extends State<MapScreen> {
     final plagueOptions = optionsSource.map((e) => e.plague).toSet().toList()..sort();
 
     final events = await _mapRepository.fetchOutbreaks(filters: _filters);
-    final heatmap = await _mapRepository.fetchHeatmap(filters: _filters);
+    final heatmapResult = await _mapRepository.fetchHeatmap(filters: _filters);
 
     return _MapData(
       events: events,
-      heatmap: heatmap,
+      heatmap: heatmapResult.cells,
+      historicalEnabled: heatmapResult.historicalEnabled,
+      allowedHours: heatmapResult.allowedHours,
+      effectiveHours: heatmapResult.hours,
       zoneById: {for (final z in zones) z.id: z},
       plagueOptions: plagueOptions,
     );
@@ -126,8 +136,21 @@ class _MapScreenState extends State<MapScreen> {
 
   void _setHours(int hours) {
     if (_hours == hours) return;
+    if (!_allowedHours.contains(hours)) {
+      _showPremiumUpsell();
+      return;
+    }
     _hours = hours;
     _reloadData();
+  }
+
+  void _showPremiumUpsell() {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("El histórico de 7 y 30 días requiere Field Premium."),
+        backgroundColor: NexoColors.deepBlue,
+      ),
+    );
   }
 
   void _setMinSeverity(int severity) {
@@ -308,19 +331,74 @@ class _MapScreenState extends State<MapScreen> {
   String _periodLabel() {
     switch (_hours) {
       case 24:
-        return "24 h";
+        return _historicalEnabled ? "24 h" : "Tiempo real (24 h)";
       case 720:
         return "30 días";
-      default:
+      case 168:
         return "7 días";
+      default:
+        return "$_hours h";
     }
   }
 
   String _footerMessage(List<_ZoneCluster> clusters, _MapData data) {
     if (clusters.isEmpty) {
-      return "Sin focos en ${_periodLabel()}. Contribuye tras tu próximo escaneo.";
+      return "Sin focos activos en ${_periodLabel()}. Las incidencias abiertas alimentan el mapa.";
     }
-    return "${data.events.length} reporte(s) · ${clusters.length} zona(s) · ${_periodLabel()} · Toca un foco para detalles";
+    return "${data.events.length} incidencia(s)/reporte(s) · ${clusters.length} zona(s) · ${_periodLabel()}";
+  }
+
+  Widget _periodChip({required String label, required int hours, bool locked = false}) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 6),
+      child: ChoiceChip(
+        label: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (locked) ...[
+              const Icon(Icons.lock_outline, size: 14),
+              const SizedBox(width: 4),
+            ],
+            Text(label, style: const TextStyle(fontSize: 12)),
+          ],
+        ),
+        selected: !locked && _hours == hours,
+        visualDensity: VisualDensity.compact,
+        onSelected: (_) {
+          if (locked) {
+            _showPremiumUpsell();
+          } else {
+            _setHours(hours);
+          }
+        },
+      ),
+    );
+  }
+
+  Widget _buildPremiumBanner() {
+    if (_historicalEnabled) return const SizedBox.shrink();
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(12, 0, 12, 6),
+      child: Material(
+        color: NexoColors.deepBlue.withValues(alpha: 0.08),
+        borderRadius: BorderRadius.circular(8),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          child: Row(
+            children: [
+              const Icon(Icons.timeline, color: NexoColors.deepBlue, size: 20),
+              const SizedBox(width: 10),
+              const Expanded(
+                child: Text(
+                  "Vista en tiempo real. Field Premium desbloquea histórico 7 y 30 días.",
+                  style: TextStyle(fontSize: 12),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   Widget _filterChip({
@@ -348,9 +426,14 @@ class _MapScreenState extends State<MapScreen> {
         scrollDirection: Axis.horizontal,
         padding: const EdgeInsets.symmetric(horizontal: 10),
         children: [
-          _filterChip(label: "24 h", selected: _hours == 24, onSelect: () => _setHours(24)),
-          _filterChip(label: "7 días", selected: _hours == 168, onSelect: () => _setHours(168)),
-          _filterChip(label: "30 días", selected: _hours == 720, onSelect: () => _setHours(720)),
+          _periodChip(label: _historicalEnabled ? "24 h" : "Ahora", hours: 24),
+          if (_historicalEnabled) ...[
+            _periodChip(label: "7 días", hours: 168),
+            _periodChip(label: "30 días", hours: 720),
+          ] else ...[
+            _periodChip(label: "7 días", hours: 168, locked: true),
+            _periodChip(label: "30 días", hours: 720, locked: true),
+          ],
           const _FilterDivider(),
           _filterChip(label: "Todas", selected: _minSeverity == 1, onSelect: () => _setMinSeverity(1)),
           _filterChip(label: "Mod.+", selected: _minSeverity == 2, onSelect: () => _setMinSeverity(2)),
@@ -427,7 +510,7 @@ class _MapScreenState extends State<MapScreen> {
               ),
               const SizedBox(height: 8),
               const Text(
-                "Escanea una plaga y contribuye al mapa para ayudar a la comarca.",
+                "Escanea una plaga y abre una incidencia para alimentar el mapa comarcal.",
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 16),
@@ -435,6 +518,11 @@ class _MapScreenState extends State<MapScreen> {
                 onPressed: () => Navigator.pushNamed(context, Routes.scan),
                 icon: const Icon(Icons.camera_alt_outlined),
                 label: const Text("Ir a escanear"),
+              ),
+              const SizedBox(height: 8),
+              OutlinedButton(
+                onPressed: () => Navigator.pushNamed(context, Routes.incidents),
+                child: const Text("Ver mis incidencias"),
               ),
             ],
           ),
@@ -486,6 +574,7 @@ class _MapScreenState extends State<MapScreen> {
       body: Column(
         children: [
           const SizedBox(height: 6),
+          _buildPremiumBanner(),
           _buildFilterBar(),
           Padding(
             padding: const EdgeInsets.fromLTRB(12, 6, 12, 4),
@@ -629,12 +718,18 @@ class _FilterDivider extends StatelessWidget {
 class _MapData {
   final List<OutbreakEvent> events;
   final List<HeatmapCell> heatmap;
+  final bool historicalEnabled;
+  final List<int> allowedHours;
+  final int effectiveHours;
   final Map<int, AgriZone> zoneById;
   final List<String> plagueOptions;
 
   _MapData({
     required this.events,
     required this.heatmap,
+    required this.historicalEnabled,
+    required this.allowedHours,
+    required this.effectiveHours,
     required this.zoneById,
     required this.plagueOptions,
   });

@@ -46,6 +46,10 @@ def create_farm(
         crop=body.crop.strip(),
         farm_type=body.farm_type,
         zone_id=body.zone_id,
+        nave=body.nave.strip() if body.nave else None,
+        sector=body.sector.strip() if body.sector else None,
+        crop_stage=body.crop_stage.strip() if body.crop_stage else None,
+        crop_variant=body.crop_variant.strip() if body.crop_variant else None,
         surface_m2=body.surface_m2,
         sigpac_code=sigpac,
     )
@@ -70,6 +74,19 @@ def update_farm(
         farm.name = body.name.strip()
     if body.crop is not None:
         farm.crop = body.crop.strip()
+    if body.zone_id is not None:
+        zone = db.query(AgriZone).filter(AgriZone.id == body.zone_id).first()
+        if not zone:
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Zona no encontrada")
+        farm.zone_id = body.zone_id
+    if body.nave is not None:
+        farm.nave = body.nave.strip() or None
+    if body.sector is not None:
+        farm.sector = body.sector.strip() or None
+    if body.crop_stage is not None:
+        farm.crop_stage = body.crop_stage.strip() or None
+    if body.crop_variant is not None:
+        farm.crop_variant = body.crop_variant.strip() or None
     if body.surface_m2 is not None:
         farm.surface_m2 = body.surface_m2
     if body.sigpac_code is not None:
