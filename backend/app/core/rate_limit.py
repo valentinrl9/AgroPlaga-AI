@@ -5,9 +5,18 @@ from __future__ import annotations
 import time
 from collections import defaultdict
 
-from fastapi import HTTPException, status
+from fastapi import HTTPException, Request, status
 
 _buckets: dict[str, list[float]] = defaultdict(list)
+
+
+def client_ip(request: Request) -> str:
+    forwarded = request.headers.get("X-Forwarded-For")
+    if forwarded:
+        return forwarded.split(",")[0].strip()
+    if request.client:
+        return request.client.host
+    return "unknown"
 
 
 def check_rate_limit(key: str, *, max_attempts: int = 10, window_seconds: int = 60) -> None:
@@ -20,3 +29,7 @@ def check_rate_limit(key: str, *, max_attempts: int = 10, window_seconds: int = 
         )
     recent.append(now)
     _buckets[key] = recent
+
+
+def rate_limit_request(request: Request, scope: str, *, max_attempts: int = 10, window_seconds: int = 60) -> None:
+    check_rate_limit(f"{scope}:{client_ip(request)}", max_attempts=max_attempts, window_seconds=window_seconds)

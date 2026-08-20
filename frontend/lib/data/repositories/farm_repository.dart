@@ -47,6 +47,8 @@ class FarmRepository {
     String? cropVariant,
     String? sigpacCode,
     double? surfaceM2,
+    int? climateStationId,
+    bool clearClimateStation = false,
   }) async {
     final json = await _client.patchAuth("/api/v1/farms/$id", {
       if (name != null) "name": name,
@@ -58,6 +60,8 @@ class FarmRepository {
       if (cropVariant != null) "crop_variant": cropVariant,
       if (sigpacCode != null) "sigpac_code": sigpacCode,
       if (surfaceM2 != null) "surface_m2": surfaceM2,
+      if (clearClimateStation) "climate_station_id": null,
+      if (!clearClimateStation && climateStationId != null) "climate_station_id": climateStationId,
     });
     return Farm.fromJson(json);
   }

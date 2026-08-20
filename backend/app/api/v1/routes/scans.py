@@ -9,7 +9,7 @@ from app.models.scan import Scan
 from app.models.user import User
 from app.schemas.scan import ScanCreate, ScanRead, ScanValidateRequest
 from app.services.gamification_service import check_scan_badges
-from app.services.scan_image_service import resolve_image_path, save_scan_image
+from app.services.scan_image_service import assert_upload_quota, resolve_image_path, save_scan_image
 from app.services.tech_scan_service import user_can_view_scan_image, validate_scan
 
 router = APIRouter()
@@ -130,6 +130,7 @@ async def create_scan_with_image(
         )
 
     _validate_farm(db, farm_id, current_user.id)
+    assert_upload_quota(db, current_user.id)
 
     scan = Scan(
         user_id=current_user.id,

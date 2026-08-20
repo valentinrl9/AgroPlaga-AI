@@ -55,7 +55,9 @@ def etl_run(
     try:
         return run_mapa_etl(db, use_cache=use_cache)
     except Exception as exc:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(exc)) from exc
+        from app.core.api_errors import safe_http_error
+
+        raise safe_http_error(exc, public_message="Error al ejecutar ETL MAPA") from exc
 
 
 @router.get("/biocides", response_model=list[BiocideProductRead])

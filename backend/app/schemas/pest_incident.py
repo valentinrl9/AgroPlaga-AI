@@ -75,6 +75,9 @@ class IncidentRead(BaseModel):
     prescription_registry_number: str | None = None
     prescription_dose_ml: float | None = None
     prescription_safety_hours: int | None = None
+    prescription_surface_m2: float | None = None
+    prescription_active_substance: str | None = None
+    farm_surface_m2: float | None = None
     treatment: IncidentTreatmentSummary | None = None
     evaluation_scan_id: int | None = None
     created_at: datetime

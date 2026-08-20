@@ -69,7 +69,9 @@ class _FarmsScreenState extends State<FarmsScreen> {
   }
 
   void _reload() {
-    setState(() => _future = _repository.fetchFarms());
+    setState(() {
+      _future = _repository.fetchFarms();
+    });
   }
 
   String _zoneLabel(int? zoneId) {

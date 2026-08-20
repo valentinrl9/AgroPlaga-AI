@@ -30,8 +30,12 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
   String? _error;
   String? _lastSync;
   List<Farm> _farms = [];
-  int? _selectedZoneId;
+  List<dynamic> _stations = [];
+  int? _selectedFarmId;
   String? _stationLabel;
+  String? _autoStationLabel;
+  bool _stationManualOverride = false;
+  bool _savingStation = false;
 
   Map<String, dynamic>? _actual;
   Map<String, dynamic>? _recomendaciones;
@@ -76,21 +80,25 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
         if (mounted) {
           setState(() {
             _farms = farms;
-            _selectedZoneId ??= farms.where((f) => f.zoneId != null).map((f) => f.zoneId).cast<int?>().firstWhere(
+            _selectedFarmId ??= farms.where((f) => f.zoneId != null).map((f) => f.id).cast<int?>().firstWhere(
                   (id) => id != null,
                   orElse: () => null,
                 );
           });
         }
       }
+      if (_stations.isEmpty) {
+        final stations = await _repo.fetchStations();
+        if (mounted) setState(() => _stations = stations);
+      }
 
-      final zoneId = _selectedZoneId;
+      final farmId = _selectedFarmId;
       final results = await Future.wait([
-        _repo.fetchActual(zoneId: zoneId),
-        _repo.fetchRecomendaciones(zoneId: zoneId),
-        _repo.fetchRecomendaciones(dias: 30, zoneId: zoneId),
-        _repo.fetchAlertas(zoneId: zoneId),
-        _repo.fetchRiesgo(zoneId: zoneId),
+        _repo.fetchActual(farmId: farmId),
+        _repo.fetchRecomendaciones(farmId: farmId),
+        _repo.fetchRecomendaciones(dias: 30, farmId: farmId),
+        _repo.fetchAlertas(farmId: farmId),
+        _repo.fetchRiesgo(farmId: farmId),
         _repo.fetchEtlStatus(),
       ]);
       if (!mounted) return;
@@ -101,6 +109,7 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
       final riesgo = results[4] as Map<String, dynamic>;
       final etl = results[5] as Map<String, dynamic>;
       final station = actual["station"] as Map<String, dynamic>? ?? recs["station"] as Map<String, dynamic>?;
+      final autoStation = actual["auto_station"] as Map<String, dynamic>? ?? recs["auto_station"] as Map<String, dynamic>?;
       setState(() {
         _unlocked = true;
         _actual = actual;
@@ -109,6 +118,8 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
         _alertas = alertas;
         _riesgo = riesgo;
         _stationLabel = station?["name"] as String? ?? "Sur de Almería";
+        _autoStationLabel = autoStation?["name"] as String? ?? _stationLabel;
+        _stationManualOverride = actual["station_manual_override"] as bool? ?? false;
         _consejos = ClimateAdvisor.generate(actual: actual, recomendaciones: recs);
         _lastSync = etl["last_run"]?.toString() ?? DateTime.now().toIso8601String();
         _loading = false;
@@ -122,9 +133,44 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
     }
   }
 
-  void _onZoneChanged(int? zoneId) {
-    setState(() => _selectedZoneId = zoneId);
+  void _onFarmChanged(int? farmId) {
+    setState(() => _selectedFarmId = farmId);
     _bootstrap();
+  }
+
+  Farm? get _selectedFarm {
+    if (_selectedFarmId == null) return null;
+    for (final f in _farms) {
+      if (f.id == _selectedFarmId) return f;
+    }
+    return null;
+  }
+
+  Future<void> _onStationChanged(int? stationId) async {
+    final farm = _selectedFarm;
+    if (farm == null) return;
+    setState(() => _savingStation = true);
+    try {
+      final updated = await _farmRepo.updateFarm(
+        farm.id,
+        clearClimateStation: stationId == null,
+        climateStationId: stationId,
+      );
+      if (!mounted) return;
+      setState(() {
+        final idx = _farms.indexWhere((f) => f.id == farm.id);
+        if (idx >= 0) _farms[idx] = updated;
+      });
+      await _bootstrap(silent: true);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("No se pudo guardar estación: $e"), backgroundColor: NexoColors.errorRed),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _savingStation = false);
+    }
   }
 
   Widget _farmSelector() {
@@ -136,23 +182,67 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
       );
     }
 
-    final zoneFarms = <int, Farm>{};
-    for (final farm in withZone) {
-      zoneFarms.putIfAbsent(farm.zoneId!, () => farm);
-    }
-
     return DropdownButtonFormField<int>(
-      value: zoneFarms.containsKey(_selectedZoneId) ? _selectedZoneId : zoneFarms.keys.first,
-      decoration: const InputDecoration(labelText: "Finca / municipio"),
-      items: zoneFarms.entries
+      value: withZone.any((f) => f.id == _selectedFarmId) ? _selectedFarmId : withZone.first.id,
+      decoration: const InputDecoration(labelText: "Finca"),
+      items: withZone
           .map(
-            (e) => DropdownMenuItem(
-              value: e.key,
-              child: Text("${e.value.name} · ${e.value.crop}", overflow: TextOverflow.ellipsis),
+            (f) => DropdownMenuItem(
+              value: f.id,
+              child: Text("${f.name} · ${f.crop}", overflow: TextOverflow.ellipsis),
             ),
           )
           .toList(),
-      onChanged: _loading ? null : _onZoneChanged,
+      onChanged: _loading || _savingStation ? null : _onFarmChanged,
+    );
+  }
+
+  Widget _stationSelector() {
+    if (_stations.isEmpty) return const SizedBox.shrink();
+    final farm = _selectedFarm;
+    final currentOverride = farm?.climateStationId;
+    final autoLabel = _autoStationLabel ?? "—";
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        DropdownButtonFormField<int?>(
+          value: currentOverride,
+          decoration: InputDecoration(
+            labelText: "Estación meteorológica",
+            helperText: _stationManualOverride
+                ? "Selección manual activa"
+                : "Automática por proximidad al municipio de la finca",
+          ),
+          items: [
+            DropdownMenuItem<int?>(
+              value: null,
+              child: Text("Automática · $autoLabel", overflow: TextOverflow.ellipsis),
+            ),
+            ..._stations.map(
+              (s) => DropdownMenuItem<int?>(
+                value: s["id"] as int,
+                child: Text(s["name"] as String, overflow: TextOverflow.ellipsis),
+              ),
+            ),
+          ],
+          onChanged: _loading || _savingStation ? null : _onStationChanged,
+        ),
+        if (_stationLabel != null) ...[
+          const SizedBox(height: 6),
+          Text(
+            _stationManualOverride
+                ? "Datos: $_stationLabel (manual)"
+                : "Datos: $_stationLabel (automática)",
+            style: const TextStyle(color: NexoColors.bioGreen, fontSize: 13, fontWeight: FontWeight.w600),
+          ),
+          if (_stationManualOverride && _autoStationLabel != null)
+            Text(
+              "La automática sería: $_autoStationLabel",
+              style: const TextStyle(color: NexoColors.textSecondary, fontSize: 12),
+            ),
+        ],
+      ],
     );
   }
 
@@ -256,18 +346,19 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
         padding: const EdgeInsets.all(16),
         children: [
           const Text(
-            "Estación meteorológica según tu finca",
+            "Clima según tu finca — estación automática o manual",
             style: TextStyle(color: NexoColors.textSecondary, fontSize: 13),
           ),
           const SizedBox(height: 8),
           _farmSelector(),
-          if (_stationLabel != null) ...[
-            const SizedBox(height: 8),
-            Text(
-              "Datos: $_stationLabel",
-              style: const TextStyle(color: NexoColors.bioGreen, fontSize: 13, fontWeight: FontWeight.w600),
+          const SizedBox(height: 12),
+          _stationSelector(),
+          if (_savingStation)
+            const Padding(
+              padding: EdgeInsets.only(top: 8),
+              child: LinearProgressIndicator(),
             ),
-          ],
+          const SizedBox(height: 8),
           if (_actual != null) ...[
             ClimateMetricCard(
               emoji: "🌡️",

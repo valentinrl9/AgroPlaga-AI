@@ -31,7 +31,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<bool> _pingServer(String baseUrl) async {
-    final uri = Uri.parse("${ApiConfig.normalize(baseUrl)}/docs");
+    final uri = Uri.parse("${ApiConfig.normalize(baseUrl)}/api/v1/climate/health");
     final response = await http.get(uri).timeout(const Duration(seconds: 8));
     return response.statusCode == 200;
   }
@@ -70,6 +70,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
         _urlController.text = normalized;
         _status = "URL guardada. No hace falta reinstalar la app.";
       });
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _status = e.toString();
+      });
     } finally {
       if (mounted) setState(() => _saving = false);
     }
@@ -93,48 +98,65 @@ class _SettingsScreenState extends State<SettingsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
-            const Text(
-              "Servidor API",
-              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 8),
-            const Text(
-              "En móvil físico usa la IP de tu PC en la misma Wi‑Fi, por ejemplo http://192.168.1.104:8000",
-              style: TextStyle(color: NexoColors.textPrimary),
-            ),
-            const SizedBox(height: 16),
-            TextField(
-              controller: _urlController,
-              decoration: const InputDecoration(
-                labelText: "URL del backend",
-                hintText: "http://192.168.1.104:8000",
-                border: OutlineInputBorder(),
+            if (ApiConfig.allowCustomServerUrl) ...[
+              const Text(
+                "Servidor API (solo desarrollo)",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
-              keyboardType: TextInputType.url,
-              autocorrect: false,
-            ),
-            const SizedBox(height: 12),
-            if (_status != null)
-              Text(
-                _status!,
-                style: TextStyle(
-                  color: _status!.startsWith("Conexión") || _status!.startsWith("URL")
-                      ? NexoColors.bioGreen
-                      : NexoColors.errorRed,
+              const SizedBox(height: 8),
+              const Text(
+                "En móvil físico usa la IP de tu PC en la misma Wi‑Fi, por ejemplo http://192.168.1.104:8000",
+                style: TextStyle(color: NexoColors.textPrimary),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _urlController,
+                decoration: const InputDecoration(
+                  labelText: "URL del backend",
+                  hintText: "http://192.168.1.104:8000",
+                  border: OutlineInputBorder(),
                 ),
+                keyboardType: TextInputType.url,
+                autocorrect: false,
               ),
-            const SizedBox(height: 16),
-            PrimaryButton(
-              label: _testing ? "Comprobando..." : "Probar conexión",
-              onPressed: _testing ? null : _testConnection,
-            ),
-            const SizedBox(height: 10),
-            PrimaryButton(
-              label: _saving ? "Guardando..." : "Guardar",
-              onPressed: _saving ? null : _save,
-            ),
-            const SizedBox(height: 10),
-            OutlinedButton(onPressed: _reset, child: const Text("Restaurar por defecto")),
+              const SizedBox(height: 12),
+              if (_status != null)
+                Text(
+                  _status!,
+                  style: TextStyle(
+                    color: _status!.startsWith("Conexión") || _status!.startsWith("URL")
+                        ? NexoColors.bioGreen
+                        : NexoColors.errorRed,
+                  ),
+                ),
+              const SizedBox(height: 16),
+              PrimaryButton(
+                label: _testing ? "Comprobando..." : "Probar conexión",
+                onPressed: _testing ? null : _testConnection,
+              ),
+              const SizedBox(height: 10),
+              PrimaryButton(
+                label: _saving ? "Guardando..." : "Guardar",
+                onPressed: _saving ? null : _save,
+              ),
+              const SizedBox(height: 10),
+              OutlinedButton(onPressed: _reset, child: const Text("Restaurar por defecto")),
+            ] else ...[
+              const Text(
+                "Servidor API",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                ApiConfig.baseUrl,
+                style: const TextStyle(color: NexoColors.textPrimary),
+              ),
+              const SizedBox(height: 8),
+              const Text(
+                "La URL del servidor está fijada en builds de producción.",
+                style: TextStyle(color: NexoColors.textPrimary),
+              ),
+            ],
           ],
         ),
       ),

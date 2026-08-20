@@ -17,7 +17,7 @@ LAT = float(os.getenv("OPENMETEO_LAT", "36.77"))
 LON = float(os.getenv("OPENMETEO_LON", "-2.81"))
 HISTORICO_START = os.getenv("OPENMETEO_HISTORICO_START", "2020-01-01")
 DEFAULT_PRESSURE_HPA = float(os.getenv("DEFAULT_PRESSURE_HPA", "1013.25"))
-CLIMATE_PREVIEW_OPEN = os.getenv("CLIMATE_PREVIEW_OPEN", "true").strip().lower() in ("1", "true", "yes")
+CLIMATE_PREVIEW_OPEN = os.getenv("CLIMATE_PREVIEW_OPEN", "false").strip().lower() in ("1", "true", "yes")
 
 
 def station_data_dir(slug: str) -> Path:

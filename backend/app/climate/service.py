@@ -20,27 +20,67 @@ from app.climate.config import (
 from app.climate.metrics import calc_dew_point_c, calc_dpv_kpa, dpv_status
 from app.climate.openmeteo_transform import calc_estres_termico
 from app.climate.repository import get_daily_between, get_last_n_daily, get_max_fecha, count_daily
-from app.climate.stations import list_active_stations, resolve_station, station_to_dict
+from app.climate.stations import list_active_stations, resolve_station, resolve_station_with_override, station_to_dict
 from app.models.climate_station import ClimateStation
+from app.models.farm import Farm
 from app.models.user import User
 from app.models.zone import AgriZone
 
 
 def user_has_climate_access(user: User) -> bool:
-    if user.has_climate_module:
+    if user.has_climate_module or user.has_field_premium:
         return True
     if user.role in ("tech", "admin"):
         return True
     return CLIMATE_PREVIEW_OPEN
 
 
-def _station_context(db: Session, zone_id: int | None) -> tuple[ClimateStation, dict]:
-    station = resolve_station(db, zone_id)
+def _station_context(
+    db: Session,
+    zone_id: int | None = None,
+    station_id_override: int | None = None,
+) -> tuple[ClimateStation, dict, dict, bool]:
+    station, auto = resolve_station_with_override(db, zone_id, station_id_override)
     zone_name = None
     if station.zone_id is not None:
         zone = db.query(AgriZone).filter(AgriZone.id == station.zone_id).first()
         zone_name = zone.name if zone else None
-    return station, station_to_dict(station, zone_name=zone_name)
+    auto_zone_name = None
+    if auto.zone_id is not None:
+        zone = db.query(AgriZone).filter(AgriZone.id == auto.zone_id).first()
+        auto_zone_name = zone.name if zone else None
+    manual = station_id_override is not None and station.id != auto.id
+    return (
+        station,
+        station_to_dict(station, zone_name=zone_name),
+        station_to_dict(auto, zone_name=auto_zone_name),
+        manual,
+    )
+
+
+def _station_meta(station_info: dict, auto_info: dict, manual: bool) -> dict:
+    return {
+        "station": station_info,
+        "auto_station": auto_info,
+        "station_manual_override": manual,
+    }
+
+
+def resolve_climate_params(
+    db: Session,
+    user: User | None,
+    farm_id: int | None,
+    zone_id: int | None,
+    station_id_override: int | None,
+) -> tuple[int | None, int | None]:
+    if farm_id is not None:
+        if user is None:
+            raise ValueError("Se requiere usuario autenticado para consultar por finca")
+        farm = db.query(Farm).filter(Farm.id == farm_id, Farm.user_id == user.id).first()
+        if farm is None:
+            raise ValueError("Finca no encontrada")
+        return farm.zone_id, farm.climate_station_id
+    return zone_id, station_id_override
 
 
 def get_stations(db: Session) -> list[dict]:
@@ -55,14 +95,21 @@ def get_stations(db: Session) -> list[dict]:
     return result
 
 
-def get_health(db: Session, zone_id: int | None = None) -> dict:
-    station, station_info = _station_context(db, zone_id)
+def get_health(
+    db: Session,
+    zone_id: int | None = None,
+    station_id_override: int | None = None,
+    farm_id: int | None = None,
+    user: User | None = None,
+) -> dict:
+    zone_id, station_id_override = resolve_climate_params(db, user, farm_id, zone_id, station_id_override)
+    station, station_info, auto_info, manual = _station_context(db, zone_id, station_id_override)
     return {
         "status": "ok" if count_daily(db, station.id) > 0 else "degraded",
         "postgres": True,
         "climate_daily_rows": count_daily(db, station.id),
         "stations_active": len(list_active_stations(db)),
-        "station": station_info,
+        **_station_meta(station_info, auto_info, manual),
         "preview_open": CLIMATE_PREVIEW_OPEN,
     }
 
@@ -134,8 +181,15 @@ def dew_point_status(dew_point_c: float, temp_c: float) -> str:
     return "optimal"
 
 
-def get_actual(db: Session, zone_id: int | None = None) -> dict:
-    station, station_info = _station_context(db, zone_id)
+def get_actual(
+    db: Session,
+    zone_id: int | None = None,
+    station_id_override: int | None = None,
+    farm_id: int | None = None,
+    user: User | None = None,
+) -> dict:
+    zone_id, station_id_override = resolve_climate_params(db, user, farm_id, zone_id, station_id_override)
+    station, station_info, auto_info, manual = _station_context(db, zone_id, station_id_override)
     realtime_csv = station_csv_paths(station.slug)["realtime"]
     try:
         df = pd.read_csv(realtime_csv)
@@ -152,7 +206,7 @@ def get_actual(db: Session, zone_id: int | None = None) -> dict:
     dew = calc_dew_point_c(t, rh)
 
     salida = {
-        "station": station_info,
+        **_station_meta(station_info, auto_info, manual),
         "timestamp": str(ts),
         "et0_hora": round(float(row["et0_fao_evapotranspiration"]), 2),
         "temperatura": t,
@@ -190,8 +244,16 @@ def get_actual(db: Session, zone_id: int | None = None) -> dict:
     return salida
 
 
-def get_prediccion(db: Session, dias: int = 7, zone_id: int | None = None) -> list[dict] | dict:
-    station, _ = _station_context(db, zone_id)
+def get_prediccion(
+    db: Session,
+    dias: int = 7,
+    zone_id: int | None = None,
+    station_id_override: int | None = None,
+    farm_id: int | None = None,
+    user: User | None = None,
+) -> list[dict] | dict:
+    zone_id, station_id_override = resolve_climate_params(db, user, farm_id, zone_id, station_id_override)
+    station, _, _, _ = _station_context(db, zone_id, station_id_override)
     rows = get_last_n_daily(db, station.id, 14)
     if not rows:
         return {"error": f"No hay datos en climate_daily para {station.name}. Ejecuta ETL."}
@@ -259,8 +321,15 @@ def _evaluar_dia(d: dict) -> tuple[int, list[str]]:
     return nivel, condiciones
 
 
-def get_alertas(db: Session, zone_id: int | None = None) -> dict:
-    station, station_info = _station_context(db, zone_id)
+def get_alertas(
+    db: Session,
+    zone_id: int | None = None,
+    station_id_override: int | None = None,
+    farm_id: int | None = None,
+    user: User | None = None,
+) -> dict:
+    zone_id, station_id_override = resolve_climate_params(db, user, farm_id, zone_id, station_id_override)
+    station, station_info, auto_info, manual = _station_context(db, zone_id, station_id_override)
     reales = get_last_n_daily(db, station.id, 7)
     alertas_reales = []
     for d in reales:
@@ -268,7 +337,9 @@ def get_alertas(db: Session, zone_id: int | None = None) -> dict:
         if nivel >= 2:
             alertas_reales.append(f"[{d['fecha']}] " + " · ".join(condiciones))
 
-    pred = get_prediccion(db, 7, zone_id=zone_id)
+    pred = get_prediccion(
+        db, 7, zone_id=zone_id, station_id_override=station_id_override, farm_id=farm_id, user=user
+    )
     alertas_pred = []
     if isinstance(pred, list):
         for d in pred:
@@ -276,7 +347,9 @@ def get_alertas(db: Session, zone_id: int | None = None) -> dict:
             if nivel >= 2:
                 alertas_pred.append(f"[{d['fecha']}] Previsto: " + " · ".join(condiciones))
 
-    riesgo = get_riesgo_semanal(db, dias=7, zone_id=zone_id)
+    riesgo = get_riesgo_semanal(
+        db, dias=7, zone_id=zone_id, station_id_override=station_id_override, farm_id=farm_id, user=user
+    )
     combinado = []
     if isinstance(riesgo, dict) and riesgo.get("diario"):
         high_days = [d for d in riesgo["diario"] if d.get("riesgo_pct", 0) >= 55]
@@ -291,7 +364,7 @@ def get_alertas(db: Session, zone_id: int | None = None) -> dict:
         )
 
     return {
-        "station": station_info,
+        **_station_meta(station_info, auto_info, manual),
         "resumen": f"{len(alertas_reales)} día(s) con alertas recientes",
         "alertas_reales": alertas_reales,
         "alertas_prediccion": alertas_pred,
@@ -306,9 +379,19 @@ def get_alertas(db: Session, zone_id: int | None = None) -> dict:
     }
 
 
-def get_recomendaciones(db: Session, dias: int = 7, zone_id: int | None = None) -> dict:
-    station, station_info = _station_context(db, zone_id)
-    pred = get_prediccion(db, dias, zone_id=zone_id)
+def get_recomendaciones(
+    db: Session,
+    dias: int = 7,
+    zone_id: int | None = None,
+    station_id_override: int | None = None,
+    farm_id: int | None = None,
+    user: User | None = None,
+) -> dict:
+    zone_id, station_id_override = resolve_climate_params(db, user, farm_id, zone_id, station_id_override)
+    station, station_info, auto_info, manual = _station_context(db, zone_id, station_id_override)
+    pred = get_prediccion(
+        db, dias, zone_id=zone_id, station_id_override=station_id_override, farm_id=farm_id, user=user
+    )
     if not isinstance(pred, list):
         return pred
 
@@ -368,16 +451,26 @@ def get_recomendaciones(db: Session, dias: int = 7, zone_id: int | None = None) 
             }
 
     return {
-        "station": station_info,
+        **_station_meta(station_info, auto_info, manual),
         "diario": diario,
         "resumen_semanal": resumen_semanal,
         "resumen_mensual": resumen_mensual,
     }
 
 
-def get_riesgo_semanal(db: Session, dias: int = 7, zone_id: int | None = None) -> dict:
-    station, station_info = _station_context(db, zone_id)
-    pred = get_prediccion(db, dias, zone_id=zone_id)
+def get_riesgo_semanal(
+    db: Session,
+    dias: int = 7,
+    zone_id: int | None = None,
+    station_id_override: int | None = None,
+    farm_id: int | None = None,
+    user: User | None = None,
+) -> dict:
+    zone_id, station_id_override = resolve_climate_params(db, user, farm_id, zone_id, station_id_override)
+    station, station_info, auto_info, manual = _station_context(db, zone_id, station_id_override)
+    pred = get_prediccion(
+        db, dias, zone_id=zone_id, station_id_override=station_id_override, farm_id=farm_id, user=user
+    )
     if not isinstance(pred, list):
         return pred
 
@@ -396,7 +489,7 @@ def get_riesgo_semanal(db: Session, dias: int = 7, zone_id: int | None = None) -
         })
 
     return {
-        "station": station_info,
+        **_station_meta(station_info, auto_info, manual),
         "score_pct": int(round(sum(scores) / len(scores))) if scores else 0,
         "diario": diario,
     }

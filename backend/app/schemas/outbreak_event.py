@@ -4,7 +4,7 @@ from typing import Literal
 from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 SeverityLevel = Literal[1, 2, 3]
-OutbreakStatus = Literal["pending", "validated", "rejected"]
+OutbreakStatus = Literal["pending", "active", "validated", "rejected", "closed"]
 ValidateAction = Literal["confirm", "correct", "reject"]
 
 

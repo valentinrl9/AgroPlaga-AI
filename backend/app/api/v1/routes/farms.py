@@ -6,6 +6,7 @@ from app.core.security import get_current_active_user
 from app.models.farm import Farm
 from app.models.user import User
 from app.models.zone import AgriZone
+from app.models.climate_station import ClimateStation
 from app.schemas.farm import FarmCreate, FarmRead, FarmUpdate
 from app.siex.service import validate_sigpac
 
@@ -91,6 +92,18 @@ def update_farm(
         farm.surface_m2 = body.surface_m2
     if body.sigpac_code is not None:
         farm.sigpac_code = validate_sigpac(body.sigpac_code) if body.sigpac_code.strip() else None
+    if "climate_station_id" in body.model_fields_set:
+        if body.climate_station_id is None:
+            farm.climate_station_id = None
+        else:
+            station = (
+                db.query(ClimateStation)
+                .filter(ClimateStation.id == body.climate_station_id, ClimateStation.active.is_(True))
+                .first()
+            )
+            if station is None:
+                raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Estación meteorológica no encontrada")
+            farm.climate_station_id = station.id
 
     db.commit()
     db.refresh(farm)

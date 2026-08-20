@@ -17,6 +17,7 @@ class FarmCreate(BaseModel):
     crop_variant: str | None = Field(default=None, max_length=50)
     surface_m2: float | None = Field(default=None, gt=0)
     sigpac_code: str | None = Field(default=None, max_length=20)
+    climate_station_id: int | None = None
 
 
 class FarmUpdate(BaseModel):
@@ -29,6 +30,7 @@ class FarmUpdate(BaseModel):
     crop_variant: str | None = Field(default=None, max_length=50)
     surface_m2: float | None = Field(default=None, gt=0)
     sigpac_code: str | None = Field(default=None, max_length=20)
+    climate_station_id: int | None = None
 
 
 class FarmRead(BaseModel):
@@ -43,6 +45,7 @@ class FarmRead(BaseModel):
     crop_variant: str | None = None
     surface_m2: float | None = None
     sigpac_code: str | None = None
+    climate_station_id: int | None = None
     created_at: datetime
 
     model_config = ConfigDict(from_attributes=True)

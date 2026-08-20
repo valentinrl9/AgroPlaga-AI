@@ -42,6 +42,9 @@ class PestIncident {
   final String? prescriptionRegistryNumber;
   final double? prescriptionDoseMl;
   final int? prescriptionSafetyHours;
+  final double? prescriptionSurfaceM2;
+  final String? prescriptionActiveSubstance;
+  final double? farmSurfaceM2;
   final IncidentTreatmentSummary? treatment;
   final int? evaluationScanId;
   final DateTime createdAt;
@@ -66,6 +69,9 @@ class PestIncident {
     this.prescriptionRegistryNumber,
     this.prescriptionDoseMl,
     this.prescriptionSafetyHours,
+    this.prescriptionSurfaceM2,
+    this.prescriptionActiveSubstance,
+    this.farmSurfaceM2,
     this.treatment,
     this.evaluationScanId,
     required this.createdAt,
@@ -92,6 +98,9 @@ class PestIncident {
       prescriptionRegistryNumber: json["prescription_registry_number"] as String?,
       prescriptionDoseMl: (json["prescription_dose_ml"] as num?)?.toDouble(),
       prescriptionSafetyHours: json["prescription_safety_hours"] as int?,
+      prescriptionSurfaceM2: (json["prescription_surface_m2"] as num?)?.toDouble(),
+      prescriptionActiveSubstance: json["prescription_active_substance"] as String?,
+      farmSurfaceM2: (json["farm_surface_m2"] as num?)?.toDouble(),
       treatment: json["treatment"] != null
           ? IncidentTreatmentSummary.fromJson(Map<String, dynamic>.from(json["treatment"] as Map))
           : null,

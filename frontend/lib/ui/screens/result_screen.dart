@@ -30,6 +30,7 @@ class _ResultScreenState extends State<ResultScreen> {
   bool _sending = false;
   bool _openingIncident = false;
   bool _incidentOpened = false;
+  int? _openedIncidentId;
   String? _incidentError;
 
   bool get _isTrackablePlague {
@@ -54,9 +55,12 @@ class _ResultScreenState extends State<ResultScreen> {
       _incidentError = null;
     });
     try {
-      await _incidentRepo.openFromScan(widget.scan.id);
+      final incident = await _incidentRepo.openFromScan(widget.scan.id);
       if (!mounted) return;
-      setState(() => _incidentOpened = true);
+      setState(() {
+        _incidentOpened = true;
+        _openedIncidentId = incident.id;
+      });
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Incidencia abierta. Aparece en el mapa comunitario de tu municipio."),
@@ -203,12 +207,24 @@ class _ResultScreenState extends State<ResultScreen> {
             ),
             if (_isTrackablePlague) ...[
               const SizedBox(height: 12),
-              if (_incidentOpened)
+              if (_incidentOpened) ...[
                 const Text(
-                  "Incidencia fitosanitaria abierta. Sigue el seguimiento en Mis incidencias.",
+                  "Incidencia fitosanitaria abierta. Continúa el seguimiento en el CRM.",
                   style: TextStyle(color: NexoColors.bioGreen, fontWeight: FontWeight.w600),
                   textAlign: TextAlign.center,
-                )
+                ),
+                const SizedBox(height: 12),
+                PrimaryButton(
+                  label: "Abrir CRM de la incidencia",
+                  onPressed: _openedIncidentId == null
+                      ? null
+                      : () => Navigator.pushNamed(
+                            context,
+                            Routes.incidentDetail,
+                            arguments: _openedIncidentId,
+                          ),
+                ),
+              ]
               else ...[
                 PrimaryButton(
                   label: _openingIncident ? "Abriendo incidencia..." : "Abrir incidencia fitosanitaria",

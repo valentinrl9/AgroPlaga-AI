@@ -11,6 +11,10 @@ os.environ.setdefault(
 os.environ.setdefault("REGISTRATION_MODE", "open")
 os.environ.setdefault("ADMIN_EMAIL", "admin@example.com")
 os.environ.setdefault("ADMIN_PASSWORD", "admin1234")
+os.environ.setdefault("ALLOW_INSECURE_SECRETS", "true")
+os.environ.setdefault("ENVIRONMENT", "development")
+os.environ.setdefault("CLIMATE_PREVIEW_OPEN", "true")
+os.environ.setdefault("SIEX_PREVIEW_OPEN", "true")
 
 
 @pytest.fixture(scope="session", autouse=True)

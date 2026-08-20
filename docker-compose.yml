@@ -37,6 +37,10 @@ services:
       - SIEX_PREVIEW_OPEN=true
       - REGISTRATION_MODE=open
       - DEMO_SEED_USERS=true
+      - DEMO_RESET_PASSWORDS=true
+      - ENVIRONMENT=development
+      - ALLOW_INSECURE_SECRETS=true
+      - DOCS_ENABLED=true
       - DEMO_USERS_PASSWORD=nexo1234
       - OPENMETEO_LAT=36.77
       - OPENMETEO_LON=-2.81

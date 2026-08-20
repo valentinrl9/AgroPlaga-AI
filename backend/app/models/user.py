@@ -19,3 +19,5 @@ class User(Base):
     has_climate_module = Column(Boolean, default=False, nullable=False)
     has_siex_module = Column(Boolean, default=False, nullable=False)
     has_siex_enterprise = Column(Boolean, default=False, nullable=False)
+    is_active = Column(Boolean, default=True, nullable=False)
+    token_version = Column(Integer, default=0, nullable=False)

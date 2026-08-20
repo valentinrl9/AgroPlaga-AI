@@ -4,7 +4,8 @@
 **Actualizado:** 7 ago 2026  
 **Rama:** `nexoagro`  
 **Estado:** ✅ **MVP 1.B desplegado** en `https://agroplaga-ai.farm` (Field Pro + notificaciones perito)  
-**Siguiente hito:** **Versión 2** — registro comunitario, CRM incidencias, clima sur Almería
+**Siguiente hito:** **Versión 2** — registro comunitario, CRM incidencias, clima sur Almería  
+**TODO infra (más adelante):** dominio `agroplaga.es` + Workspace · seguridad avanzada (pinning, Redis, WAF)
 
 ---
 
@@ -290,6 +291,67 @@ Referencia: diagrama *CRM Fitosanitario AgroPlaga — Ciclo de Vida* (Detección
 
 ---
 
+## TODO — Dominio principal `agroplaga.es` + Google Workspace
+
+> **Prioridad:** cuando V2 esté validada en local / antes de escalar comercial.  
+> **Situación actual:** producción en `https://agroplaga-ai.farm` (Namecheap).  
+> **Objetivo:** `https://agroplaga.es` (IONOS) como dominio principal.  
+> **SSL web/API:** Caddy + Let's Encrypt en el VPS (no Google Workspace).
+
+### Checklist DNS (IONOS)
+
+- [ ] Registro **A** `@` → IP del VPS
+- [ ] Registro **A** `www` → misma IP (o CNAME `www` → `@`)
+- [ ] Verificar propagación: `nslookup agroplaga.es`
+- [ ] Registros **MX** → Google Workspace (cuando el correo esté listo)
+- [ ] Registros **TXT** → verificación Google + SPF + DKIM
+
+### Checklist Google Workspace (solo correo)
+
+- [ ] Alta Google Workspace con dominio `agroplaga.es`
+- [ ] Verificar dominio (TXT en IONOS)
+- [ ] MX + SPF + DKIM según asistente Google Admin
+- [ ] Crear buzones (`hola@`, `piloto@`, `soporte@`, etc.)
+
+### Checklist VPS / despliegue
+
+- [ ] `API_DOMAIN=agroplaga.es` en `deploy/pilot.env`
+- [ ] Actualizar `deploy/pilot.env.example` con `agroplaga.es` como ejemplo
+- [ ] Añadir bloque **redirect 301** `agroplaga-ai.farm` → `agroplaga.es` en `deploy/Caddyfile`
+- [ ] Redeploy: `docker compose -f docker-compose.pilot.yml --env-file deploy/pilot.env -p agroplaga up -d --build`
+- [ ] Probar HTTPS: `https://agroplaga.es/`, `/panel/`, `/api/v1/climate/health`
+- [ ] Mantener `agroplaga-ai.farm` en Namecheap apuntando al mismo VPS (redirect legacy)
+
+### Checklist app y comunicación
+
+- [ ] APK release: `flutter build apk --dart-define=API_BASE_URL=https://agroplaga.es`
+- [ ] Actualizar landing, `docs/`, guías piloto y enlaces comerciales al dominio `.es`
+- [ ] Avisar a pilotos / repartir nueva APK
+
+### Orden recomendado (sin cortar servicio)
+
+1. DNS `agroplaga.es` → VPS (convive con `.farm`)
+2. Probar HTTPS en `.es` (Caddy emite cert cuando DNS resuelve)
+3. Google Workspace en paralelo (MX no afecta la web)
+4. Redirect `.farm` → `.es`
+5. Nueva APK y comunicación a usuarios
+
+---
+
+## Seguridad — IMPORTANTE (post-V2 / pre-comercialización)
+
+> **Estado ago 2026:** aplicado hardening P0+P1 en código (JWT, alertas, heatmap, secure storage, HTTPS release, etc.). **70/70 tests backend.** Pendiente infra y capa avanzada.
+
+- [ ] **Certificate pinning** (Flutter release) — fijar certificado/clave pública del API `agroplaga.es` para bloquear MITM incluso con HTTPS
+- [ ] **Rate limiting distribuido** (Redis) — sustituir buckets en memoria cuando haya >1 worker o varias instancias
+- [ ] **WAF / firewall VPS** — reglas en Hetzner/Cloudflare (solo 80/443, geo opcional, bloqueo brute-force)
+- [ ] **Auditoría externa** — pentest ligero antes de registro abierto o cooperativas de pago
+- [ ] **Rotación de secretos** — procedimiento documentado para `SECRET_KEY`, DB, SMTP
+
+*(Ver también: [TODO — Dominio `agroplaga.es`](#todo--dominio-principal-agroplagaes--google-workspace) arriba.)*
+
+---
+
 ## Orden de construcción
 
 ```
@@ -329,7 +391,8 @@ Fase 0 ✅
 | jul 2026 | Fase 0: backend Climate PostgreSQL + shell Nexo + UI Climate B+ |
 | jul 2026 | Fase 0 validada: checklist manual E2E + commit `14947d9` (mapa validado, migración 0012) |
 | ago 2026 | MVP 1.B (Field Pro) en producción: notificaciones perito, SIEX/Climate/MAPA, migración `0016` |
-| ago 2026 | Landing rediseñada + formulario contacto email; spec **Versión 2** acordada (registro, CRM incidencias, clima sur Almería) |
+| ago 2026 | Hardening seguridad P0+P1 (JWT, RBAC alertas, secure storage, HTTPS release) |
+| ago 2026 | Spec **Versión 2** acordada (registro, CRM incidencias, clima sur Almería) |
 
 ---
 

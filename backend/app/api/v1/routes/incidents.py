@@ -37,9 +37,12 @@ router = APIRouter()
 def _incident_read(db: Session, incident: PestIncident) -> IncidentRead:
     zone = db.query(AgriZone).filter(AgriZone.id == incident.zone_id).first()
     farm_name = None
+    farm_surface_m2 = None
     if incident.farm_id is not None:
         farm = db.query(Farm).filter(Farm.id == incident.farm_id).first()
-        farm_name = farm.name if farm else None
+        if farm is not None:
+            farm_name = farm.name
+            farm_surface_m2 = farm.surface_m2
 
     treatment_summary: IncidentTreatmentSummary | None = None
     if incident.treatment_id is not None:
@@ -72,6 +75,9 @@ def _incident_read(db: Session, incident: PestIncident) -> IncidentRead:
         prescription_registry_number=incident.prescription_registry_number,
         prescription_dose_ml=incident.prescription_dose_ml,
         prescription_safety_hours=incident.prescription_safety_hours,
+        prescription_surface_m2=incident.prescription_surface_m2,
+        prescription_active_substance=incident.prescription_active_substance,
+        farm_surface_m2=farm_surface_m2,
         treatment=treatment_summary,
         evaluation_scan_id=incident.evaluation_scan_id,
         created_at=incident.created_at,

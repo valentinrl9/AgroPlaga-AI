@@ -102,13 +102,16 @@ def seed_master_user() -> None:
     if not email or not password:
         return
 
+    force_reset = os.getenv("MASTER_FORCE_RESET", "false").strip().lower() in {"1", "true", "yes"}
+
     db = SessionLocal()
     try:
         existing = db.query(User).filter(User.email == email).first()
         if existing:
             existing.name = name
             existing.role = "admin"
-            existing.hashed_password = get_password_hash(password)
+            if force_reset:
+                existing.hashed_password = get_password_hash(password)
             existing.has_field_premium = True
             existing.has_climate_module = True
             existing.has_siex_module = True
@@ -141,6 +144,11 @@ def seed_mapa_biocide_stubs() -> None:
         ("ES-00003", "Vertimec 1.8 EC", "abamectina", "arañuela roja", "tomate", 0.2, 0.3, 48),
         ("ES-00004", "Previcur Energy", "propamocarb", "mildiu", "tomate", 1.5, 2.0, 120),
         ("ES-00005", "Amistar", "azoxistrobin", "oídio", "tomate", 0.6, 0.8, 96),
+        ("ES-00006", "Amistar", "azoxistrobin", "oídio", "calabacín", 0.6, 0.8, 96),
+        ("ES-00007", "VACCIPLANT MAX", "Bacillus subtilis", "oídio", "calabacín", 0.25, 0.35, 24),
+        ("ES-00008", "Serenade ASO", "Bacillus subtilis QST713", "oídio", "calabacín", 0.4, 0.6, 24),
+        ("ES-00009", "Kumulus DF", "azufre", "oídio", "calabacín", 2.0, 3.0, 48),
+        ("ES-00010", "Previcur Energy", "propamocarb", "oídio", "calabacín", 1.2, 1.8, 120),
     ]
 
     db = SessionLocal()

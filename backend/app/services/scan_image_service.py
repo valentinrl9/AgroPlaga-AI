@@ -2,8 +2,10 @@ import imghdr
 from pathlib import Path
 
 from fastapi import HTTPException, UploadFile, status
+from sqlalchemy.orm import Session
 
 from app.core.config import settings
+from app.models.scan import Scan
 
 MAX_IMAGE_BYTES = 2 * 1024 * 1024
 ALLOWED_KINDS = {"jpeg", "png", "webp"}
@@ -14,6 +16,19 @@ def ensure_storage_dir() -> Path:
     root = Path(settings.scan_images_dir)
     root.mkdir(parents=True, exist_ok=True)
     return root
+
+
+def assert_upload_quota(db: Session, user_id: int) -> None:
+    count = (
+        db.query(Scan)
+        .filter(Scan.user_id == user_id, Scan.image_path.isnot(None))
+        .count()
+    )
+    if count >= settings.max_scan_images_per_user:
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Has alcanzado el límite de imágenes de escaneo. Elimina escaneos antiguos o contacta soporte.",
+        )
 
 
 async def save_scan_image(scan_id: int, upload: UploadFile) -> str:

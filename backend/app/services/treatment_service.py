@@ -4,37 +4,104 @@ from fastapi import HTTPException, status
 from sqlalchemy import func
 from sqlalchemy.orm import Session
 
+from app.data.crop_catalog import normalize_crop, resolve_crop_name
 from app.models.biocide_product import BiocideProduct
 from app.models.farm import Farm
 from app.models.farm_treatment import FarmTreatment
 from app.models.scan import Scan
 from app.models.user import User
-from app.schemas.treatment import DoseCalculateRequest, DoseCalculateResponse, TreatmentCreate, TreatmentRead
+from app.schemas.treatment import BiocideProductRead, DoseCalculateRequest, DoseCalculateResponse, TreatmentCreate, TreatmentRead
 from app.services.scan_validation import is_scan_rejected, is_scan_verified, verification_label
 
+_BIO_KEYWORDS = (
+    "bacillus",
+    "trichoderma",
+    "beauveria",
+    "metarhizium",
+    "steinernema",
+    "saccharomyces",
+    "extracto",
+    "fermentado",
+    "microorganismo",
+    "micorriza",
+    "vacciplant",
+)
 
-def list_biocides(db: Session, plague: str, crop: str) -> list[BiocideProduct]:
+
+def crop_match_keys(crop: str) -> set[str]:
+    raw = crop.strip().lower()
+    keys = {raw, normalize_crop(crop)}
+    resolved = resolve_crop_name(crop)
+    if resolved:
+        keys.add(resolved.lower())
+        keys.add(normalize_crop(resolved))
+    return {k for k in keys if k}
+
+
+def is_biological_product(product: BiocideProduct) -> bool:
+    blob = " ".join(
+        filter(
+            None,
+            [product.active_substance or "", product.agent_name or "", product.name or ""],
+        )
+    ).lower()
+    return any(keyword in blob for keyword in _BIO_KEYWORDS)
+
+
+def biocide_to_read(product: BiocideProduct) -> BiocideProductRead:
+    return BiocideProductRead(
+        id=product.id,
+        registry_no=product.registry_no,
+        name=product.name,
+        active_substance=product.active_substance,
+        plague=product.plague,
+        crop=product.crop,
+        dose_min_l_ha=product.dose_min_l_ha,
+        dose_max_l_ha=product.dose_max_l_ha,
+        dose_unit=product.dose_unit,
+        agent_name=product.agent_name,
+        safety_hours=product.safety_hours,
+        source=product.source,
+        is_biological=is_biological_product(product),
+    )
+
+
+def list_biocides(db: Session, plague: str, crop: str) -> list[BiocideProductRead]:
     plague_key = plague.strip().lower()
-    crop_key = crop.strip().lower()
-    return (
+    crop_keys = crop_match_keys(crop)
+    rows = (
         db.query(BiocideProduct)
         .filter(
             BiocideProduct.plague == plague_key,
-            BiocideProduct.crop == crop_key,
+            BiocideProduct.crop.in_(crop_keys),
             func.lower(BiocideProduct.product_status) == "vigente",
         )
         .order_by(BiocideProduct.name.asc())
         .all()
     )
+    reads = [biocide_to_read(row) for row in rows]
+    reads.sort(key=lambda item: (not item.is_biological, item.name.lower()))
+    return reads
+
+
+def get_biocide_product(db: Session, registry_no: str, plague: str, crop: str) -> BiocideProduct | None:
+    crop_keys = crop_match_keys(crop)
+    return (
+        db.query(BiocideProduct)
+        .filter(
+            BiocideProduct.registry_no == registry_no.strip(),
+            BiocideProduct.plague == plague.strip().lower(),
+            BiocideProduct.crop.in_(crop_keys),
+        )
+        .first()
+    )
 
 
 def calculate_dose(db: Session, payload: DoseCalculateRequest) -> DoseCalculateResponse:
-    query = db.query(BiocideProduct).filter(BiocideProduct.registry_no == payload.registry_no.strip())
-    if payload.plague:
-        query = query.filter(BiocideProduct.plague == payload.plague.strip().lower())
-    if payload.crop:
-        query = query.filter(BiocideProduct.crop == payload.crop.strip().lower())
-    product = query.first()
+    if payload.plague and payload.crop:
+        product = get_biocide_product(db, payload.registry_no, payload.plague, payload.crop)
+    else:
+        product = db.query(BiocideProduct).filter(BiocideProduct.registry_no == payload.registry_no.strip()).first()
     if not product:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Producto no encontrado en catálogo MAPA")
 

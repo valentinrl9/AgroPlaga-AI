@@ -16,6 +16,7 @@ class BiocideProductRead(BaseModel):
     agent_name: str | None = None
     safety_hours: int
     source: str = "mapa_cex"
+    is_biological: bool = False
 
     model_config = ConfigDict(from_attributes=True)
 

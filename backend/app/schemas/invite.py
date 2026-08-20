@@ -32,5 +32,11 @@ class AdminUserRead(BaseModel):
     email: str
     role: str
     contribution_count: int
+    is_active: bool = True
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class AdminUserUpdate(BaseModel):
+    is_active: bool | None = None
+    role: str | None = Field(default=None, pattern="^(farmer|tech|admin)$")

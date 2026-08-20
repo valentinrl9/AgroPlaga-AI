@@ -1,10 +1,10 @@
+import "package:flutter/foundation.dart";
 import "package:shared_preferences/shared_preferences.dart";
 
+import "secure_token_storage.dart";
 import "../data/api_client.dart";
 
 class Session {
-  static const String tokenKey = "auth_token";
-  static const String refreshTokenKey = "refresh_token";
   static const String roleKey = "user_role";
   static const String nameKey = "user_name";
   static const String fieldPremiumKey = "has_field_premium";
@@ -14,8 +14,21 @@ class Session {
   static const String contributedScansKey = "contributed_scan_ids";
 
   static Future<bool> restore() async {
-    final prefs = await SharedPreferences.getInstance();
-    final token = prefs.getString(tokenKey);
+    var token = await SecureTokenStorage.readAccessToken();
+    if (token == null || token.isEmpty) {
+      // Migración desde SharedPreferences (versiones anteriores).
+      final prefs = await SharedPreferences.getInstance();
+      token = prefs.getString("auth_token");
+      final legacyRefresh = prefs.getString("refresh_token");
+      if (token != null && token.isNotEmpty) {
+        await SecureTokenStorage.writeAccessToken(token);
+        if (legacyRefresh != null && legacyRefresh.isNotEmpty) {
+          await SecureTokenStorage.writeRefreshToken(legacyRefresh);
+        }
+        await prefs.remove("auth_token");
+        await prefs.remove("refresh_token");
+      }
+    }
     if (token != null && token.isNotEmpty) {
       ApiClient.instance.setToken(token);
       return true;
@@ -26,21 +39,15 @@ class Session {
 
   static Future<void> saveTokens({required String accessToken, String? refreshToken}) async {
     ApiClient.instance.setToken(accessToken);
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString(tokenKey, accessToken);
-    if (refreshToken != null && refreshToken.isNotEmpty) {
-      await prefs.setString(refreshTokenKey, refreshToken);
-    }
+    await SecureTokenStorage.writeAccessToken(accessToken);
+    await SecureTokenStorage.writeRefreshToken(refreshToken);
   }
 
   static Future<void> saveToken(String token) async {
     await saveTokens(accessToken: token);
   }
 
-  static Future<String?> get refreshToken async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(refreshTokenKey);
-  }
+  static Future<String?> get refreshToken async => SecureTokenStorage.readRefreshToken();
 
   static Future<bool> tryRefreshToken() async {
     final refresh = await refreshToken;
@@ -140,9 +147,8 @@ class Session {
 
   static Future<void> clear() async {
     ApiClient.instance.setToken(null);
+    await SecureTokenStorage.clear();
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(tokenKey);
-    await prefs.remove(refreshTokenKey);
     await prefs.remove(roleKey);
     await prefs.remove(nameKey);
     await prefs.remove(fieldPremiumKey);
@@ -152,7 +158,7 @@ class Session {
   }
 
   static Future<bool> hasToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.containsKey(tokenKey);
+    final token = await SecureTokenStorage.readAccessToken();
+    return token != null && token.isNotEmpty;
   }
 }

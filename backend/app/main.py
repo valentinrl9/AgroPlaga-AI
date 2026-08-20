@@ -2,11 +2,24 @@ from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1.routes import auth, users, scans, stats, zones, outbreak_events, alerts, heatmap, community, feedback, farms, tech_dashboard, analytics, plagues, admin, contact, climate, treatments, siex, crops, incidents
-from app.core.config import settings
+from app.core.config import settings, validate_settings
+from app.core.security_headers import SecurityHeadersMiddleware
 from app.db.init_db import init_db
 from app.services.scheduler import start_scheduler, stop_scheduler
 
-app = FastAPI(title="NEXO Agro API", version="2.0.0-rc1", redirect_slashes=False)
+_docs_url = "/docs" if settings.docs_enabled else None
+_redoc_url = "/redoc" if settings.docs_enabled else None
+_openapi_url = "/openapi.json" if settings.docs_enabled else None
+
+app = FastAPI(
+    title="NEXO Agro API",
+    version="2.0.0",
+    redirect_slashes=False,
+    docs_url=_docs_url,
+    redoc_url=_redoc_url,
+    openapi_url=_openapi_url,
+)
+app.add_middleware(SecurityHeadersMiddleware)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins,
@@ -40,6 +53,7 @@ app.openapi = custom_openapi
 
 @app.on_event("startup")
 async def startup_event():
+    validate_settings()
     init_db()
     start_scheduler()
 

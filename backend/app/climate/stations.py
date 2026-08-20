@@ -55,6 +55,21 @@ def get_default_station(db: Session) -> ClimateStation:
     return station
 
 
+def resolve_station_with_override(
+    db: Session,
+    zone_id: int | None = None,
+    station_id_override: int | None = None,
+) -> tuple[ClimateStation, ClimateStation]:
+    """Devuelve (estación activa, estación automática por proximidad)."""
+    auto = resolve_station(db, zone_id)
+    if station_id_override is None:
+        return auto, auto
+    manual = get_station(db, station_id_override)
+    if manual is None or not manual.active:
+        raise ValueError("Estación meteorológica no válida o inactiva")
+    return manual, auto
+
+
 def resolve_station(db: Session, zone_id: int | None = None) -> ClimateStation:
     if zone_id is not None:
         direct = (

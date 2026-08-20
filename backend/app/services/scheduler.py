@@ -1,5 +1,8 @@
 """Job programado: alertas fitosanitarias + ETL climático."""
 
+import threading
+from datetime import datetime, timedelta, timezone
+
 from apscheduler.schedulers.background import BackgroundScheduler
 
 from app.db.session import SessionLocal
@@ -77,7 +80,14 @@ def start_scheduler() -> None:
     scheduler.start()
     _scheduler = scheduler
     _alert_scan_job()
-    _climate_etl_job()
+    # ETL multi-estación puede tardar varios minutos: no bloquear /docs ni login al arrancar.
+    scheduler.add_job(
+        _climate_etl_job,
+        "date",
+        run_date=datetime.now(timezone.utc) + timedelta(seconds=45),
+        id="climate_etl_bootstrap",
+        replace_existing=True,
+    )
 
 
 def stop_scheduler() -> None:

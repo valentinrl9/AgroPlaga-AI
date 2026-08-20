@@ -16,6 +16,7 @@ from app.schemas.alert import (
     AlertRead,
 )
 from app.services.alert_engine import run_alert_scan
+from app.services.heatmap_access import enforce_map_hours
 from app.services.heatmap_service import get_heatmap_grid
 
 router = APIRouter()
@@ -134,7 +135,7 @@ def trigger_alert_scan(
 def update_alert(
     alert_id: int,
     body: AlertDismiss,
-    current_user: User = Depends(get_current_active_user),
+    _user: User = Depends(TECH_OR_ADMIN),
     db: Session = Depends(get_db),
 ):
     row = (
@@ -159,9 +160,10 @@ def heatmap_preview(
     plague: str | None = Query(default=None),
     hours: int = Query(default=168, ge=1, le=720),
     min_severity: int = Query(default=1, ge=1, le=3),
-    _current_user: User = Depends(get_current_active_user),
+    current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
 ):
+    hours = enforce_map_hours(current_user, hours)
     return {
         "cells": get_heatmap_grid(
             db,

@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 
 import "core/api_config.dart";
 import "core/auth_redirect.dart";
+import "core/route_guard.dart";
 import "core/routes.dart";
 import "models/scan.dart";
 import "core/theme.dart";
@@ -55,8 +56,14 @@ class NexoAgroApp extends StatelessWidget {
         Routes.community: (context) => const CommunityScreen(),
         Routes.farms: (context) => const FarmsScreen(),
         Routes.incidents: (context) => const IncidentsScreen(),
-        Routes.techValidation: (context) => const TechValidationScreen(),
-        Routes.techScanValidation: (context) => const TechScanValidationScreen(),
+        Routes.techValidation: (context) => const RouteGuard(
+              allowedRoles: {"tech", "admin"},
+              child: TechValidationScreen(),
+            ),
+        Routes.techScanValidation: (context) => const RouteGuard(
+              allowedRoles: {"tech", "admin"},
+              child: TechScanValidationScreen(),
+            ),
         Routes.analytics: (context) => const AnalyticsScreen(),
         Routes.settings: (context) => const SettingsScreen(),
       },

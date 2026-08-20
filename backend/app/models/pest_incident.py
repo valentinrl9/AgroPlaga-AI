@@ -40,6 +40,7 @@ class PestIncident(Base):
     prescription_active_substance = Column(String(120), nullable=True)
     prescription_dose_ml = Column(Float, nullable=True)
     prescription_safety_hours = Column(Integer, nullable=True)
+    prescription_surface_m2 = Column(Float, nullable=True)
     treatment_id = Column(Integer, ForeignKey("farm_treatments.id"), nullable=True, index=True)
     evaluation_scan_id = Column(Integer, ForeignKey("scans.id"), nullable=True)
 

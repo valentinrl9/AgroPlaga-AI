@@ -2,7 +2,6 @@ from datetime import datetime, timezone
 
 from sqlalchemy.orm import Session
 
-from app.models.biocide_product import BiocideProduct
 from app.models.farm import Farm
 from app.models.farm_treatment import FarmTreatment
 from app.models.outbreak_event import OutbreakEvent
@@ -121,14 +120,11 @@ def prescribe_incident(db: Session, user: User, incident: PestIncident, payload:
         raise ValueError("La prescripción solo está disponible en diagnóstico o prescripción")
 
     crop_key = incident.crop.strip().lower()
-    product = (
-        db.query(BiocideProduct)
-        .filter(
-            BiocideProduct.registry_no == payload.registry_no.strip(),
-            BiocideProduct.plague == incident.plague,
-            BiocideProduct.crop == crop_key,
-        )
-        .first()
+    product = treatment_service.get_biocide_product(
+        db,
+        payload.registry_no,
+        incident.plague,
+        incident.crop,
     )
     if product is None:
         raise ValueError("Producto MAPA no encontrado para esta plaga y cultivo")
@@ -148,6 +144,7 @@ def prescribe_incident(db: Session, user: User, incident: PestIncident, payload:
     incident.prescription_active_substance = product.active_substance
     incident.prescription_dose_ml = dose.dose_ml
     incident.prescription_safety_hours = dose.safety_hours
+    incident.prescription_surface_m2 = payload.surface_m2
     incident.stage = "prescription"
     incident.updated_at = _now()
     if payload.notes:

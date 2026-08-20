@@ -2,12 +2,12 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_db
-from app.core.security import get_current_active_admin
+from app.core.security import get_current_active_admin, revoke_user_tokens
 from app.models.contact_inquiry import ContactInquiry
 from app.models.pilot_invite import PilotInvite
 from app.models.user import User
 from app.schemas.contact import ContactRead
-from app.schemas.invite import AdminUserRead, PilotInviteCreate, PilotInviteRead
+from app.schemas.invite import AdminUserRead, AdminUserUpdate, PilotInviteCreate, PilotInviteRead
 from app.services.invite_service import create_invite
 
 router = APIRouter()
@@ -62,6 +62,30 @@ def list_users(
     db: Session = Depends(get_db),
 ):
     return db.query(User).order_by(User.id.asc()).all()
+
+
+@router.patch("/users/{user_id}", response_model=AdminUserRead)
+def update_user(
+    user_id: int,
+    body: AdminUserUpdate,
+    admin: User = Depends(get_current_active_admin),
+    db: Session = Depends(get_db),
+):
+    user = db.query(User).filter(User.id == user_id).first()
+    if user is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Usuario no encontrado")
+    if user.id == admin.id and body.is_active is False:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="No puedes desactivar tu propia cuenta")
+    if body.role is not None:
+        user.role = body.role
+    if body.is_active is not None:
+        if not body.is_active:
+            revoke_user_tokens(user)
+        user.is_active = body.is_active
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    return user
 
 
 @router.get("/contact-inquiries", response_model=list[ContactRead])

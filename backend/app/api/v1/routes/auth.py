@@ -7,7 +7,14 @@ from sqlalchemy.orm import Session
 from app.api.deps import get_db
 from app.core.config import settings
 from app.core.rate_limit import check_rate_limit
-from app.core.security import create_token_pair, get_password_hash, verify_password, decode_refresh_token
+from app.core.security import (
+    create_token_pair,
+    get_current_active_user,
+    get_password_hash,
+    revoke_user_tokens,
+    verify_password,
+    decode_refresh_token,
+)
 from app.models.user import User
 from app.schemas.auth import RefreshRequest, Token, UserCreate, UserLogin
 from app.services.invite_service import consume_invite
@@ -16,13 +23,14 @@ router = APIRouter()
 
 
 def _issue_tokens(user: User) -> Token:
-    access_token, refresh_token = create_token_pair(user.email)
+    access_token, refresh_token = create_token_pair(user)
     return Token(access_token=access_token, refresh_token=refresh_token)
 
 
 def _rate_limit_auth(request: Request, email: str) -> None:
-    client_ip = request.client.host if request.client else "unknown"
-    check_rate_limit(f"auth:{client_ip}:{email.lower()}")
+    from app.core.rate_limit import client_ip, check_rate_limit
+
+    check_rate_limit(f"auth:{client_ip(request)}:{email.lower()}")
 
 
 @router.post("/register", response_model=Token)
@@ -68,6 +76,8 @@ def login(credentials: UserLogin, request: Request, db: Session = Depends(get_db
     user = db.query(User).filter(User.email == credentials.email).first()
     if not user or not verify_password(credentials.password, user.hashed_password):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid credentials")
+    if not user.is_active:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Cuenta desactivada")
     return _issue_tokens(user)
 
 
@@ -85,13 +95,31 @@ def token(
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    if not user.is_active:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Cuenta desactivada")
     return _issue_tokens(user)
 
 
 @router.post("/refresh", response_model=Token)
-def refresh(body: RefreshRequest, db: Session = Depends(get_db)):
-    email = decode_refresh_token(body.refresh_token)
+def refresh(body: RefreshRequest, request: Request, db: Session = Depends(get_db)):
+    from app.core.rate_limit import rate_limit_request
+
+    rate_limit_request(request, "auth-refresh", max_attempts=30, window_seconds=60)
+    email, token_version = decode_refresh_token(body.refresh_token)
     user = db.query(User).filter(User.email == email).first()
-    if user is None:
+    if user is None or not user.is_active:
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token")
+    if token_version != (user.token_version or 0):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid refresh token")
     return _issue_tokens(user)
+
+
+@router.post("/logout")
+def logout(
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    revoke_user_tokens(current_user)
+    db.add(current_user)
+    db.commit()
+    return {"ok": True}

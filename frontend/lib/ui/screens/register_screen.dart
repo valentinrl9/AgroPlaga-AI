@@ -47,9 +47,9 @@ class _RegisterScreenState extends State<RegisterScreen> {
       return;
     }
 
-    if (password.length < 6) {
+    if (password.length < 8) {
       setState(() {
-        _errorMessage = "La contraseña debe tener al menos 6 caracteres.";
+        _errorMessage = "La contraseña debe tener al menos 8 caracteres.";
       });
       return;
     }

@@ -10,6 +10,7 @@ class Farm {
   final String? cropVariant;
   final double? surfaceM2;
   final String? sigpacCode;
+  final int? climateStationId;
   final DateTime createdAt;
 
   Farm({
@@ -24,6 +25,7 @@ class Farm {
     this.cropVariant,
     this.surfaceM2,
     this.sigpacCode,
+    this.climateStationId,
     required this.createdAt,
   });
 
@@ -40,6 +42,7 @@ class Farm {
       cropVariant: json["crop_variant"] as String?,
       surfaceM2: (json["surface_m2"] as num?)?.toDouble(),
       sigpacCode: json["sigpac_code"] as String?,
+      climateStationId: json["climate_station_id"] as int?,
       createdAt: DateTime.parse(json["created_at"] as String),
     );
   }

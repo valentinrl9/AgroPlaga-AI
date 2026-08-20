@@ -69,6 +69,23 @@ def test_climate_stations_api(client, unique_email):
     assert any(s["slug"] == "vicar" for s in body)
 
 
+def test_resolve_station_with_override(client):
+    seed_climate_stations()
+    from app.db.session import SessionLocal
+    from app.climate.stations import resolve_station_with_override
+
+    db = SessionLocal()
+    try:
+        adra = db.query(ClimateStation).filter(ClimateStation.slug == "adra").first()
+        poniente = db.query(ClimateStation).filter(ClimateStation.slug == "poniente").first()
+        assert adra is not None and poniente is not None
+        manual, auto = resolve_station_with_override(db, None, adra.id)
+        assert manual.slug == "adra"
+        assert auto.slug == "poniente"
+    finally:
+        db.close()
+
+
 def test_climate_actual_with_zone_id(client, unique_email):
     from tests.conftest import auth_headers, register_and_login
 

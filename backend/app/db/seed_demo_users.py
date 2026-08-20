@@ -45,12 +45,14 @@ LOCAL_DEMO_USERS: tuple[dict, ...] = (
 
 
 def seed_local_demo_users() -> None:
-    if os.getenv("DEMO_SEED_USERS", "true").strip().lower() not in {"1", "true", "yes"}:
+    if os.getenv("DEMO_SEED_USERS", "false").strip().lower() not in {"1", "true", "yes"}:
         return
 
     password = os.getenv("DEMO_USERS_PASSWORD", DEFAULT_PASSWORD).strip()
     if not password:
         return
+
+    reset_passwords = os.getenv("DEMO_RESET_PASSWORDS", "false").strip().lower() in {"1", "true", "yes"}
 
     db = SessionLocal()
     try:
@@ -62,7 +64,8 @@ def seed_local_demo_users() -> None:
             if existing:
                 existing.name = spec["name"]
                 existing.role = spec["role"]
-                existing.hashed_password = hashed
+                if reset_passwords:
+                    existing.hashed_password = hashed
                 existing.has_field_premium = spec["has_field_premium"]
                 existing.has_climate_module = spec["has_climate_module"]
                 existing.has_siex_module = spec["has_siex_module"]

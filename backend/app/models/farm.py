@@ -20,4 +20,5 @@ class Farm(Base):
     crop_variant = Column(String(50), nullable=True)
     surface_m2 = Column(Float, nullable=True)
     sigpac_code = Column(String(20), nullable=True, index=True)
+    climate_station_id = Column(Integer, ForeignKey("climate_stations.id"), nullable=True, index=True)
     created_at = Column(DateTime(timezone=True), default=datetime.utcnow, nullable=False)

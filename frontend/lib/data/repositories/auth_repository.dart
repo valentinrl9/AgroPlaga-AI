@@ -85,6 +85,9 @@ class AuthRepository {
   Future<UserProfile?> currentProfile() => _users.fetchProfile();
 
   Future<void> logout() async {
+    try {
+      await _client.post("/api/v1/auth/logout", {});
+    } catch (_) {}
     await Session.clear();
   }
 
