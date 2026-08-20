@@ -19,18 +19,23 @@ GEOJSON_URL = (
 )
 OUT = Path(__file__).resolve().parents[1] / "app" / "db" / "data" / "almeria_municipalities.json"
 
-# Coordenadas de referencia (Poniente / costa) — prevalecen sobre GeoJSON.
-KNOWN_COORDS: dict[str, tuple[float, float]] = {
-    "04001": (-2.4597, 36.8381),  # Almería capital
-    "04002": (-3.0203, 36.7486),  # Adra
-    "04013": (-3.1333, 36.7833),  # Albuñol — legacy seed name
-    "04058": (-2.9050, 36.7400),  # Balanegra (04904 en INE nuevo)
-    "04070": (-2.9494, 36.8461),  # Berja
-    "04079": (-2.8667, 36.8267),  # Dalías
-    "04087": (-2.8144, 36.7763),  # El Ejido (04902)
-    "04101": (-2.5444, 36.7444),  # Ríoja
-    "04102": (-2.6154, 36.7640),  # Roquetas de Mar
-    "04151": (-2.6421, 36.8310),  # Vícar
+# Centroides manuales (lon, lat). Clave = nombre normalizado del INE.
+# Previenen errores cuando el INE renumeró municipios (p. ej. 04070 ya no es Berja).
+KNOWN_COORDS_BY_NAME: dict[str, tuple[float, float]] = {
+    "Almería": (-2.4597, 36.8381),
+    "Adra": (-3.0203, 36.7486),
+    "Berja": (-2.9494, 36.8461),
+    "Dalías": (-2.8667, 36.8267),
+    "El Ejido": (-2.8144, 36.7763),
+    "Roquetas de Mar": (-2.8670, 36.8270),
+    "Vícar": (-2.6154, 36.7640),
+    "Níjar": (-2.2060, 36.9670),
+    "Carboneras": (-1.8930, 36.9980),
+    "Cuevas del Almanzora": (-1.8820, 37.2990),
+    "Garrucha": (-1.8220, 37.1810),
+    "Vera": (-1.8650, 37.2470),
+    "Oria": (-2.2950, 37.4850),
+    "Suflí": (-2.3882, 37.3387),
 }
 
 
@@ -69,7 +74,6 @@ def _load_geo_centroids() -> dict[str, tuple[float, float]]:
         if geometry.get("type") == "Point":
             lon, lat = coords[0], coords[1]
         else:
-            # Primer anillo del polígono más externo.
             ring = coords[0] if geometry.get("type") == "Polygon" else coords[0][0]
             lon = sum(p[0] for p in ring) / len(ring)
             lat = sum(p[1] for p in ring) / len(ring)
@@ -99,12 +103,11 @@ def main() -> None:
         code = entry["municipio_id"].zfill(5)
         name = _normalize_name(entry["nombre"])
         sigpac = f"04-{entry['cmun']}"
-        if code in KNOWN_COORDS:
-            lon, lat = KNOWN_COORDS[code]
+        if name in KNOWN_COORDS_BY_NAME:
+            lon, lat = KNOWN_COORDS_BY_NAME[name]
         elif code in geo:
             lon, lat = geo[code]
         else:
-            # Centro provincial aproximado (Almería).
             lon, lat = -2.45, 37.15
         rows.append(
             {

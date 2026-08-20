@@ -1,4 +1,4 @@
-import { Circle, MapContainer, TileLayer } from "react-leaflet";
+import { Circle, MapContainer, TileLayer, Tooltip } from "react-leaflet";
 import type { ZoneCell } from "../types";
 
 function severityColor(maxSeverity: number): string {
@@ -40,7 +40,13 @@ export default function HeatmapMap({ zones }: { zones: ZoneCell[] }) {
             center={[zone.lat, zone.lon]}
             radius={800 + zone.intensity * 2000}
             pathOptions={zoneStyle(zone)}
-          />
+          >
+            <Tooltip direction="top" offset={[0, -6]}>
+              <strong>{zone.zone_name}</strong>
+              <br />
+              SIGPAC {zone.sigpac_code}
+            </Tooltip>
+          </Circle>
         ))}
       </MapContainer>
     </div>

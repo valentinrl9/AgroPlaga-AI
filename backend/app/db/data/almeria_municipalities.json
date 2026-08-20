@@ -4,24 +4,24 @@
     "sigpac_code": "04-001",
     "name": "Abla",
     "province": "Almería",
-    "lon": -2.4597,
-    "lat": 36.8381
+    "lon": -2.45,
+    "lat": 37.15
   },
   {
     "municipality_code": "04002",
     "sigpac_code": "04-002",
     "name": "Abrucena",
     "province": "Almería",
-    "lon": -3.0203,
-    "lat": 36.7486
+    "lon": -2.45,
+    "lat": 37.15
   },
   {
     "municipality_code": "04003",
     "sigpac_code": "04-003",
     "name": "Adra",
     "province": "Almería",
-    "lon": -2.45,
-    "lat": 37.15
+    "lon": -3.0203,
+    "lat": 36.7486
   },
   {
     "municipality_code": "04004",
@@ -100,8 +100,8 @@
     "sigpac_code": "04-013",
     "name": "Almería",
     "province": "Almería",
-    "lon": -3.1333,
-    "lat": 36.7833
+    "lon": -2.4597,
+    "lat": 36.8381
   },
   {
     "municipality_code": "04014",
@@ -220,8 +220,8 @@
     "sigpac_code": "04-029",
     "name": "Berja",
     "province": "Almería",
-    "lon": -2.45,
-    "lat": 37.15
+    "lon": -2.9494,
+    "lat": 36.8461
   },
   {
     "municipality_code": "04022",
@@ -252,8 +252,8 @@
     "sigpac_code": "04-032",
     "name": "Carboneras",
     "province": "Almería",
-    "lon": -2.45,
-    "lat": 37.15
+    "lon": -1.893,
+    "lat": 36.998
   },
   {
     "municipality_code": "04033",
@@ -284,8 +284,8 @@
     "sigpac_code": "04-035",
     "name": "Cuevas del Almanzora",
     "province": "Almería",
-    "lon": -2.45,
-    "lat": 37.15
+    "lon": -1.882,
+    "lat": 37.299
   },
   {
     "municipality_code": "04034",
@@ -300,16 +300,16 @@
     "sigpac_code": "04-038",
     "name": "Dalías",
     "province": "Almería",
-    "lon": -2.45,
-    "lat": 37.15
+    "lon": -2.8667,
+    "lat": 36.8267
   },
   {
     "municipality_code": "04902",
     "sigpac_code": "04-902",
     "name": "El Ejido",
     "province": "Almería",
-    "lon": -2.45,
-    "lat": 37.15
+    "lon": -2.8144,
+    "lat": 36.7763
   },
   {
     "municipality_code": "04041",
@@ -356,8 +356,8 @@
     "sigpac_code": "04-049",
     "name": "Garrucha",
     "province": "Almería",
-    "lon": -2.45,
-    "lat": 37.15
+    "lon": -1.822,
+    "lat": 37.181
   },
   {
     "municipality_code": "04047",
@@ -468,8 +468,8 @@
     "sigpac_code": "04-058",
     "name": "Líjar",
     "province": "Almería",
-    "lon": -2.905,
-    "lat": 36.74
+    "lon": -2.45,
+    "lat": 37.15
   },
   {
     "municipality_code": "04061",
@@ -516,8 +516,8 @@
     "sigpac_code": "04-066",
     "name": "Níjar",
     "province": "Almería",
-    "lon": -2.45,
-    "lat": 37.15
+    "lon": -2.206,
+    "lat": 36.967
   },
   {
     "municipality_code": "04067",
@@ -548,8 +548,8 @@
     "sigpac_code": "04-070",
     "name": "Oria",
     "province": "Almería",
-    "lon": -2.9494,
-    "lat": 36.8461
+    "lon": -2.295,
+    "lat": 37.485
   },
   {
     "municipality_code": "04071",
@@ -612,8 +612,8 @@
     "sigpac_code": "04-079",
     "name": "Roquetas de Mar",
     "province": "Almería",
-    "lon": -2.8667,
-    "lat": 36.8267
+    "lon": -2.867,
+    "lat": 36.827
   },
   {
     "municipality_code": "04077",
@@ -684,8 +684,8 @@
     "sigpac_code": "04-087",
     "name": "Suflí",
     "province": "Almería",
-    "lon": -2.8144,
-    "lat": 36.7763
+    "lon": -2.3882,
+    "lat": 37.3387
   },
   {
     "municipality_code": "04088",
@@ -772,16 +772,16 @@
     "sigpac_code": "04-100",
     "name": "Vera",
     "province": "Almería",
-    "lon": -2.45,
-    "lat": 37.15
+    "lon": -1.865,
+    "lat": 37.247
   },
   {
     "municipality_code": "04101",
     "sigpac_code": "04-101",
     "name": "Viator",
     "province": "Almería",
-    "lon": -2.5444,
-    "lat": 36.7444
+    "lon": -2.45,
+    "lat": 37.15
   },
   {
     "municipality_code": "04098",

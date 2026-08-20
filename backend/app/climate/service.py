@@ -49,7 +49,7 @@ def _station_context(
     if auto.zone_id is not None:
         zone = db.query(AgriZone).filter(AgriZone.id == auto.zone_id).first()
         auto_zone_name = zone.name if zone else None
-    manual = station_id_override is not None and station.id != auto.id
+    manual = station_id_override is not None
     return (
         station,
         station_to_dict(station, zone_name=zone_name),

@@ -25,7 +25,16 @@ git checkout nexoagro
 git pull origin nexoagro
 
 echo "=== build panel B2B ==="
-bash deploy/build-panel.sh
+if command -v npm >/dev/null 2>&1; then
+  bash deploy/build-panel.sh
+elif [[ -f web-panel/dist/index.html ]]; then
+  echo "npm no instalado — usando web-panel/dist del repo (OK para piloto)."
+else
+  echo "npm no encontrado y falta web-panel/dist/index.html"
+  echo "  En tu PC: cd web-panel && npm ci && npm run build"
+  echo "  Luego: git add web-panel/dist && git push  (o scp dist al VPS)"
+  exit 1
+fi
 
 echo "=== docker compose up (migraciones 0021-0023) ==="
 docker compose -f docker-compose.pilot.yml --env-file "$ENV_FILE" -p agroplaga up -d --build
@@ -35,6 +44,9 @@ sleep 15
 
 echo "=== alembic head ==="
 docker compose -f docker-compose.pilot.yml --env-file "$ENV_FILE" -p agroplaga exec -T backend alembic current
+
+echo "=== refresh SIGPAC centroids ==="
+docker compose -f docker-compose.pilot.yml --env-file "$ENV_FILE" -p agroplaga exec -T backend python scripts/refresh_sigpac_centroids.py
 
 API_DOMAIN="$(grep '^API_DOMAIN=' "$ENV_FILE" | cut -d= -f2-)"
 echo "=== smoke HTTP ==="

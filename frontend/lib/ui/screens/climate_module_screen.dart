@@ -61,11 +61,32 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
     super.dispose();
   }
 
-  Future<void> _bootstrap({bool silent = false}) async {
+  void _clearClimateData() {
+    _actual = null;
+    _recomendaciones = null;
+    _recomendaciones30 = null;
+    _alertas = null;
+    _riesgo = null;
+    _consejos = {};
+    _stationLabel = null;
+    _autoStationLabel = null;
+    _stationManualOverride = false;
+  }
+
+  Future<Map<String, dynamic>> _fetchClimateMap(Future<Map<String, dynamic>> future) async {
+    try {
+      return await future;
+    } catch (e) {
+      return {"error": e.toString()};
+    }
+  }
+
+  Future<void> _bootstrap({bool silent = false, bool notifyError = false}) async {
     if (!silent) {
       setState(() {
         _loading = true;
         _error = null;
+        _clearClimateData();
       });
     }
     try {
@@ -93,21 +114,20 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
       }
 
       final farmId = _selectedFarmId;
+      final actual = await _repo.fetchActual(farmId: farmId);
       final results = await Future.wait([
-        _repo.fetchActual(farmId: farmId),
-        _repo.fetchRecomendaciones(farmId: farmId),
-        _repo.fetchRecomendaciones(dias: 30, farmId: farmId),
-        _repo.fetchAlertas(farmId: farmId),
-        _repo.fetchRiesgo(farmId: farmId),
-        _repo.fetchEtlStatus(),
+        _fetchClimateMap(_repo.fetchRecomendaciones(farmId: farmId)),
+        _fetchClimateMap(_repo.fetchRecomendaciones(dias: 30, farmId: farmId)),
+        _fetchClimateMap(_repo.fetchAlertas(farmId: farmId)),
+        _fetchClimateMap(_repo.fetchRiesgo(farmId: farmId)),
+        _fetchClimateMap(_repo.fetchEtlStatus()),
       ]);
       if (!mounted) return;
-      final actual = results[0] as Map<String, dynamic>;
-      final recs = results[1] as Map<String, dynamic>;
-      final recs30 = results[2] as Map<String, dynamic>;
-      final alertas = results[3] as Map<String, dynamic>;
-      final riesgo = results[4] as Map<String, dynamic>;
-      final etl = results[5] as Map<String, dynamic>;
+      final recs = results[0];
+      final recs30 = results[1];
+      final alertas = results[2];
+      final riesgo = results[3];
+      final etl = results[4];
       final station = actual["station"] as Map<String, dynamic>? ?? recs["station"] as Map<String, dynamic>?;
       final autoStation = actual["auto_station"] as Map<String, dynamic>? ?? recs["auto_station"] as Map<String, dynamic>?;
       setState(() {
@@ -129,7 +149,16 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
       setState(() {
         _error = e.toString();
         _loading = false;
+        if (!silent) _clearClimateData();
       });
+      if (notifyError && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("No se pudieron cargar datos de la estación: $e"),
+            backgroundColor: NexoColors.errorRed,
+          ),
+        );
+      }
     }
   }
 
@@ -149,7 +178,12 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
   Future<void> _onStationChanged(int? stationId) async {
     final farm = _selectedFarm;
     if (farm == null) return;
-    setState(() => _savingStation = true);
+    setState(() {
+      _savingStation = true;
+      _loading = true;
+      _error = null;
+      _clearClimateData();
+    });
     try {
       final updated = await _farmRepo.updateFarm(
         farm.id,
@@ -161,7 +195,7 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
         final idx = _farms.indexWhere((f) => f.id == farm.id);
         if (idx >= 0) _farms[idx] = updated;
       });
-      await _bootstrap(silent: true);
+      await _bootstrap(notifyError: true);
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
