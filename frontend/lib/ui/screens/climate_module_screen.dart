@@ -6,6 +6,7 @@ import "../../../core/nexo_colors.dart";
 import "../../../data/repositories/climate_repository.dart";
 import "../../../data/repositories/farm_repository.dart";
 import "../../../models/farm.dart";
+import "../layout/mobile_layout.dart";
 import "../widgets/primary_button.dart";
 import "../widgets/nexo_lock_screen.dart";
 import "climate/climate_advisor.dart";
@@ -13,7 +14,9 @@ import "climate/climate_charts.dart";
 import "climate/climate_report_pdf.dart";
 
 class ClimateModuleScreen extends StatefulWidget {
-  const ClimateModuleScreen({super.key});
+  final bool isActive;
+
+  const ClimateModuleScreen({super.key, this.isActive = true});
 
   @override
   State<ClimateModuleScreen> createState() => _ClimateModuleScreenState();
@@ -27,6 +30,8 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
 
   bool _unlocked = false;
   bool _loading = true;
+  bool _refreshing = false;
+  bool _hasLoadedOnce = false;
   String? _error;
   String? _lastSync;
   List<Farm> _farms = [];
@@ -51,7 +56,24 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
     super.initState();
     _tabs = TabController(length: 5, vsync: this);
     _bootstrap();
-    _refreshTimer = Timer.periodic(_refreshInterval, (_) => _bootstrap(silent: true));
+    _syncRefreshTimer();
+  }
+
+  @override
+  void didUpdateWidget(ClimateModuleScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isActive && !oldWidget.isActive && _hasLoadedOnce) {
+      _bootstrap(silent: true);
+    }
+    _syncRefreshTimer();
+  }
+
+  void _syncRefreshTimer() {
+    _refreshTimer?.cancel();
+    if (!widget.isActive) return;
+    _refreshTimer = Timer.periodic(_refreshInterval, (_) {
+      if (widget.isActive) _bootstrap(silent: true);
+    });
   }
 
   @override
@@ -82,17 +104,28 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
   }
 
   Future<void> _bootstrap({bool silent = false, bool notifyError = false}) async {
+    final firstLoad = !_hasLoadedOnce;
     if (!silent) {
       setState(() {
-        _loading = true;
         _error = null;
-        _clearClimateData();
+        if (firstLoad) {
+          _loading = true;
+          _clearClimateData();
+        } else {
+          _refreshing = true;
+        }
       });
     }
     try {
       final access = await _repo.fetchAccess();
       if (!(access["climate_accessible"] as bool? ?? false)) {
-        if (mounted) setState(() => _unlocked = false);
+        if (mounted) {
+          setState(() {
+            _unlocked = false;
+            _loading = false;
+            _refreshing = false;
+          });
+        }
         return;
       }
 
@@ -143,13 +176,16 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
         _consejos = ClimateAdvisor.generate(actual: actual, recomendaciones: recs);
         _lastSync = etl["last_run"]?.toString() ?? DateTime.now().toIso8601String();
         _loading = false;
+        _refreshing = false;
+        _hasLoadedOnce = true;
       });
     } catch (e) {
       if (!mounted) return;
       setState(() {
         _error = e.toString();
         _loading = false;
-        if (!silent) _clearClimateData();
+        _refreshing = false;
+        if (firstLoad) _clearClimateData();
       });
       if (notifyError && mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -180,9 +216,9 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
     if (farm == null) return;
     setState(() {
       _savingStation = true;
-      _loading = true;
       _error = null;
       _clearClimateData();
+      _refreshing = true;
     });
     try {
       final updated = await _farmRepo.updateFarm(
@@ -317,7 +353,7 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
 
   @override
   Widget build(BuildContext context) {
-    if (!_unlocked && !_loading) {
+    if (!_unlocked && !_loading && !_hasLoadedOnce) {
       return const Scaffold(body: NexoLockScreen(moduleName: "NEXO Climate", isB2C: true));
     }
 
@@ -336,21 +372,32 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
           ],
         ),
         actions: [
-          IconButton(icon: const Icon(Icons.refresh), onPressed: _loading ? null : () => _bootstrap()),
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _loading || _refreshing ? null : () => _bootstrap(),
+          ),
         ],
       ),
-      body: _loading
+      body: _loading && !_hasLoadedOnce
           ? const Center(child: CircularProgressIndicator())
-          : _error != null
+          : _error != null && !_hasLoadedOnce
               ? Center(child: Text(_error!, style: const TextStyle(color: NexoColors.errorRed)))
-              : TabBarView(
-                  controller: _tabs,
+              : Column(
                   children: [
-                    _buildInicio(),
-                    _buildRecomendaciones(),
-                    _buildAlertas(),
-                    _buildRiesgo(),
-                    _buildInforme(),
+                    if (_refreshing || _savingStation)
+                      const LinearProgressIndicator(minHeight: 3),
+                    Expanded(
+                      child: TabBarView(
+                        controller: _tabs,
+                        children: [
+                          _buildInicio(),
+                          _buildRecomendaciones(),
+                          _buildAlertas(),
+                          _buildRiesgo(),
+                          _buildInforme(),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
     );
@@ -377,7 +424,8 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
     return RefreshIndicator(
       onRefresh: () => _bootstrap(),
       child: ListView(
-        padding: const EdgeInsets.all(16),
+        padding: MobileLayout.scrollPadding(context),
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         children: [
           const Text(
             "Clima según tu finca — estación automática o manual",
@@ -387,7 +435,7 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
           _farmSelector(),
           const SizedBox(height: 12),
           _stationSelector(),
-          if (_savingStation)
+          if (_savingStation || _refreshing)
             const Padding(
               padding: EdgeInsets.only(top: 8),
               child: LinearProgressIndicator(),
@@ -450,7 +498,7 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
       return const Center(child: Text("Sin recomendaciones disponibles"));
     }
     return ListView.builder(
-      padding: const EdgeInsets.all(16),
+      padding: MobileLayout.scrollPadding(context),
       itemCount: diario.length,
       itemBuilder: (context, i) {
         final d = diario[i] as Map<String, dynamic>;
@@ -483,7 +531,7 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
     final riesgo = _alertas?["riesgo_acumulado"] as Map<String, dynamic>? ?? {};
 
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: MobileLayout.scrollPadding(context),
       children: [
         Text(_alertas?["resumen"]?.toString() ?? "", style: const TextStyle(fontWeight: FontWeight.w600)),
         const SizedBox(height: 16),
@@ -502,7 +550,7 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
     final diario = (_riesgo?["diario"] as List?)?.cast<Map<String, dynamic>>() ?? [];
 
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: MobileLayout.scrollPadding(context),
       children: [
         Card(
           child: Padding(
@@ -557,7 +605,7 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
         {};
 
     return ListView(
-      padding: const EdgeInsets.all(16),
+      padding: MobileLayout.scrollPadding(context),
       children: [
         const Text("Informe resumido", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),

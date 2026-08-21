@@ -14,18 +14,16 @@ class NexoShellScreen extends StatefulWidget {
 class _NexoShellScreenState extends State<NexoShellScreen> {
   int _index = 0;
 
-  static const _tabs = [
-    FieldHomeScreen(),
-    ClimateModuleScreen(),
-    SiexModuleScreen(),
-  ];
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: IndexedStack(
         index: _index,
-        children: _tabs,
+        children: [
+          FieldHomeScreen(isActive: _index == 0),
+          ClimateModuleScreen(isActive: _index == 1),
+          SiexModuleScreen(isActive: _index == 2),
+        ],
       ),
       bottomNavigationBar: NavigationBar(
         selectedIndex: _index,

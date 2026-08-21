@@ -10,6 +10,7 @@ import "../../data/repositories/outbreak_event_repository.dart";
 import "../../data/repositories/zone_repository.dart";
 import "../../models/scan.dart";
 import "../../models/zone.dart";
+import "../layout/mobile_layout.dart";
 import "../widgets/card_scan.dart";
 import "../widgets/primary_button.dart";
 
@@ -117,9 +118,12 @@ class _ContributeScreenState extends State<ContributeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Contribuir al mapa")),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
+      body: MobileLayout.dismissKeyboardOnTap(
+        context: context,
+        child: SingleChildScrollView(
+          padding: MobileLayout.scrollPadding(context),
+          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             const Text(
@@ -139,7 +143,10 @@ class _ContributeScreenState extends State<ContributeScreen> {
             ),
             const SizedBox(height: 20),
             if (_loadingZones)
-              const Expanded(child: Center(child: CircularProgressIndicator()))
+              const Padding(
+                padding: EdgeInsets.symmetric(vertical: 32),
+                child: Center(child: CircularProgressIndicator()),
+              )
             else ...[
               InputDecorator(
                 decoration: const InputDecoration(
@@ -164,7 +171,7 @@ class _ContributeScreenState extends State<ContributeScreen> {
                   ),
                 ),
               ),
-              const Spacer(),
+              const SizedBox(height: 24),
               if (_error != null)
                 Padding(
                   padding: const EdgeInsets.only(bottom: 12),
@@ -182,6 +189,7 @@ class _ContributeScreenState extends State<ContributeScreen> {
             ],
           ],
         ),
+      ),
       ),
     );
   }

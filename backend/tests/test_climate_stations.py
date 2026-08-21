@@ -107,3 +107,44 @@ def test_climate_actual_with_zone_id(client, unique_email):
     assert response.status_code == 200
     body = response.json()
     assert body["station"]["slug"] == "nijar"
+
+
+def test_climate_actual_uses_farm_station_override(client, unique_email):
+    from tests.conftest import auth_headers, register_and_login
+
+    seed_climate_stations()
+    token = register_and_login(client, unique_email)
+    headers = auth_headers(token)
+
+    from app.db.session import SessionLocal
+    from app.models.farm import Farm
+    from app.models.user import User
+
+    db = SessionLocal()
+    try:
+        zone = db.query(AgriZone).filter(AgriZone.name == "El Ejido").first()
+        adra = db.query(ClimateStation).filter(ClimateStation.slug == "adra").first()
+        user = db.query(User).filter(User.email == unique_email).first()
+        assert zone is not None and adra is not None and user is not None
+
+        farm = Farm(
+            user_id=user.id,
+            name="Finca test clima",
+            crop="tomate",
+            farm_type="greenhouse",
+            zone_id=zone.id,
+            climate_station_id=adra.id,
+        )
+        db.add(farm)
+        db.commit()
+        db.refresh(farm)
+        farm_id = farm.id
+    finally:
+        db.close()
+
+    response = client.get(f"/api/v1/climate/health?farm_id={farm_id}", headers=headers)
+    assert response.status_code == 200
+    body = response.json()
+    assert body["station"]["slug"] == "adra"
+    assert body["auto_station"]["slug"] == "poniente"
+    assert body["station_manual_override"] is True

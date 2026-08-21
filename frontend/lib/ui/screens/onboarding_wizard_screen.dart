@@ -1,3 +1,5 @@
+import "dart:async";
+
 import "package:flutter/material.dart";
 
 import "../../core/nexo_colors.dart";
@@ -7,6 +9,7 @@ import "../../data/repositories/farm_repository.dart";
 import "../../data/repositories/zone_repository.dart";
 import "../../models/crop.dart";
 import "../../models/zone.dart";
+import "../layout/mobile_layout.dart";
 import "../widgets/primary_button.dart";
 
 class OnboardingWizardScreen extends StatefulWidget {
@@ -20,6 +23,7 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
   final _farmRepository = FarmRepository();
   final _zoneRepository = ZoneRepository();
   final _cropRepository = CropRepository();
+  Timer? _cropSearchDebounce;
 
   final _nameController = TextEditingController();
   final _naveController = TextEditingController();
@@ -48,6 +52,7 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
 
   @override
   void dispose() {
+    _cropSearchDebounce?.cancel();
     _nameController.dispose();
     _naveController.dispose();
     _sectorController.dispose();
@@ -76,6 +81,14 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
         _loading = false;
       });
     }
+  }
+
+  void _scheduleCropSearch(String query) {
+    _cropSearchDebounce?.cancel();
+    if (query.trim().length < 2) return;
+    _cropSearchDebounce = Timer(const Duration(milliseconds: 350), () {
+      _searchCrops(query);
+    });
   }
 
   Future<void> _searchCrops(String query) async {
@@ -146,9 +159,12 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
       appBar: AppBar(title: const Text("Configura tu explotación")),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
-              child: Column(
+          : MobileLayout.dismissKeyboardOnTap(
+              context: context,
+              child: SingleChildScrollView(
+                padding: MobileLayout.scrollPadding(context),
+                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   const Text(
@@ -231,9 +247,6 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
                   Autocomplete<CropCatalogEntry>(
                     optionsBuilder: (query) {
                       final q = query.text.trim().toLowerCase();
-                      if (q.length >= 2) {
-                        _searchCrops(q);
-                      }
                       if (q.isEmpty) return _crops;
                       return _crops.where((crop) {
                         final haystack = [crop.name.toLowerCase(), ...crop.aliases.map((a) => a.toLowerCase())];
@@ -262,6 +275,7 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
                             _selectedCrop = null;
                             _cropController.text = value;
                           });
+                          _scheduleCropSearch(value);
                         },
                       );
                     },
@@ -318,6 +332,7 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
                   ),
                 ],
               ),
+            ),
             ),
     );
   }

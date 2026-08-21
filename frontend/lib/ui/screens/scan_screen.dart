@@ -10,6 +10,7 @@ import "../../data/repositories/scan_repository.dart";
 import "../../models/farm.dart";
 import "../../models/scan.dart";
 import "../../ml/plaga_classifier.dart";
+import "../layout/mobile_layout.dart";
 import "../widgets/app_logo.dart";
 import "../widgets/primary_button.dart";
 import "../widgets/severity_badge.dart";
@@ -187,7 +188,8 @@ class _ScanScreenState extends State<ScanScreen> {
     return Scaffold(
       appBar: AppBar(title: const Text("PlagaScan — orientación IA")),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: MobileLayout.scrollPadding(context),
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

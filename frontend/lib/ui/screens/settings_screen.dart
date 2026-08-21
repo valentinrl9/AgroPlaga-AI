@@ -3,6 +3,7 @@ import "package:http/http.dart" as http;
 
 import "../../core/api_config.dart";
 import "../../core/nexo_colors.dart";
+import "../layout/mobile_layout.dart";
 import "../widgets/primary_button.dart";
 
 class SettingsScreen extends StatefulWidget {
@@ -37,6 +38,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _testConnection() async {
+    FocusManager.instance.primaryFocus?.unfocus();
     setState(() {
       _testing = true;
       _status = null;
@@ -58,6 +60,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _save() async {
+    FocusManager.instance.primaryFocus?.unfocus();
     setState(() {
       _saving = true;
       _status = null;
@@ -93,71 +96,77 @@ class _SettingsScreenState extends State<SettingsScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: const Text("Ajustes")),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            if (ApiConfig.allowCustomServerUrl) ...[
-              const Text(
-                "Servidor API (solo desarrollo)",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                "En móvil físico usa la IP de tu PC en la misma Wi‑Fi, por ejemplo http://192.168.1.104:8000",
-                style: TextStyle(color: NexoColors.textPrimary),
-              ),
-              const SizedBox(height: 16),
-              TextField(
-                controller: _urlController,
-                decoration: const InputDecoration(
-                  labelText: "URL del backend",
-                  hintText: "http://192.168.1.104:8000",
-                  border: OutlineInputBorder(),
-                ),
-                keyboardType: TextInputType.url,
-                autocorrect: false,
-              ),
-              const SizedBox(height: 12),
-              if (_status != null)
-                Text(
-                  _status!,
-                  style: TextStyle(
-                    color: _status!.startsWith("Conexión") || _status!.startsWith("URL")
-                        ? NexoColors.bioGreen
-                        : NexoColors.errorRed,
+      body: SafeArea(
+        child: MobileLayout.dismissKeyboardOnTap(
+          context: context,
+          child: SingleChildScrollView(
+            padding: MobileLayout.scrollPadding(context),
+            keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                if (ApiConfig.allowCustomServerUrl) ...[
+                  const Text(
+                    "Servidor API (solo desarrollo)",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                   ),
-                ),
-              const SizedBox(height: 16),
-              PrimaryButton(
-                label: _testing ? "Comprobando..." : "Probar conexión",
-                onPressed: _testing ? null : _testConnection,
-              ),
-              const SizedBox(height: 10),
-              PrimaryButton(
-                label: _saving ? "Guardando..." : "Guardar",
-                onPressed: _saving ? null : _save,
-              ),
-              const SizedBox(height: 10),
-              OutlinedButton(onPressed: _reset, child: const Text("Restaurar por defecto")),
-            ] else ...[
-              const Text(
-                "Servidor API",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-              ),
-              const SizedBox(height: 12),
-              Text(
-                ApiConfig.baseUrl,
-                style: const TextStyle(color: NexoColors.textPrimary),
-              ),
-              const SizedBox(height: 8),
-              const Text(
-                "La URL del servidor está fijada en builds de producción.",
-                style: TextStyle(color: NexoColors.textPrimary),
-              ),
-            ],
-          ],
+                  const SizedBox(height: 8),
+                  const Text(
+                    "En móvil físico usa la IP de tu PC en la misma Wi‑Fi, por ejemplo http://192.168.1.104:8000",
+                    style: TextStyle(color: NexoColors.textPrimary),
+                  ),
+                  const SizedBox(height: 16),
+                  TextField(
+                    controller: _urlController,
+                    decoration: const InputDecoration(
+                      labelText: "URL del backend",
+                      hintText: "http://192.168.1.104:8000",
+                      border: OutlineInputBorder(),
+                    ),
+                    keyboardType: TextInputType.url,
+                    autocorrect: false,
+                  ),
+                  const SizedBox(height: 12),
+                  if (_status != null)
+                    Text(
+                      _status!,
+                      style: TextStyle(
+                        color: _status!.startsWith("Conexión") || _status!.startsWith("URL")
+                            ? NexoColors.bioGreen
+                            : NexoColors.errorRed,
+                      ),
+                    ),
+                  const SizedBox(height: 16),
+                  PrimaryButton(
+                    label: _testing ? "Comprobando..." : "Probar conexión",
+                    onPressed: _testing ? null : _testConnection,
+                  ),
+                  const SizedBox(height: 10),
+                  PrimaryButton(
+                    label: _saving ? "Guardando..." : "Guardar",
+                    onPressed: _saving ? null : _save,
+                  ),
+                  const SizedBox(height: 10),
+                  OutlinedButton(onPressed: _reset, child: const Text("Restaurar por defecto")),
+                ] else ...[
+                  const Text(
+                    "Servidor API",
+                    style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    ApiConfig.baseUrl,
+                    style: const TextStyle(color: NexoColors.textPrimary),
+                  ),
+                  const SizedBox(height: 8),
+                  const Text(
+                    "La URL del servidor está fijada en builds de producción.",
+                    style: TextStyle(color: NexoColors.textPrimary),
+                  ),
+                ],
+              ],
+            ),
+          ),
         ),
       ),
     );

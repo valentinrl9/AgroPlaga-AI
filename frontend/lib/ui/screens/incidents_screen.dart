@@ -4,6 +4,7 @@ import "../../core/nexo_colors.dart";
 import "../../core/routes.dart";
 import "../../data/repositories/incident_repository.dart";
 import "../../models/pest_incident.dart";
+import "../layout/mobile_layout.dart";
 
 class IncidentsScreen extends StatefulWidget {
   const IncidentsScreen({super.key});
@@ -144,7 +145,7 @@ class _IncidentsScreenState extends State<IncidentsScreen> {
             return const Center(child: CircularProgressIndicator());
           }
           if (snapshot.hasError) {
-            return Center(child: Text("Error: ${snapshot.error}"));
+            return MobileLayout.errorState(error: snapshot.error!, onRetry: _reload);
           }
 
           final incidents = snapshot.data ?? [];

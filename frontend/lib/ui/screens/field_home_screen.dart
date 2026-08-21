@@ -7,12 +7,15 @@ import "../../core/routes.dart";
 import "../../core/session.dart";
 import "../../data/repositories/auth_repository.dart";
 import "../../data/repositories/tech_repository.dart";
+import "../layout/mobile_layout.dart";
 import "../widgets/carencia_banner.dart";
 import "../widgets/nexo_section_card.dart";
 import "../widgets/primary_button.dart";
 
 class FieldHomeScreen extends StatefulWidget {
-  const FieldHomeScreen({super.key});
+  final bool isActive;
+
+  const FieldHomeScreen({super.key, this.isActive = true});
 
   @override
   State<FieldHomeScreen> createState() => _FieldHomeScreenState();
@@ -34,16 +37,26 @@ class _FieldHomeScreenState extends State<FieldHomeScreen> {
   }
 
   @override
+  void didUpdateWidget(FieldHomeScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isActive && !oldWidget.isActive && _isTech) {
+      _loadTechDashboard();
+    }
+    _syncTechPolling();
+  }
+
+  void _syncTechPolling() {
+    _techPollTimer?.cancel();
+    if (!widget.isActive || !_isTech) return;
+    _techPollTimer = Timer.periodic(const Duration(seconds: 30), (_) {
+      if (widget.isActive) _loadTechDashboard(notifyOnNew: true);
+    });
+  }
+
+  @override
   void dispose() {
     _techPollTimer?.cancel();
     super.dispose();
-  }
-
-  void _startTechPolling() {
-    _techPollTimer?.cancel();
-    _techPollTimer = Timer.periodic(const Duration(seconds: 30), (_) {
-      _loadTechDashboard(notifyOnNew: true);
-    });
   }
 
   Future<void> _loadProfile() async {
@@ -57,7 +70,7 @@ class _FieldHomeScreenState extends State<FieldHomeScreen> {
     }
     if (isTech) {
       await _loadTechDashboard();
-      _startTechPolling();
+      _syncTechPolling();
     }
   }
 
@@ -92,6 +105,21 @@ class _FieldHomeScreenState extends State<FieldHomeScreen> {
     await AuthRepository().logout();
     if (!context.mounted) return;
     Navigator.pushNamedAndRemoveUntil(context, Routes.login, (_) => false);
+  }
+
+  Widget _actionGrid(List<Widget> tiles) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final tileWidth = (constraints.maxWidth - 10) / 2;
+        return Wrap(
+          spacing: 10,
+          runSpacing: 10,
+          children: tiles
+              .map((tile) => SizedBox(width: tiles.length == 1 ? constraints.maxWidth : tileWidth, child: tile))
+              .toList(),
+        );
+      },
+    );
   }
 
   Widget _actionRow(List<Widget> tiles) {
@@ -253,7 +281,7 @@ class _FieldHomeScreenState extends State<FieldHomeScreen> {
           NexoSectionCard(
             title: "GESTIÓN",
             children: [
-              _actionRow([
+              _actionGrid([
                 NexoActionTile(
                   icon: Icons.settings_outlined,
                   label: "Ajustes API",
@@ -295,6 +323,8 @@ class _FieldHomeScreenState extends State<FieldHomeScreen> {
         ],
       ),
       body: SingleChildScrollView(
+        padding: MobileLayout.scrollPadding(context),
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [

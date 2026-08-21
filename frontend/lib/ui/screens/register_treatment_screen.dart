@@ -7,6 +7,7 @@ import "../../data/repositories/scan_repository.dart";
 import "../../data/repositories/treatment_repository.dart";
 import "../../models/farm.dart";
 import "../../models/scan.dart";
+import "../layout/mobile_layout.dart";
 import "../widgets/primary_button.dart";
 import "../widgets/scan_validation_banner.dart";
 
@@ -180,6 +181,9 @@ class _RegisterTreatmentScreenState extends State<RegisterTreatmentScreen> {
         if (_scan != null && _scan!.isUnverified) "ack_unverified": true,
       });
       if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Tratamiento registrado correctamente.")),
+      );
       Navigator.pop(context, true);
     } catch (e) {
       if (!mounted) return;
@@ -199,7 +203,8 @@ class _RegisterTreatmentScreenState extends State<RegisterTreatmentScreen> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
-              padding: const EdgeInsets.all(16),
+              padding: MobileLayout.scrollPadding(context),
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [

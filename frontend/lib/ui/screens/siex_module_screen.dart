@@ -2,10 +2,13 @@ import "package:flutter/material.dart";
 
 import "../../core/nexo_colors.dart";
 import "../../data/repositories/siex_repository.dart";
+import "../layout/mobile_layout.dart";
 import "../widgets/nexo_lock_screen.dart";
 
 class SiexModuleScreen extends StatefulWidget {
-  const SiexModuleScreen({super.key});
+  final bool isActive;
+
+  const SiexModuleScreen({super.key, this.isActive = true});
 
   @override
   State<SiexModuleScreen> createState() => _SiexModuleScreenState();
@@ -22,6 +25,14 @@ class _SiexModuleScreenState extends State<SiexModuleScreen> {
   void initState() {
     super.initState();
     _load();
+  }
+
+  @override
+  void didUpdateWidget(SiexModuleScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isActive && !oldWidget.isActive && _unlocked) {
+      _load();
+    }
   }
 
   Future<void> _load() async {
@@ -102,7 +113,7 @@ class _SiexModuleScreenState extends State<SiexModuleScreen> {
         actions: [IconButton(icon: const Icon(Icons.refresh), onPressed: _load)],
       ),
       body: _error != null
-          ? Center(child: Text(_error!, style: const TextStyle(color: NexoColors.errorRed)))
+          ? MobileLayout.errorState(error: _error!, onRetry: _load)
           : _entries.isEmpty
               ? const Center(
                   child: Padding(
@@ -116,7 +127,7 @@ class _SiexModuleScreenState extends State<SiexModuleScreen> {
                   ),
                 )
               : ListView.builder(
-                  padding: const EdgeInsets.all(16),
+                  padding: MobileLayout.scrollPadding(context),
                   itemCount: _entries.length,
                   itemBuilder: (context, i) {
                     final e = _entries[i] as Map<String, dynamic>;
