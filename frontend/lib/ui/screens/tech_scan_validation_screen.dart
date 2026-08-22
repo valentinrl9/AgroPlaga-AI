@@ -30,7 +30,7 @@ class _TechScanValidationScreenState extends State<TechScanValidationScreen> {
     _reload();
   }
 
-  List<String> _plagueOptionsFor(Map<String, dynamic> scan) {
+  List<String> _plagueSuggestionsFor(Map<String, dynamic> scan) {
     final options = List<String>.from(PlagueCatalog.labels);
     for (final key in ["plague", "farmer_plague", "effective_plague"]) {
       final raw = scan[key]?.toString().trim().toLowerCase();
@@ -41,15 +41,10 @@ class _TechScanValidationScreenState extends State<TechScanValidationScreen> {
     return options;
   }
 
-  String? _selectedPlague(int id, Map<String, dynamic> scan, List<String> options) {
-    final preferred = (_correctPlague[id] ?? scan["effective_plague"] ?? scan["plague"]?.toString())
-        ?.trim()
+  String _resolvedPlague(int id, Map<String, dynamic> scan) {
+    return (_correctPlague[id] ?? scan["effective_plague"] ?? scan["plague"]?.toString() ?? "")
+        .trim()
         .toLowerCase();
-    if (preferred == null || preferred.isEmpty) return null;
-    for (final option in options) {
-      if (option.toLowerCase() == preferred) return option;
-    }
-    return null;
   }
 
   Future<void> _reload() async {
@@ -90,8 +85,11 @@ class _TechScanValidationScreenState extends State<TechScanValidationScreen> {
     setState(() => _busyId = scanId);
     try {
       final scan = _scans.cast<Map<String, dynamic>>().firstWhere((s) => s["id"] == scanId);
-      final options = _plagueOptionsFor(scan);
-      final selected = _selectedPlague(scanId, scan, options);
+      final selected = _resolvedPlague(scanId, scan);
+      if (action == "correct" && selected.isEmpty) {
+        if (mounted) setState(() => _error = "Indica la plaga corregida");
+        return;
+      }
       await _repo.validate(
         scanId: scanId,
         action: action,
@@ -115,7 +113,7 @@ class _TechScanValidationScreenState extends State<TechScanValidationScreen> {
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
-          : _error != null
+          : _error != null && _scans.isEmpty
               ? Center(child: Text(_error!, style: const TextStyle(color: NexoColors.errorRed)))
               : _scans.isEmpty
                   ? const Center(child: Text("No hay escaneos pendientes de validar."))
@@ -127,8 +125,8 @@ class _TechScanValidationScreenState extends State<TechScanValidationScreen> {
                         final id = scan["id"] as int;
                         final bytes = _images[id] ?? Uint8List(0);
                         final busy = _busyId == id;
-                        final plagueOptions = _plagueOptionsFor(scan);
-                        final selectedPlague = _selectedPlague(id, scan, plagueOptions);
+                        final suggestions = _plagueSuggestionsFor(scan);
+                        final plagueValue = _resolvedPlague(id, scan);
                         final effectivePlague =
                             scan["effective_plague"]?.toString() ?? scan["plague"]?.toString() ?? "—";
                         final aiPlague = scan["plague"]?.toString();
@@ -148,6 +146,14 @@ class _TechScanValidationScreenState extends State<TechScanValidationScreen> {
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
+                                    if (_error != null)
+                                      Padding(
+                                        padding: const EdgeInsets.only(bottom: 8),
+                                        child: Text(
+                                          _error!,
+                                          style: const TextStyle(color: NexoColors.errorRed, fontSize: 13),
+                                        ),
+                                      ),
                                     Text(
                                       "$effectivePlague · ${scan["crop"]}",
                                       style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
@@ -171,23 +177,42 @@ class _TechScanValidationScreenState extends State<TechScanValidationScreen> {
                                       "Confianza ${((scan["confidence"] as num) * 100).toStringAsFixed(0)}%",
                                     ),
                                     const SizedBox(height: 10),
-                                    DropdownButtonFormField<String>(
-                                      value: selectedPlague,
-                                      decoration: const InputDecoration(labelText: "Plaga corregida"),
-                                      items: plagueOptions
-                                          .map((p) => DropdownMenuItem(value: p, child: Text(p)))
-                                          .toList(),
-                                      onChanged: busy
-                                          ? null
-                                          : (v) {
-                                              if (v == null) return;
-                                              setState(() => _correctPlague[id] = v);
-                                            },
+                                    Autocomplete<String>(
+                                      initialValue: TextEditingValue(text: plagueValue),
+                                      optionsBuilder: (query) {
+                                        final q = query.text.trim().toLowerCase();
+                                        if (q.isEmpty) return suggestions;
+                                        return suggestions.where((p) => p.contains(q));
+                                      },
+                                      onSelected: (value) {
+                                        setState(() => _correctPlague[id] = value.trim().toLowerCase());
+                                      },
+                                      fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
+                                        if (controller.text.isEmpty && plagueValue.isNotEmpty) {
+                                          controller.text = plagueValue;
+                                        }
+                                        return TextFormField(
+                                          controller: controller,
+                                          focusNode: focusNode,
+                                          enabled: !busy,
+                                          maxLength: 50,
+                                          decoration: const InputDecoration(
+                                            labelText: "Plaga corregida",
+                                            helperText:
+                                                "Catálogo o cualquier otra plaga (texto libre, máx. 50 caracteres).",
+                                            counterText: "",
+                                          ),
+                                          onChanged: (value) {
+                                            setState(() => _correctPlague[id] = value.trim().toLowerCase());
+                                          },
+                                        );
+                                      },
                                     ),
                                     const SizedBox(height: 8),
                                     TextField(
                                       decoration: const InputDecoration(labelText: "Notas perito"),
                                       maxLines: 2,
+                                      enabled: !busy,
                                       onChanged: (v) => _notes[id] = v,
                                     ),
                                     const SizedBox(height: 12),
@@ -225,4 +250,3 @@ class _TechScanValidationScreenState extends State<TechScanValidationScreen> {
     );
   }
 }
-

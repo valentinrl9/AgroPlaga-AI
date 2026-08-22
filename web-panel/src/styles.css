@@ -282,6 +282,7 @@ body { margin: 0; background: var(--nexo-bg); }
 
 .toolbar select,
 .validation-body select,
+.validation-body input[type="text"],
 .validation-body textarea {
   background: var(--nexo-surface-elevated);
   color: var(--nexo-text);
@@ -444,6 +445,11 @@ td { color: var(--nexo-text); }
   display: grid;
   gap: 0.3rem;
   font-size: 0.9rem;
+  color: var(--nexo-text-muted);
+}
+
+.validation-field-hint {
+  font-size: 0.8rem;
   color: var(--nexo-text-muted);
 }
 

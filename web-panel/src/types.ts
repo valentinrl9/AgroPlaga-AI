@@ -111,6 +111,12 @@ export interface ScanValidatePayload {
   tech_notes?: string;
 }
 
+export interface PlagueCatalogResponse {
+  version: string;
+  region: string;
+  labels: string[];
+}
+
 export interface SiexEntry {
   id: number;
   treatment_id: number;
