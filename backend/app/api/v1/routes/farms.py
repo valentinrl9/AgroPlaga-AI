@@ -8,7 +8,7 @@ from app.models.user import User
 from app.models.zone import AgriZone
 from app.models.climate_station import ClimateStation
 from app.schemas.farm import FarmCreate, FarmRead, FarmUpdate
-from app.siex.service import validate_sigpac
+from app.siex.service import refresh_siex_entries_for_farm, validate_sigpac
 
 router = APIRouter()
 
@@ -90,8 +90,11 @@ def update_farm(
         farm.crop_variant = body.crop_variant.strip() or None
     if body.surface_m2 is not None:
         farm.surface_m2 = body.surface_m2
+    sigpac_updated = False
     if body.sigpac_code is not None:
+        previous_sigpac = farm.sigpac_code
         farm.sigpac_code = validate_sigpac(body.sigpac_code) if body.sigpac_code.strip() else None
+        sigpac_updated = farm.sigpac_code and farm.sigpac_code != previous_sigpac
     if "climate_station_id" in body.model_fields_set:
         if body.climate_station_id is None:
             farm.climate_station_id = None
@@ -107,6 +110,8 @@ def update_farm(
 
     db.commit()
     db.refresh(farm)
+    if sigpac_updated:
+        refresh_siex_entries_for_farm(db, current_user, farm.id)
     return farm
 
 

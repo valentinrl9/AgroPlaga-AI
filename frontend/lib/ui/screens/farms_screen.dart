@@ -37,6 +37,7 @@ class _FarmsScreenState extends State<FarmsScreen> {
   CropCatalogEntry? _selectedCrop;
   String? _cropStage;
   String _farmType = "greenhouse";
+  bool _showAddForm = false;
 
   @override
   void initState() {
@@ -83,6 +84,23 @@ class _FarmsScreenState extends State<FarmsScreen> {
     return "Municipio #$zoneId";
   }
 
+  void _resetForm() {
+    _nameController.clear();
+    _cropController.clear();
+    _naveController.clear();
+    _sectorController.clear();
+    _variantController.clear();
+    _sigpacController.clear();
+    _surfaceController.clear();
+    setState(() {
+      _selectedZone = null;
+      _selectedCrop = null;
+      _cropStage = null;
+      _farmType = "greenhouse";
+      _showAddForm = false;
+    });
+  }
+
   Future<void> _createFarm() async {
     if (_nameController.text.trim().isEmpty) return;
     final crop = _selectedCrop?.name ?? _cropController.text.trim();
@@ -101,18 +119,7 @@ class _FarmsScreenState extends State<FarmsScreen> {
       surfaceM2: surface,
       sigpacCode: _sigpacController.text.trim(),
     );
-    _nameController.clear();
-    _cropController.clear();
-    _naveController.clear();
-    _sectorController.clear();
-    _variantController.clear();
-    _sigpacController.clear();
-    _surfaceController.clear();
-    setState(() {
-      _selectedZone = null;
-      _selectedCrop = null;
-      _cropStage = null;
-    });
+    _resetForm();
     _reload();
   }
 
@@ -204,208 +211,272 @@ class _FarmsScreenState extends State<FarmsScreen> {
   }
 
   Widget _buildForm() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        const Text(
-          "Registra fincas, naves y sectores con municipio, cultivo y fase. "
-          "El SIGPAC del recinto solo hace falta si usas el cuaderno SIEX.",
-          style: TextStyle(color: NexoColors.textSecondary, fontSize: 13),
-        ),
-        const SizedBox(height: 16),
-        TextField(
-          controller: _nameController,
-          decoration: const InputDecoration(labelText: "Nombre *", border: OutlineInputBorder()),
-        ),
-        const SizedBox(height: 8),
-        DropdownButtonFormField<String>(
-          key: ValueKey(_farmType),
-          initialValue: _farmType,
-          decoration: const InputDecoration(labelText: "Tipo", border: OutlineInputBorder()),
-          items: const [
-            DropdownMenuItem(value: "greenhouse", child: Text("Invernadero")),
-            DropdownMenuItem(value: "farm", child: Text("Finca")),
-          ],
-          onChanged: (v) => setState(() => _farmType = v ?? "greenhouse"),
-        ),
-        const SizedBox(height: 8),
-        TextField(
-          controller: _naveController,
-          decoration: const InputDecoration(labelText: "Nave", border: OutlineInputBorder()),
-        ),
-        const SizedBox(height: 8),
-        TextField(
-          controller: _sectorController,
-          decoration: const InputDecoration(labelText: "Sector", border: OutlineInputBorder()),
-        ),
-        const SizedBox(height: 8),
-        Autocomplete<AgriZone>(
-          optionsBuilder: (query) {
-            final q = query.text.trim().toLowerCase();
-            if (q.isEmpty) return _zones.take(20);
-            return _zones.where((zone) => zone.name.toLowerCase().contains(q)).take(20);
-          },
-          displayStringForOption: (zone) => zone.name,
-          onSelected: (zone) => setState(() => _selectedZone = zone),
-          fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
-            return TextField(
-              controller: controller,
-              focusNode: focusNode,
+    return Card(
+      margin: EdgeInsets.zero,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                const Expanded(
+                  child: Text(
+                    "Nueva finca",
+                    style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),
+                  ),
+                ),
+                IconButton(
+                  tooltip: "Cerrar",
+                  onPressed: _resetForm,
+                  icon: const Icon(Icons.close),
+                ),
+              ],
+            ),
+            const Text(
+              "El SIGPAC del recinto solo hace falta si usas el cuaderno SIEX.",
+              style: TextStyle(color: NexoColors.textSecondary, fontSize: 13),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _nameController,
+              decoration: const InputDecoration(labelText: "Nombre *", border: OutlineInputBorder()),
+            ),
+            const SizedBox(height: 8),
+            DropdownButtonFormField<String>(
+              key: ValueKey(_farmType),
+              initialValue: _farmType,
+              decoration: const InputDecoration(labelText: "Tipo", border: OutlineInputBorder()),
+              items: const [
+                DropdownMenuItem(value: "greenhouse", child: Text("Invernadero")),
+                DropdownMenuItem(value: "farm", child: Text("Finca")),
+              ],
+              onChanged: (v) => setState(() => _farmType = v ?? "greenhouse"),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _naveController,
+              decoration: const InputDecoration(labelText: "Nave", border: OutlineInputBorder()),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _sectorController,
+              decoration: const InputDecoration(labelText: "Sector", border: OutlineInputBorder()),
+            ),
+            const SizedBox(height: 8),
+            Autocomplete<AgriZone>(
+              optionsBuilder: (query) {
+                final q = query.text.trim().toLowerCase();
+                if (q.isEmpty) return _zones.take(20);
+                return _zones.where((zone) => zone.name.toLowerCase().contains(q)).take(20);
+              },
+              displayStringForOption: (zone) => zone.name,
+              onSelected: (zone) => setState(() => _selectedZone = zone),
+              fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
+                return TextField(
+                  controller: controller,
+                  focusNode: focusNode,
+                  decoration: const InputDecoration(
+                    labelText: "Municipio",
+                    hintText: "Busca tu municipio",
+                    border: OutlineInputBorder(),
+                  ),
+                  onChanged: (_) => setState(() => _selectedZone = null),
+                );
+              },
+            ),
+            const SizedBox(height: 8),
+            Autocomplete<CropCatalogEntry>(
+              optionsBuilder: (query) {
+                final q = query.text.trim().toLowerCase();
+                if (q.isEmpty) return _crops;
+                return _crops.where((crop) {
+                  final tokens = [crop.name.toLowerCase(), ...crop.aliases.map((a) => a.toLowerCase())];
+                  return tokens.any((token) => token.contains(q));
+                });
+              },
+              displayStringForOption: (crop) => crop.name,
+              onSelected: (crop) {
+                setState(() {
+                  _selectedCrop = crop;
+                  _cropController.text = crop.name;
+                  _cropStage = crop.stages.isNotEmpty ? crop.stages.first : null;
+                });
+              },
+              fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
+                return TextField(
+                  controller: controller,
+                  focusNode: focusNode,
+                  decoration: const InputDecoration(labelText: "Cultivo *", border: OutlineInputBorder()),
+                  onChanged: (value) {
+                    _cropController.text = value;
+                    setState(() => _selectedCrop = null);
+                  },
+                );
+              },
+            ),
+            const SizedBox(height: 8),
+            DropdownButtonFormField<String>(
+              key: ValueKey("${_selectedCrop?.id ?? 'crop'}-$_cropStage"),
+              initialValue: _cropStage,
+              decoration: const InputDecoration(labelText: "Fase fenológica", border: OutlineInputBorder()),
+              items: (_selectedCrop?.stages ?? const ["plantación", "crecimiento", "floración", "cuajado", "cosecha"])
+                  .map((stage) => DropdownMenuItem(value: stage, child: Text(stage)))
+                  .toList(),
+              onChanged: (v) => setState(() => _cropStage = v),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _variantController,
+              decoration: const InputDecoration(labelText: "Variante", border: OutlineInputBorder()),
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _sigpacController,
               decoration: const InputDecoration(
-                labelText: "Municipio",
-                hintText: "Busca tu municipio",
+                labelText: "SIGPAC recinto (solo SIEX)",
+                hintText: "Ej. 04079A00100001",
+                helperText: "Opcional ahora · visor SIGPAC del MAPA",
                 border: OutlineInputBorder(),
               ),
-              onChanged: (_) => setState(() => _selectedZone = null),
-            );
-          },
+            ),
+            const SizedBox(height: 8),
+            TextField(
+              controller: _surfaceController,
+              keyboardType: TextInputType.number,
+              decoration: const InputDecoration(labelText: "Superficie m²", border: OutlineInputBorder()),
+            ),
+            const SizedBox(height: 12),
+            PrimaryButton(label: "Guardar finca", onPressed: _createFarm),
+          ],
         ),
-        const SizedBox(height: 8),
-        Autocomplete<CropCatalogEntry>(
-          optionsBuilder: (query) {
-            final q = query.text.trim().toLowerCase();
-            if (q.isEmpty) return _crops;
-            return _crops.where((crop) {
-              final tokens = [crop.name.toLowerCase(), ...crop.aliases.map((a) => a.toLowerCase())];
-              return tokens.any((token) => token.contains(q));
-            });
-          },
-          displayStringForOption: (crop) => crop.name,
-          onSelected: (crop) {
-            setState(() {
-              _selectedCrop = crop;
-              _cropController.text = crop.name;
-              _cropStage = crop.stages.isNotEmpty ? crop.stages.first : null;
-            });
-          },
-          fieldViewBuilder: (context, controller, focusNode, onFieldSubmitted) {
-            return TextField(
-              controller: controller,
-              focusNode: focusNode,
-              decoration: const InputDecoration(labelText: "Cultivo *", border: OutlineInputBorder()),
-              onChanged: (value) {
-                _cropController.text = value;
-                setState(() => _selectedCrop = null);
-              },
-            );
-          },
+      ),
+    );
+  }
+
+  Widget _buildFarmCard(Farm farm) {
+    return Card(
+      child: ListTile(
+        title: Text(farm.name),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              "${farm.typeLabel} · ${farm.crop}\n"
+              "Municipio: ${_zoneLabel(farm.zoneId)}\n"
+              "Nave/sector: ${farm.nave ?? "—"} / ${farm.sector ?? "—"}\n"
+              "Fase: ${farm.cropStage ?? "—"} · Variante: ${farm.cropVariant ?? "—"}\n"
+              "SIGPAC: ${farm.sigpacCode ?? "—"} · Sup.: ${farm.surfaceM2?.toStringAsFixed(0) ?? "—"} m²",
+            ),
+            if (!farm.hasSigpac)
+              const Padding(
+                padding: EdgeInsets.only(top: 6),
+                child: Text(
+                  "Sin SIGPAC — cuaderno SIEX incompleto",
+                  style: TextStyle(color: NexoColors.warningAmber, fontSize: 12),
+                ),
+              ),
+          ],
         ),
-        const SizedBox(height: 8),
-        DropdownButtonFormField<String>(
-          key: ValueKey("${_selectedCrop?.id ?? 'crop'}-$_cropStage"),
-          initialValue: _cropStage,
-          decoration: const InputDecoration(labelText: "Fase fenológica", border: OutlineInputBorder()),
-          items: (_selectedCrop?.stages ?? const ["plantación", "crecimiento", "floración", "cuajado", "cosecha"])
-              .map((stage) => DropdownMenuItem(value: stage, child: Text(stage)))
-              .toList(),
-          onChanged: (v) => setState(() => _cropStage = v),
+        isThreeLine: false,
+        onTap: () => _editFarm(farm),
+        trailing: IconButton(
+          icon: const Icon(Icons.delete_outline),
+          onPressed: () => _deleteFarm(farm),
         ),
-        const SizedBox(height: 8),
-        TextField(
-          controller: _variantController,
-          decoration: const InputDecoration(labelText: "Variante", border: OutlineInputBorder()),
-        ),
-        const SizedBox(height: 8),
-        TextField(
-          controller: _sigpacController,
-          decoration: const InputDecoration(
-            labelText: "SIGPAC recinto (solo SIEX)",
-            hintText: "Ej. 04079A00100001",
-            helperText: "Opcional ahora · visor SIGPAC del MAPA",
-            border: OutlineInputBorder(),
-          ),
-        ),
-        const SizedBox(height: 8),
-        TextField(
-          controller: _surfaceController,
-          keyboardType: TextInputType.number,
-          decoration: const InputDecoration(labelText: "Superficie m²", border: OutlineInputBorder()),
-        ),
-        const SizedBox(height: 12),
-        PrimaryButton(label: "Añadir", onPressed: _createFarm),
-      ],
+      ),
+    );
+  }
+
+  Widget _buildAddButton() {
+    return OutlinedButton.icon(
+      onPressed: () => setState(() => _showAddForm = true),
+      icon: const Icon(Icons.add),
+      label: const Text("Añadir finca"),
+      style: OutlinedButton.styleFrom(
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        side: const BorderSide(color: NexoColors.bioGreen),
+        foregroundColor: NexoColors.bioGreen,
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Mis fincas")),
+      appBar: AppBar(
+        title: const Text("Mis fincas"),
+        actions: [
+          if (!_showAddForm)
+            IconButton(
+              tooltip: "Añadir finca",
+              onPressed: () => setState(() => _showAddForm = true),
+              icon: const Icon(Icons.add),
+            ),
+        ],
+      ),
       body: MobileLayout.dismissKeyboardOnTap(
         context: context,
-        child: CustomScrollView(
-          keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-          slivers: [
-            SliverPadding(
-              padding: EdgeInsets.fromLTRB(16, 16, 16, 0),
-              sliver: SliverToBoxAdapter(child: _buildForm()),
-            ),
-            SliverPadding(
-              padding: MobileLayout.scrollPadding(context).copyWith(top: 20),
-              sliver: FutureBuilder<List<Farm>>(
-                future: _future,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting && !snapshot.hasData) {
-                    return const SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: Center(child: CircularProgressIndicator()),
-                    );
-                  }
-                  if (snapshot.hasError) {
-                    return SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: MobileLayout.errorState(error: snapshot.error!, onRetry: _reload),
-                    );
-                  }
-                  final farms = snapshot.data ?? [];
-                  if (farms.isEmpty) {
-                    return const SliverFillRemaining(
-                      hasScrollBody: false,
-                      child: Center(child: Text("No tienes fincas registradas.")),
-                    );
-                  }
-                  return SliverList.separated(
-                    itemCount: farms.length,
-                    separatorBuilder: (_, __) => const SizedBox(height: 8),
-                    itemBuilder: (context, index) {
-                      final farm = farms[index];
-                      return Card(
-                        child: ListTile(
-                          title: Text(farm.name),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "${farm.typeLabel} · ${farm.crop}\n"
-                                "Municipio: ${_zoneLabel(farm.zoneId)}\n"
-                                "Nave/sector: ${farm.nave ?? "—"} / ${farm.sector ?? "—"}\n"
-                                "Fase: ${farm.cropStage ?? "—"} · Variante: ${farm.cropVariant ?? "—"}\n"
-                                "SIGPAC: ${farm.sigpacCode ?? "—"} · Sup.: ${farm.surfaceM2?.toStringAsFixed(0) ?? "—"} m²",
-                              ),
-                              if (!farm.hasSigpac)
-                                const Padding(
-                                  padding: EdgeInsets.only(top: 6),
-                                  child: Text(
-                                    "Sin SIGPAC — cuaderno SIEX incompleto",
-                                    style: TextStyle(color: NexoColors.warningAmber, fontSize: 12),
-                                  ),
-                                ),
-                            ],
-                          ),
-                          isThreeLine: false,
-                          onTap: () => _editFarm(farm),
-                          trailing: IconButton(
-                            icon: const Icon(Icons.delete_outline),
-                            onPressed: () => _deleteFarm(farm),
-                          ),
+        child: FutureBuilder<List<Farm>>(
+          future: _future,
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting && !snapshot.hasData) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            if (snapshot.hasError) {
+              return MobileLayout.errorState(error: snapshot.error!, onRetry: _reload);
+            }
+
+            final farms = snapshot.data ?? [];
+            return CustomScrollView(
+              keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+              slivers: [
+                SliverPadding(
+                  padding: MobileLayout.scrollPadding(context).copyWith(bottom: 8),
+                  sliver: SliverList(
+                    delegate: SliverChildListDelegate([
+                      if (farms.isEmpty && !_showAddForm) ...[
+                        const SizedBox(height: 24),
+                        const Icon(Icons.agriculture_outlined, size: 48, color: NexoColors.textSecondary),
+                        const SizedBox(height: 12),
+                        const Text(
+                          "No tienes fincas registradas.",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(fontWeight: FontWeight.w600),
                         ),
-                      );
-                    },
-                  );
-                },
-              ),
-            ),
-          ],
+                        const SizedBox(height: 8),
+                        const Text(
+                          "Pulsa «Añadir finca» para registrar tu invernadero o parcela.",
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: NexoColors.textSecondary, fontSize: 13),
+                        ),
+                        const SizedBox(height: 20),
+                        _buildAddButton(),
+                      ] else ...[
+                        if (farms.isNotEmpty) ...[
+                          Text(
+                            "${farms.length} finca${farms.length == 1 ? "" : "s"} · Toca una para editar cultivo o SIGPAC",
+                            style: const TextStyle(color: NexoColors.textSecondary, fontSize: 13),
+                          ),
+                          const SizedBox(height: 12),
+                          ...farms.map(_buildFarmCard).expand((card) => [card, const SizedBox(height: 8)]),
+                          if (!_showAddForm) ...[
+                            const SizedBox(height: 4),
+                            _buildAddButton(),
+                          ],
+                        ],
+                      ],
+                      if (_showAddForm) ...[
+                        if (farms.isNotEmpty) const SizedBox(height: 8),
+                        _buildForm(),
+                      ],
+                      const SizedBox(height: 16),
+                    ]),
+                  ),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );

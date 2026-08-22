@@ -159,6 +159,29 @@ def test_treatment_without_sigpac_creates_pending_sigpac_entry(client, unique_em
     assert data[0]["status"] == "pendiente_sigpac"
 
 
+def test_adding_sigpac_updates_pending_siex_entry(client, unique_email):
+    token = register_and_login(client, unique_email)
+    farm = _create_farm(client, token, sigpac=None)
+    scan_id = _create_scan(client, token, farm_id=farm["id"])
+    _create_treatment(client, token, farm_id=farm["id"], scan_id=scan_id)
+
+    pending = client.get("/api/v1/siex/entries", headers=auth_headers(token)).json()
+    assert pending[0]["status"] == "pendiente_sigpac"
+    assert pending[0]["sigpac_code"].startswith("PEND")
+
+    patch = client.patch(
+        f"/api/v1/farms/{farm['id']}",
+        headers=auth_headers(token),
+        json={"sigpac_code": "04079A00100001"},
+    )
+    assert patch.status_code == 200
+
+    entries = client.get("/api/v1/siex/entries", headers=auth_headers(token)).json()
+    assert entries[0]["status"] == "registrado"
+    assert entries[0]["sigpac_code"] == "04079A00100001"
+    assert "falta el código SIGPAC" not in entries[0]["justificacion"].lower()
+
+
 def test_treatment_with_sigpac_compiles_siex_entry(client, unique_email):
     token = register_and_login(client, unique_email)
     farm = _create_farm(client, token)

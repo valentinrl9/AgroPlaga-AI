@@ -275,10 +275,107 @@ def compile_from_treatment(db: Session, user: User, treatment: FarmTreatment) ->
     return row
 
 
+def _refresh_entry_from_farm(db: Session, user: User, entry: SiexCuadernoEntry) -> bool:
+    """Actualiza una entrada pendiente_sigpac cuando la finca ya tiene recinto SIGPAC."""
+    if entry.status != "pendiente_sigpac":
+        return False
+
+    farm: Farm | None = None
+    if entry.farm_id is not None:
+        farm = db.query(Farm).filter(Farm.id == entry.farm_id, Farm.user_id == user.id).first()
+    if farm is None or not farm.sigpac_code:
+        return False
+
+    treatment = db.query(FarmTreatment).filter(FarmTreatment.id == entry.treatment_id).first()
+    if treatment is None:
+        return False
+
+    scan: Scan | None = None
+    if entry.scan_id is not None:
+        scan = db.query(Scan).filter(Scan.id == entry.scan_id).first()
+    incident = _resolve_incident(db, treatment, scan)
+
+    sigpac, _, has_parcel_sigpac = _resolve_sigpac_for_entry(farm)
+    if not has_parcel_sigpac:
+        return False
+
+    verified = is_scan_verified(scan)
+    plague = incident.plague if incident else effective_plague(scan, entry.plague)
+    crop = incident.crop if incident else (scan.crop if scan else farm.crop)
+    surface_m2 = (
+        incident.prescription_surface_m2
+        if incident and incident.prescription_surface_m2 is not None
+        else entry.surface_m2 or farm.surface_m2
+    )
+    climate_context = entry.climate_context or _climate_snippet(db, user, plague)
+    que, justificacion = _build_texts(
+        plague=plague,
+        crop=crop,
+        sigpac=sigpac,
+        product_name=entry.product_name,
+        registry_number=entry.registry_number,
+        dose_ml=entry.dose_ml,
+        surface_m2=surface_m2,
+        safety_hours=entry.safety_hours,
+        scan=scan,
+        climate_context=climate_context,
+        verified=verified,
+    )
+
+    entry.sigpac_code = sigpac
+    entry.que_se_hizo = que
+    entry.justificacion = justificacion
+    entry.status = _entry_status(user, has_parcel_sigpac=True)
+    entry.farm_name = farm.name
+    if farm.zone_id:
+        zone = db.query(AgriZone).filter(AgriZone.id == farm.zone_id).first()
+        if zone is not None:
+            entry.zone_name = zone.name
+    return True
+
+
+def refresh_siex_entries_for_farm(db: Session, user: User, farm_id: int) -> int:
+    """Refresca entradas SIEX pendientes de SIGPAC vinculadas a una finca."""
+    rows = (
+        db.query(SiexCuadernoEntry)
+        .filter(
+            SiexCuadernoEntry.user_id == user.id,
+            SiexCuadernoEntry.farm_id == farm_id,
+            SiexCuadernoEntry.status == "pendiente_sigpac",
+        )
+        .all()
+    )
+    updated = 0
+    for row in rows:
+        if _refresh_entry_from_farm(db, user, row):
+            updated += 1
+    if updated:
+        db.commit()
+    return updated
+
+
+def _refresh_pending_sigpac_entries(db: Session, user: User) -> None:
+    rows = (
+        db.query(SiexCuadernoEntry)
+        .filter(
+            SiexCuadernoEntry.user_id == user.id,
+            SiexCuadernoEntry.status == "pendiente_sigpac",
+        )
+        .all()
+    )
+    updated = False
+    for row in rows:
+        if _refresh_entry_from_farm(db, user, row):
+            updated = True
+    if updated:
+        db.commit()
+
+
 def list_my_entries(db: Session, user_id: int) -> list[SiexEntryRead]:
     user = db.query(User).filter(User.id == user_id).first()
     if user is not None:
         _sync_missing_entries(db, user)
+        _refresh_pending_sigpac_entries(db, user)
     rows = (
         db.query(SiexCuadernoEntry)
         .filter(SiexCuadernoEntry.user_id == user_id)
