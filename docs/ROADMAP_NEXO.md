@@ -1,11 +1,36 @@
 # NEXO Agro — Roadmap de Desarrollo
 
 **Autor:** Valentín Ruiz León  
-**Actualizado:** 7 ago 2026  
+**Actualizado:** 22 ago 2026  
 **Rama:** `nexoagro`  
-**Estado:** ✅ **MVP 1.B desplegado** en `https://agroplaga-ai.farm` (Field Pro + notificaciones perito)  
-**Siguiente hito:** **Versión 2** — registro comunitario, CRM incidencias, clima sur Almería  
+**Estado:** ✅ **NEXO Field Pro 2.0** desplegado en `https://agroplaga-ai.farm` — versión piloto **aceptable para campo**  
+**Siguiente hito:** Piloto ampliado sur Almería + gaps comerciales (FCM, dominio `.es`, SIEX cooperativa)  
 **TODO infra (más adelante):** dominio `agroplaga.es` + Workspace · seguridad avanzada (pinning, Redis, WAF)
+
+---
+
+## Resumen ejecutivo — V2 (ago 2026)
+
+### Lo que tenemos operativo
+
+| Área | Entregado |
+|------|-----------|
+| **Field base** | PlagaScan offline, historial, alertas, mapa comunitario, registro con consentimiento mapa anónimo |
+| **Field Pro / Premium** | Tratamientos MAPA, dosis automática, carencia, catálogo biocidas ETL semanal |
+| **Fincas** | Wizard onboarding + «Mis fincas» (103 municipios Almería, cultivo/fase/nave/sector, SIGPAC manual para SIEX) |
+| **CRM incidencias** | Ciclo 1→6 (detección → cierre), prescripción MAPA, evaluación con foto cámara/galería, bucle tratamiento↔evaluación |
+| **Mapa comercial** | Freemium 24 h; Premium 7 d / 30 d; focos ligados a incidencias activas; cierre retira del heatmap |
+| **Perito** | Cola validación foto, corrección plaga, agricultor puede corregir plaga IA, notificaciones polling |
+| **Climate** | 11 estaciones sur Almería, ETL multi-estación, selector por finca/estación, informe PDF, loading UX |
+| **SIEX** | Cuaderno borrador automático desde tratamientos; SIGPAC manual por finca; refresh al completar recinto; preview abierto en piloto |
+| **Producción** | VPS + Docker + Caddy, migraciones hasta `0025`, APK release `2.0.0+3` |
+
+### Planificado para más adelante (no bloquea piloto V2)
+
+- GPS automático en escaneos / SIGPAC por coordenadas (**descartado** por cobertura invernadero y permisos; SIGPAC manual acordado)
+- Push FCM, catálogo plagas extendido perito, informes PDF visita, firma SIEX cooperativa, export JSON ministerial
+- Reentrenamiento IA con fotos validadas, IoT sensores, dashboard Climate web, dominio `agroplaga.es`, hardening Redis/WAF/pinning
+- Historial rotaciones/fases, recordatorios push carencia/reevaluación, resistencias cruzadas 48 d
 
 ---
 
@@ -27,9 +52,9 @@
 
 | Módulo | Origen | Permiso RBAC | Estado |
 |--------|--------|--------------|--------|
-| **NEXO Field** | AgroPlaga AI | base (todos) + `has_field_premium` | ✅ Operativo (piloto VPS) |
-| **NEXO Climate** | AgroData Consulting | `has_climate_module` | 🟡 Portado a PostgreSQL + UI Flutter B+ |
-| **NEXO SIEX** | CEX / cumplimiento 2027 | `has_siex_enterprise` | 🟡 MVP local — Fase 3 |
+| **NEXO Field** | AgroPlaga AI | base (todos) + `has_field_premium` | ✅ V2 operativo (piloto VPS + APK) |
+| **NEXO Climate** | AgroData Consulting | `has_climate_module` | ✅ Multi-estación sur Almería (11 puntos) + UI Flutter |
+| **NEXO SIEX** | CEX / cumplimiento 2027 | `has_siex_module` / `has_siex_enterprise` | 🟡 Cuaderno borrador automático; SIGPAC manual; validación cooperativa pendiente |
 
 ### Mapeo versiones antiguas → NEXO
 
@@ -94,138 +119,120 @@
 
 ---
 
-## Fase 1 — NEXO Field completo ⏳
+## Fase 1 — NEXO Field completo 🟡 (gaps menores)
 
-> Cerrar lo pendiente del piloto AgroPlaga y Field Premium.
+> Cerrar lo pendiente del piloto AgroPlaga y Field Premium. **Núcleo V2 ya integrado** — quedan mejoras perito/comercial.
 
 ### Experiencia perito móvil (ex v1.6 / Fase 11)
 - [x] Home "Centro de mando" para rol `tech` (KPIs + CTAs)
 - [x] Cola validación con foto (`TechScanValidationScreen` → `/api/v1/tech/pending-scans`)
 - [x] Notificaciones in-app perito al compartir escaneo (polling panel + app; migración `0016`)
-- [ ] **Catálogo extendido perito:** autocomplete con filtro al escribir sobre catálogo amplio (EPPO + `plague_registry`), no limitado a las 15 plagas de la IA; opción «otra plaga»; cola de sugerencias revisable por admin → alimentar catálogo y dataset semilla
+- [ ] **Catálogo extendido perito:** autocomplete EPPO + `plague_registry`; «otra plaga»; cola sugerencias admin → dataset
 - [ ] Mapa técnico con capas (calor, pendientes, validados) — presets parciales vía mapa existente
 - [ ] Modo visita a finca + informe PDF
 
 ### Field Premium (ex v1.7 parcial + v1.8)
 - [x] Modelo `farm_treatments` + API `/api/v1/treatments` (migración `0013`)
 - [x] Contador plazo de carencia (`CarenciaBanner` + semáforo recolección)
-- [x] Catálogo biocidas MAPA piloto (seed `biocide_products`, 5 productos)
-- [x] **ETL real MAPA CEX** (`ExportJsonProductosAutorizados` — cuaderno digital ministerial)
+- [x] Catálogo biocidas MAPA piloto + **ETL real MAPA CEX** (`ExportJsonProductosAutorizados`)
 - [x] Motor dosis automática (`POST /api/v1/treatments/dose/calculate`)
 - [x] API catálogo: `GET /treatments/catalog/status` + `POST /treatments/etl/run` (admin)
 - [x] Scheduler ETL MAPA semanal (domingos 03:00 UTC)
-- [ ] **Mapa histórico 7 / 30 días** (freemium solo tiempo real — ver V2 §2.3)
+- [x] **Mapa histórico 7 / 30 días** para `has_field_premium` (`heatmap_access.py` + `MapScreen`)
 - [ ] Historial resistencias cruzadas (48 días)
 
 ### IA (ex v1.5 — pausado)
 - [ ] Reentrenamiento TFLite con fotos validadas por perito
-- [ ] Mensaje honesto en UI: IA orientativa, perito valida
+- [x] Mensaje honesto en UI: IA orientativa, perito valida (`ScanValidationBanner`, corrección agricultor)
 
 ### Infra
 - [ ] FCM push alertas
-- [ ] APK release Nexo para agricultores piloto
+- [x] APK release Nexo 2.0 (`flutter build apk --dart-define=API_BASE_URL=https://agroplaga-ai.farm`)
 
 ---
 
-## Versión 2 — NEXO Field 2.0 ⏳ (próximo gran hito)
+## Versión 2 — NEXO Field 2.0 ✅ COMPLETADA (piloto ago 2026)
 
-> Experiencia completa para comercializar en **todo el sur de Almería**: registro con fincas, mapa comunitario obligatorio, seguimiento fitosanitario por incidencias y clima multi-zona.
+> Experiencia comercializable en **todo el sur de Almería**: registro con fincas, mapa comunitario, CRM incidencias, clima multi-zona y SIEX borrador.
 
 ### 2.1 Registro, fincas y mapa comunitario
 
 **Principios acordados:**
-- El valor de la app depende de la comunidad → **consentimiento de mapa anónimo obligatorio** al registrarse (condiciones de uso; sin aceptar, no hay cuenta).
-- Contribución al mapa de calor **automática** al abrir una incidencia relevante (sin preguntar cada vez).
-- Compartir con **perito** sigue siendo **opt-in por escaneo** (`share_with_tech`).
-- **Coordenadas GPS solo en escaneos**, no en la finca/unidad de producción.
+- Consentimiento mapa anónimo **obligatorio** al registrarse (`consent_map_anonymous`; backfill legacy `0025`).
+- Contribución al mapa **automática** al abrir incidencia relevante.
+- Compartir con **perito** opt-in por escaneo (`share_with_tech`).
+- **SIGPAC recinto manual** en finca (obligatorio solo para SIEX). GPS/EXIF **descartado** por cobertura invernadero y fiabilidad.
 
 **Wizard de registro (obligatorio ≥1 unidad):**
-- [ ] Paso cuenta: código invitación, nombre, email, contraseña
-- [ ] Paso legal: aceptación condiciones + mapa comunitario anónimo (obligatorio)
-- [ ] Paso unidades de producción (estructura libre del agricultor):
-  - [ ] Finca, nave, sector (nombres que el agricultor elija)
-  - [ ] **Municipio:** desplegable con **todos los municipios SIGPAC de Almería** (~102; ampliar `agri_zones` / seed actual solo Poniente)
-  - [ ] **Cultivo + variedad:** autocompletado con filtro dinámico al escribir; guardar valor **normalizado** (catálogo MAPA + variantes en `shared/crop_catalog.json`)
-  - [ ] **Estado fenológico:** siembra → germinación → crecimiento → floración → fructificación → maduración → cosecha
-  - [ ] Superficie m² (dosis MAPA)
-  - [ ] SIGPAC recinto: opcional en registro; obligatorio solo cuando cooperativa use SIEX
-- [ ] Backend: ampliar modelo `Farm` (o `ProductionUnit`) con `nave`, `sector`, `crop_stage`, `crop_variant`, `zone_id`
-- [ ] Backend: `User.consent_accepted_at` + mapa implícito activo
-- [ ] API: `GET /api/v1/crops?q=` autocomplete normalizado
-- [ ] API: `GET /api/v1/zones` con catálogo completo provincia 04
+- [x] Paso cuenta: código invitación, nombre, email, contraseña (`RegisterScreen`)
+- [x] Paso legal: aceptación condiciones + mapa comunitario anónimo (obligatorio en registro)
+- [x] Paso unidades (`OnboardingWizardScreen` + gate si no hay fincas):
+  - [x] Finca, nave, sector (nombres libres)
+  - [x] **Municipio:** autocomplete **103 municipios** Almería (`almeria_municipalities.json` + `GET /zones`)
+  - [x] **Cultivo + variante:** autocompletado (`GET /crops?q=` + `crop_catalog.json`)
+  - [x] **Estado fenológico** (catálogo por cultivo)
+  - [x] Superficie m²
+  - [x] SIGPAC recinto opcional (obligatorio solo para cuaderno SIEX)
+- [x] Backend: `Farm` con `nave`, `sector`, `crop_stage`, `crop_variant`, `zone_id`, `sigpac_code` (migraciones `0017+`)
+- [x] Backend: `User.consent_accepted_at` + `ensure_map_consent()` para cuentas legacy
 
 **Edición continua:**
-- [ ] Pantalla «Mis fincas/unidades»: cambiar cultivo (rotación) y fase fenológica en cualquier momento
+- [x] «Mis fincas»: editar cultivo, fase y SIGPAC; lista primero + botón «Añadir finca»
 - [ ] Historial opcional de cambios de fase (futuro IA / predicciones)
 
 **Escaneo:**
-- [ ] GPS automático al escanear (`latitude`, `longitude` en `Scan`; permiso ubicación en app)
-- [ ] Vincular escaneo a nave/sector; heredar cultivo/fase de la unidad (editable antes de guardar)
-- [ ] Quitar prompt repetido «¿contribuir al mapa?» en `ResultScreen` (sustituido por consentimiento registro + incidencia)
+- [ ] GPS automático al escanear (`latitude`/`longitude` en modelo; **no enviado desde app** — pospuesto)
+- [x] Vincular escaneo a finca (`farm_id`); selector finca en escaneo/tratamiento
+- [x] Sin prompt repetido «¿contribuir al mapa?» — consentimiento registro + incidencia (`ResultScreen`)
+- [x] Agricultor puede corregir plaga IA (`farmer_plague`, migración `0024`)
 
-### 2.2 CRM fitosanitario — ciclo de vida de incidencias
-
-Referencia: diagrama *CRM Fitosanitario AgroPlaga — Ciclo de Vida* (Detección → Diagnóstico → Prescripción → Tratamiento → Evaluación → Cierre).
+### 2.2 CRM fitosanitario — ciclo de vida de incidencias ✅
 
 **Bifurcación tras escaneo:**
-- [ ] Escaneo sin relevancia → solo **historial** (comportamiento actual)
-- [ ] Escaneo = plaga a seguir → abrir **incidencia** (`PestIncident` / ticket fitosanitario)
+- [x] Escaneo sin relevancia → historial
+- [x] Escaneo relevante → **incidencia** (`PestIncident`, migraciones `0018`/`0019`)
 
-**Etapas y requisitos:**
-- [ ] **1 Detección** — foto, unidad (nave/sector), cultivo, fase, GPS del escaneo, plaga IA
-- [ ] **2 Diagnóstico** — verificación gravedad; validación perito opcional; plaga confirmada
-- [ ] **3 Prescripción** — producto MAPA, dosis, plazo seguridad (reutilizar `register_treatment` + catálogo)
-- [ ] **4 Tratamiento** — registro aplicación + contador carencia + alertas (`FarmTreatment`, `CarenciaBanner`)
-- [ ] **5 Evaluación** — foto comparativa; decisión «¿mejora?»
-- [ ] **6 Cierre** — `RESUELTO` o `COSECHA PERDIDA` → export SIEX si cooperativa enterprise
+**Etapas:**
+- [x] **1 Detección** — foto, finca, cultivo, plaga IA
+- [x] **2 Diagnóstico** — avance etapa + productos MAPA
+- [x] **3 Prescripción** — producto, dosis, superficie parcial/total (`prescription_surface_m2`)
+- [x] **4 Tratamiento** — registro + carencia + entrada SIEX borrador
+- [x] **5 Evaluación** — foto comparativa (cámara/galería), mejora sí/no
+- [x] **6 Cierre** — `RESUELTO` / `COSECHA PERDIDA` + export SIEX si aplica
 
 **Reglas de flujo:**
-- [ ] Si **no mejora** en evaluación → volver a **paso 4 (Tratamiento)**, no a prescripción (plaga ya confirmada; solo cambiar producto/dosis)
-- [ ] Bucle tratamiento ↔ evaluación hasta mejora o cierre
-- [ ] Recordatorios: carencia activa, fecha reevaluación (in-app; push FCM en sprint posterior)
+- [x] Si **no mejora** → vuelve a **tratamiento** (no a prescripción)
+- [x] Bucle tratamiento ↔ evaluación hasta mejora o cierre
+- [ ] Recordatorios in-app/push: carencia activa, fecha reevaluación
 
 **Backend / Flutter:**
-- [ ] Modelo `PestIncident` + estados + API CRUD y transiciones
-- [ ] Pantalla timeline «Mis incidencias activas»
-- [ ] Enlazar `Scan`, `FarmTreatment`, `OutbreakEvent` (mapa), validación perito
-- [ ] Cierre incidencia → retirar foco del mapa comarcal (sync `OutbreakEvent.status = closed`)
+- [x] Modelo + API CRUD/transiciones (`/api/v1/incidents`)
+- [x] Pantalla timeline + detalle por etapas (`IncidentsScreen`, `IncidentDetailScreen`)
+- [x] Enlace `Scan`, `FarmTreatment`, `OutbreakEvent`, validación perito
+- [x] Cierre → `OutbreakEvent.status = closed` (excluido del heatmap)
 
-### 2.3 Mapa de calor — Freemium vs Premium (`has_field_premium`)
+### 2.3 Mapa de calor — Freemium vs Premium ✅
 
-**Fuente de datos (acordado V2):**
-- El mapa de calor se alimenta de las **incidencias fitosanitarias abiertas** que generan los agricultores (al declarar una plaga relevante, con consentimiento de mapa al registrarse).
-- Cada incidencia activa publica un `OutbreakEvent` anónimo en su **municipio/zona SIGPAC** (sin parcela ni identidad).
-- Cuando el agricultor **cierra** la incidencia (controlada → `RESUELTO`, o `COSECHA PERDIDA`), el foco **desaparece del mapa de calor** de inmediato (estado `closed` / excluido de la agregación).
-- Incidencias en historial del agricultor ≠ incidencias visibles en mapa comarcal.
+- [x] Incidencia activa → `OutbreakEvent` en municipio SIGPAC
+- [x] Cierre incidencia → evento `closed`, excluido de `get_heatmap_grid`
+- [x] Heatmap solo incidencias no cerradas
+- [x] Backend: `enforce_map_hours` — freemium 24 h; premium 7 d / 30 d
+- [x] Flutter `MapScreen`: selector histórico + chips bloqueados + CTA Premium
+- [x] Panel perito/cooperativa sin restricción freemium (rol B2B)
+- [ ] Copy landing comercial alineado con paywall (marketing)
 
-**Estado actual (1.B):** el heatmap usa `outbreak_events` con ventana temporal (`hours`); no hay cierre de incidencia ni retirada automática al resolver — **cambiar en V2** al enlazar mapa ↔ `PestIncident`.
+### 2.4 Criterio de done Versión 2 (Field) ✅
 
-**Modelo comercial acordado:**
-- **Freemium (Field base):** solo mapa de calor en **tiempo real** (ventana corta, p. ej. últimas 24 h o «ahora»).
-- **Premium (`has_field_premium`):** histórico **7 días** y **30 días** en el selector del mapa.
-
-**Implementación prevista (V2):**
-- [ ] Al abrir incidencia → crear/activar `OutbreakEvent` en zona del municipio de la unidad
-- [ ] Al cerrar incidencia → marcar evento mapa como `closed` y **excluir** de `get_heatmap_grid`
-- [ ] Heatmap solo agrega incidencias **activas** (estados 1–5 del CRM; no `closed`)
-- [ ] Backend: en `GET /api/v1/heatmap` validar `hours` según licencia (`has_field_premium`); freemium → solo vista tiempo real (incidencias activas ahora); premium → histórico **7 días** y **30 días** (evolución / agregación temporal de focos activos en esa ventana)
-- [ ] Flutter `MapScreen`: selector 7 d / 30 d visible solo con premium; freemium sin selector histórico (o CTA «Contratar Premium»)
-- [ ] Contribución al mapa: **todos** los agricultores (consentimiento registro); la diferencia es **visualización**, no aportar datos
-- [ ] Panel perito/cooperativa: sin restricción freemium (rol B2B)
-- [ ] Copy en app y landing alineado con paywall
-
-### 2.4 Criterio de done Versión 2 (Field)
-
-- [ ] Registro obligatorio con unidades + municipios Almería completos
-- [ ] GPS en escaneos; mapa auto-contribuye con consentimiento registro
-- [ ] Incidencia completa 1→6 con bucle evaluación → tratamiento
-- [ ] Perito y mapa siguen desacoplados
-- [ ] Freemium: mapa tiempo real; Premium: histórico 7 y 30 días
-- [ ] Landing + piloto sur Almería alineados comercialmente
+- [x] Registro obligatorio con unidades + municipios Almería completos
+- [x] Mapa auto-contribuye con consentimiento registro (sin GPS escaneo)
+- [x] Incidencia completa 1→6 con bucle evaluación → tratamiento
+- [x] Perito y mapa desacoplados; share_with_tech opt-in
+- [x] Freemium: mapa 24 h; Premium: histórico 7 y 30 días
+- [ ] Landing + piloto sur Almería alineados comercialmente (copy/marketing)
 
 ---
 
-## Fase 2 — NEXO Climate productivo ⏳
+## Fase 2 — NEXO Climate productivo 🟡 (operativo piloto)
 
 > Paridad con dashboard AgroData original + monetización B2C.
 
@@ -234,42 +241,42 @@ Referencia: diagrama *CRM Fitosanitario AgroPlaga — Ciclo de Vida* (Detección
 - [x] Auto-refresh cada 15 min en app (`Timer.periodic` + ETL status)
 - [x] Pestaña Riesgo (`GET /api/v1/climate/riesgo` + barra semanal)
 - [x] Semáforos DPV / punto de rocío en UI (`punto_rocio_status`)
+- [x] Loading UX al cambiar estación meteorológica (banner + skeletons)
 - [ ] Copiar histórico CSV AgroData → `backend/data/climate/` (arranque rápido ETL)
 
-### Estaciones meteorológicas — sur de Almería (V2 Climate) 🎯
+### Estaciones meteorológicas — sur de Almería ✅ (piloto)
 
-**Situación actual:** ETL Open-Meteo con **un solo punto** (`OPENMETEO_LAT/LON` ≈ La Mojonera, 36.77 / -2.81), válido para El Ejido / Poniente pero **insuficiente** para comercializar en todo el sur almeriense.
+**Implementado:** ETL Open-Meteo **multi-estación** — **11 puntos** sur almeriense (`climate_stations_sur.json`, migración `0020`).
 
-**Objetivo V2:** datos climáticos alineados con la **zona de la finca del agricultor** (municipio / estación más cercana), no solo Poniente.
-
-- [ ] Inventariar estaciones disponibles sur Almería (Red Hidrosur, AEMET, cooperativas, Open-Meteo grid por municipio)
-- [ ] Modelo `climate_stations` (id, nombre, municipio/zone_id, lat, lon, fuente, activa)
-- [ ] Seed estaciones: Poniente (La Mojonera/Ejido), Roquetas, Adra, Almería, Níjar, Cabo de Gata, Carboneras, Levante (Mojácar, Garrucha, Vera…)
-- [ ] ETL multi-estación: ingesta por estación → `climate_daily` / weekly / monthly con `station_id`
-- [ ] API Climate: métricas según `zone_id` o estación vinculada a la unidad de producción del usuario
-- [ ] Flutter: Climate usa estación de la finca seleccionada (fallback estación más cercana al municipio)
-- [ ] Recomendaciones y alertas DPV contextualizadas por zona (no solo El Ejido)
-- [ ] Documentar fuentes y cadencia de actualización por estación
+- [x] Modelo `climate_stations` (id, slug, municipio/zone_id, lat, lon, fuente, activa)
+- [x] Seed estaciones: Poniente, Roquetas, Adra, Almería capital, Níjar, Levante, etc.
+- [x] ETL multi-estación → `climate_daily` / weekly / monthly con `station_id`
+- [x] API Climate: métricas según estación vinculada a finca (`farm.climate_station_id`, migración `0022`)
+- [x] Flutter: selector finca + estación; fallback estación más cercana al municipio
+- [x] Recomendaciones y alertas DPV por estación activa
+- [ ] Inventario formal fuentes (Hidrosur/AEMET/cooperativas) documentado por estación
+- [ ] Ampliar rejilla si faltan microclimas (Cabezo, Tabernas…)
 
 ### Futuro IoT / B2B
-- [ ] Ingesta estaciones meteorológicas locales
+- [ ] Ingesta estaciones meteorológicas locales (hardware propio)
 - [ ] Sensores interior (temp, HR, CO2, suelo)
-- [ ] Paywall B2C: trial 7 días, `has_climate_module`
+- [ ] Paywall B2C: trial 7 días, `has_climate_module` (preview abierto en piloto)
 - [ ] Dashboard web Climate (React) para consultoría
 
 ---
 
-## Fase 3 — NEXO SIEX + Enterprise 🟡 (MVP local)
+## Fase 3 — NEXO SIEX + Enterprise 🟡 (borrador operativo — deadline 2027)
 
-> Cumplimiento legal SIEX (obligatorio enero 2027) + panel cooperativa.
+> Cumplimiento legal SIEX + panel cooperativa.
 
-- [x] Tabla `siex_cuaderno_borrador` + compilación automática desde tratamientos Field
-- [x] SIGPAC obligatorio en finca (`farms.sigpac_code`) para validez del cuaderno
+- [x] Tabla `siex_cuaderno_borrador` + compilación automática desde tratamientos/incidencias
+- [x] SIGPAC recinto en finca (`farms.sigpac_code`) — **manual**; refresh entradas `pendiente_sigpac` al completar
 - [x] Justificación automática (plaga/escaneo/MAPA + contexto Climate si activo)
-- [x] API `/api/v1/siex/*` + hook post-`create_treatment`
-- [x] Flutter: pestaña SIEX + selector finca en registro tratamiento
+- [x] API `/api/v1/siex/*` + hook post-tratamiento; sync entradas faltantes al listar
+- [x] Flutter: pestaña SIEX + banners SIGPAC + selector finca en tratamiento
 - [x] Bandeja validación perito B2B (panel web `/siex`)
 - [x] Export preview JSON entradas validadas
+- [x] `SIEX_PREVIEW_OPEN` en piloto (acceso agricultor sin licencia cooperativa)
 - [ ] Firma digital cooperativa → `VALIDADO_OFICIAL`
 - [ ] Exportador JSON schema ministerial definitivo (un clic)
 - [ ] Panel multivista socios (plagas + clima agregado)
@@ -281,12 +288,12 @@ Referencia: diagrama *CRM Fitosanitario AgroPlaga — Ciclo de Vida* (Detección
 
 > Cutover VPS, piloto unificado, monetización.
 
-- [ ] Backup PostgreSQL antes de deploy (protocolo ya usado jul 2026)
-- [ ] Deploy rama `nexoagro` a VPS (staging o producción con OK explícito)
+- [x] Backup PostgreSQL antes de deploy (protocolo jul–ago 2026)
+- [x] Deploy rama `nexoagro` a VPS producción (`deploy/vps-deploy-v2.sh`, `agroplaga-ai.farm`)
 - [ ] Apagar stack legacy AgroData en VPS (`agrodata-*`)
-- [ ] Piloto 5–6 agricultores con app Nexo unificada
+- [ ] Piloto 5–6 agricultores con app Nexo unificada (ampliación sur Almería)
 - [ ] Métricas Lean → pivotar o perseverar
-- [ ] Repo definitivo `NexoAgro`
+- [ ] Repo definitivo `NexoAgro` (rebrand GitHub opcional)
 - [ ] Paquete comercial implantación cooperativas
 
 ---
@@ -357,15 +364,16 @@ Referencia: diagrama *CRM Fitosanitario AgroPlaga — Ciclo de Vida* (Detección
 ```
 Fase 0 ✅
     MVP 1.B ✅ (Field Pro + notificaciones perito)
-        Versión 2 Field (registro + incidencias + GPS escaneos)
-            Versión 2 Climate (estaciones sur Almería)
-                Piloto sur Almería completo
-                    Fase 1 gaps (catálogo perito, FCM, APK release)
-                        Fase 3 SIEX (deadline 2027)
-                            Fase 4 comercial
+        Versión 2 Field ✅ (registro + incidencias + mapa premium)
+            Versión 2 Climate ✅ piloto (11 estaciones sur Almería)
+                SIEX borrador ✅ (SIGPAC manual + refresh)
+                    Piloto ampliado sur Almería + métricas Lean
+                        Fase 1 gaps (catálogo perito, FCM, PDF visita)
+                            Fase 3 SIEX cooperativa (deadline 2027)
+                                Fase 4 comercial + dominio agroplaga.es
 ```
 
-**Regla V2:** Field 2.0 (registro + CRM incidencias) y Climate multi-estación pueden desarrollarse en paralelo; ambos necesarios antes de escalar comercialización fuera del Poniente.
+**Enfoque actual:** validar V2 en campo; priorizar FCM, copy comercial y SIEX cooperativa según feedback piloto.
 
 ---
 
@@ -393,6 +401,10 @@ Fase 0 ✅
 | ago 2026 | MVP 1.B (Field Pro) en producción: notificaciones perito, SIEX/Climate/MAPA, migración `0016` |
 | ago 2026 | Hardening seguridad P0+P1 (JWT, RBAC alertas, secure storage, HTTPS release) |
 | ago 2026 | Spec **Versión 2** acordada (registro, CRM incidencias, clima sur Almería) |
+| ago 2026 | **V2 Field:** onboarding, CRM incidencias 1→6, mapa premium, fincas, `farmer_plague`, consent legacy |
+| ago 2026 | **V2 Climate:** 11 estaciones, selector finca/estación, loading UX |
+| ago 2026 | **SIEX borrador:** SIGPAC manual, `pendiente_sigpac` + refresh retroactivo, banners UX |
+| ago 2026 | APK `NEXO-Field-Pro-2.0.0` + commits `c525f14`–`fe0ce2b` en `nexoagro` |
 
 ---
 
