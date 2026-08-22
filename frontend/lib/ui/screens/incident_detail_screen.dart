@@ -1,10 +1,12 @@
+import "package:flutter/foundation.dart";
 import "package:flutter/material.dart";
+import "package:image_picker/image_picker.dart";
 
 import "../../core/nexo_colors.dart";
-import "../../core/routes.dart";
 import "../../data/repositories/incident_repository.dart";
 import "../../data/repositories/scan_repository.dart";
 import "../../data/repositories/treatment_repository.dart";
+import "../../ml/plaga_classifier.dart";
 import "../../models/pest_incident.dart";
 import "../../models/scan.dart";
 import "../widgets/primary_button.dart";
@@ -22,6 +24,7 @@ class _IncidentDetailScreenState extends State<IncidentDetailScreen> {
   final _incidentRepo = IncidentRepository();
   final _treatmentRepo = TreatmentRepository();
   final _scanRepo = ScanRepository();
+  final _imagePicker = ImagePicker();
 
   late Future<PestIncident> _future;
   List<dynamic> _biocides = [];
@@ -34,6 +37,7 @@ class _IncidentDetailScreenState extends State<IncidentDetailScreen> {
   double _affectedPercent = 30;
   bool _loadingBiocides = false;
   bool _loadingScans = false;
+  bool _capturingEvalPhoto = false;
   bool _busy = false;
   String? _error;
   Map<String, dynamic>? _dosePreview;
@@ -142,6 +146,49 @@ class _IncidentDetailScreenState extends State<IncidentDetailScreen> {
           _error = e.toString();
         });
       }
+    }
+  }
+
+  static const _severityLabels = {1: "Leve", 2: "Moderado", 3: "Alto"};
+
+  String _severityLabel(int level) => _severityLabels[level.clamp(1, 3)] ?? "Moderado";
+
+  Future<void> _captureEvaluationPhoto(PestIncident incident, ImageSource source) async {
+    final file = await _imagePicker.pickImage(source: source, imageQuality: 85, maxWidth: 1024);
+    if (file == null || !mounted) return;
+
+    setState(() {
+      _capturingEvalPhoto = true;
+      _error = null;
+    });
+
+    try {
+      final bytes = await file.readAsBytes();
+      final diagnosis = await classifyPlaga(bytes);
+      final scan = await _scanRepo.createScan(
+        crop: incident.crop,
+        plague: incident.plague,
+        severity: _severityLabel(diagnosis.suggestedSeverity),
+        confidence: diagnosis.confidence,
+        farmId: incident.farmId,
+      );
+      await _incidentRepo.attachEvaluationScan(incident.id, scan.id);
+      if (!mounted) return;
+      setState(() {
+        _evalScanController.text = "${scan.id}";
+        _scans = [scan, ..._scans.where((s) => s.id != scan.id)];
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Foto comparativa guardada y adjunta a la incidencia."),
+          backgroundColor: NexoColors.bioGreen,
+        ),
+      );
+      _reload();
+    } catch (e) {
+      if (mounted) setState(() => _error = e.toString());
+    } finally {
+      if (mounted) setState(() => _capturingEvalPhoto = false);
     }
   }
 
@@ -885,13 +932,55 @@ class _IncidentDetailScreenState extends State<IncidentDetailScreen> {
             title: "Foto comparativa",
             children: [
               const Text(
-                "Selecciona un escaneo de seguimiento o crea uno nuevo con el botón de cámara.",
+                "Toma una foto ahora o elige una de la galería para comparar con el escaneo inicial.",
                 style: TextStyle(color: NexoColors.textSecondary, fontSize: 13),
               ),
-              const SizedBox(height: 12),
-              if (_scans.where((s) => s.id != incident.scanId).isEmpty)
-                const Text("Aún no hay otros escaneos. Usa «Nuevo escaneo» abajo.")
-              else
+              if (_canAct(incident, "evaluation")) ...[
+                const SizedBox(height: 12),
+                if (_capturingEvalPhoto)
+                  const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 12),
+                    child: Column(
+                      children: [
+                        LinearProgressIndicator(),
+                        SizedBox(height: 8),
+                        Text("Analizando y guardando foto...", style: TextStyle(fontSize: 13)),
+                      ],
+                    ),
+                  )
+                else ...[
+                  if (!kIsWeb)
+                    PrimaryButton(
+                      label: "Tomar foto ahora",
+                      onPressed: _busy
+                          ? null
+                          : () => _captureEvaluationPhoto(incident, ImageSource.camera),
+                    ),
+                  if (!kIsWeb) const SizedBox(height: 8),
+                  OutlinedButton.icon(
+                    onPressed: _busy
+                        ? null
+                        : () => _captureEvaluationPhoto(incident, ImageSource.gallery),
+                    icon: const Icon(Icons.photo_library_outlined),
+                    label: Text(kIsWeb ? "Seleccionar imagen" : "Elegir de galería"),
+                  ),
+                ],
+              ],
+              if (incident.evaluationScanId != null)
+                Padding(
+                  padding: const EdgeInsets.only(top: 12),
+                  child: Text(
+                    "Adjunto actual: escaneo #${incident.evaluationScanId}",
+                    style: const TextStyle(color: NexoColors.bioGreen, fontSize: 13),
+                  ),
+                ),
+              if (_scans.where((s) => s.id != incident.scanId).isNotEmpty) ...[
+                const SizedBox(height: 16),
+                const Text(
+                  "O usa un escaneo anterior",
+                  style: TextStyle(fontWeight: FontWeight.w600, fontSize: 13),
+                ),
+                const SizedBox(height: 8),
                 DropdownButtonFormField<int>(
                   key: ValueKey(_evalScanController.text),
                   initialValue: int.tryParse(_evalScanController.text),
@@ -908,33 +997,26 @@ class _IncidentDetailScreenState extends State<IncidentDetailScreen> {
                         ),
                       )
                       .toList(),
-                  onChanged: !_canAct(incident, "evaluation") || _busy
+                  onChanged: !_canAct(incident, "evaluation") || _busy || _capturingEvalPhoto
                       ? null
                       : (v) {
                           if (v != null) setState(() => _evalScanController.text = "$v");
                         },
                 ),
-              if (incident.evaluationScanId != null)
-                Padding(
-                  padding: const EdgeInsets.only(top: 8),
-                  child: Text(
-                    "Adjunto actual: escaneo #${incident.evaluationScanId}",
-                    style: const TextStyle(color: NexoColors.bioGreen, fontSize: 13),
+                if (_canAct(incident, "evaluation")) ...[
+                  const SizedBox(height: 8),
+                  OutlinedButton.icon(
+                    onPressed: _busy || _capturingEvalPhoto
+                        ? null
+                        : () => _run(() async {
+                              final scanId = int.tryParse(_evalScanController.text.trim());
+                              if (scanId == null) throw Exception("Selecciona un escaneo comparativo");
+                              await _incidentRepo.attachEvaluationScan(incident.id, scanId);
+                            }),
+                    icon: const Icon(Icons.attach_file),
+                    label: const Text("Adjuntar escaneo seleccionado"),
                   ),
-                ),
-              if (_canAct(incident, "evaluation")) ...[
-                const SizedBox(height: 12),
-                OutlinedButton.icon(
-                  onPressed: _busy
-                      ? null
-                      : () => _run(() async {
-                            final scanId = int.tryParse(_evalScanController.text.trim());
-                            if (scanId == null) throw Exception("Selecciona un escaneo comparativo");
-                            await _incidentRepo.attachEvaluationScan(incident.id, scanId);
-                          }),
-                  icon: const Icon(Icons.attach_file),
-                  label: const Text("Adjuntar escaneo seleccionado"),
-                ),
+                ],
               ],
             ],
           ),
@@ -1055,7 +1137,6 @@ class _IncidentDetailScreenState extends State<IncidentDetailScreen> {
 
           final incident = snapshot.data!;
           final viewStage = _viewStage ?? incident.stage;
-          final showScanFab = incident.isActive && viewStage == "evaluation";
 
           return Stack(
             children: [
@@ -1087,7 +1168,7 @@ class _IncidentDetailScreenState extends State<IncidentDetailScreen> {
                     ),
                   Expanded(
                     child: SingleChildScrollView(
-                      padding: EdgeInsets.fromLTRB(16, 16, 16, showScanFab ? 88 : 16),
+                      padding: const EdgeInsets.fromLTRB(16, 16, 16, 16),
                       child: _buildStageContent(incident),
                     ),
                   ),
@@ -1101,27 +1182,6 @@ class _IncidentDetailScreenState extends State<IncidentDetailScreen> {
                   ),
                 ),
             ],
-          );
-        },
-      ),
-      floatingActionButton: FutureBuilder<PestIncident>(
-        future: _future,
-        builder: (context, snapshot) {
-          if (!snapshot.hasData) return const SizedBox.shrink();
-          final incident = snapshot.data!;
-          final viewStage = _viewStage ?? incident.stage;
-          if (!incident.isActive || viewStage != "evaluation") return const SizedBox.shrink();
-          return FloatingActionButton.extended(
-            onPressed: _busy
-                ? null
-                : () async {
-                    await Navigator.pushNamed(context, Routes.scan);
-                    if (!mounted) return;
-                    setState(() => _scans = []);
-                    _reload();
-                  },
-            label: const Text("Nuevo escaneo"),
-            icon: const Icon(Icons.camera_alt_outlined),
           );
         },
       ),
