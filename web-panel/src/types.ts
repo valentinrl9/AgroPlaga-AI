@@ -81,6 +81,8 @@ export interface TechScanQueueItem {
   id: number;
   crop: string;
   plague: string;
+  farmer_plague: string | null;
+  effective_plague: string;
   confidence: number;
   severity: string;
   farm_id: number | null;
@@ -145,4 +147,31 @@ export interface SiexExportPreview {
   exported_at: string;
   count: number;
   entries: Record<string, unknown>[];
+}
+
+export interface TechIncident {
+  id: number;
+  scan_id: number;
+  farm_id: number | null;
+  farm_name: string | null;
+  zone_id: number;
+  zone_name: string | null;
+  plague: string;
+  crop: string;
+  severity: number;
+  stage: string;
+  closure_outcome: string | null;
+  notes: string | null;
+  prescription_product_name: string | null;
+  prescription_registry_number: string | null;
+  prescription_dose_ml: number | null;
+  prescription_safety_hours: number | null;
+  prescription_surface_m2: number | null;
+  farm_surface_m2: number | null;
+  evaluation_scan_id: number | null;
+  created_at: string;
+  updated_at: string;
+  closed_at: string | null;
+  farmer_name: string;
+  farmer_email: string;
 }

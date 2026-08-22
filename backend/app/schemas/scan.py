@@ -80,6 +80,8 @@ class TechScanQueueItem(BaseModel):
     id: int
     crop: str
     plague: str
+    farmer_plague: str | None = None
+    effective_plague: str
     confidence: float
     severity: str
     farm_id: int | None

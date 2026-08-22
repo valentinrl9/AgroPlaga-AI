@@ -9,6 +9,7 @@ from app.models.pest_incident import CLOSURE_OUTCOMES, PestIncident
 from app.models.scan import Scan
 from app.models.user import User
 from app.schemas.outbreak_event import OutbreakEventCreate
+from app.models.zone import AgriZone
 from app.schemas.pest_incident import (
     IncidentAdvance,
     IncidentApplyTreatment,
@@ -16,6 +17,8 @@ from app.schemas.pest_incident import (
     IncidentClose,
     IncidentEvaluate,
     IncidentPrescribe,
+    IncidentTreatmentSummary,
+    TechIncidentRead,
 )
 from app.schemas.treatment import DoseCalculateRequest, TreatmentCreate, TreatmentRead
 from app.services.outbreak_event_service import create_anonymous_event
@@ -294,3 +297,65 @@ def stage_label(stage: str) -> str:
         "closed": "Cierre",
     }
     return labels.get(stage, stage)
+
+
+def _incident_to_tech_read(db: Session, incident: PestIncident, farmer: User) -> TechIncidentRead:
+    zone = db.query(AgriZone).filter(AgriZone.id == incident.zone_id).first()
+    farm_name = None
+    farm_surface_m2 = None
+    if incident.farm_id is not None:
+        farm = db.query(Farm).filter(Farm.id == incident.farm_id).first()
+        if farm is not None:
+            farm_name = farm.name
+            farm_surface_m2 = farm.surface_m2
+
+    treatment_summary: IncidentTreatmentSummary | None = None
+    if incident.treatment_id is not None:
+        row = db.query(FarmTreatment).filter(FarmTreatment.id == incident.treatment_id).first()
+        if row is not None:
+            read = treatment_service._treatment_read(row)
+            treatment_summary = IncidentTreatmentSummary(
+                id=read.id,
+                product_name=read.product_name,
+                safety_hours=read.safety_hours,
+                hours_remaining=read.hours_remaining,
+                harvest_allowed=read.harvest_allowed,
+            )
+
+    return TechIncidentRead(
+        id=incident.id,
+        scan_id=incident.scan_id,
+        farm_id=incident.farm_id,
+        farm_name=farm_name,
+        zone_id=incident.zone_id,
+        zone_name=zone.name if zone else None,
+        outbreak_event_id=incident.outbreak_event_id,
+        plague=incident.plague,
+        crop=incident.crop,
+        severity=incident.severity,
+        stage=incident.stage,
+        closure_outcome=incident.closure_outcome,
+        notes=incident.notes,
+        prescription_product_name=incident.prescription_product_name,
+        prescription_registry_number=incident.prescription_registry_number,
+        prescription_dose_ml=incident.prescription_dose_ml,
+        prescription_safety_hours=incident.prescription_safety_hours,
+        prescription_surface_m2=incident.prescription_surface_m2,
+        prescription_active_substance=incident.prescription_active_substance,
+        farm_surface_m2=farm_surface_m2,
+        treatment=treatment_summary,
+        evaluation_scan_id=incident.evaluation_scan_id,
+        created_at=incident.created_at,
+        updated_at=incident.updated_at,
+        closed_at=incident.closed_at,
+        farmer_name=farmer.name,
+        farmer_email=farmer.email,
+    )
+
+
+def list_incidents_for_tech(db: Session, *, active_only: bool = True) -> list[TechIncidentRead]:
+    query = db.query(PestIncident, User).join(User, PestIncident.user_id == User.id)
+    if active_only:
+        query = query.filter(PestIncident.stage != "closed")
+    rows = query.order_by(PestIncident.updated_at.desc()).limit(200).all()
+    return [_incident_to_tech_read(db, incident, farmer) for incident, farmer in rows]

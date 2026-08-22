@@ -1,4 +1,4 @@
-import type { OutbreakEvent, PilotFarmer, ScanValidatePayload, SiexEntry, SiexEntryValidatePayload, SiexExportPreview, TechDashboard, TechNotificationSummary, TechScanQueueItem, UserProfile } from "../types";
+import type { OutbreakEvent, PilotFarmer, ScanValidatePayload, SiexEntry, SiexEntryValidatePayload, SiexExportPreview, TechDashboard, TechIncident, TechNotificationSummary, TechScanQueueItem, UserProfile } from "../types";
 
 const TOKEN_KEY = "agroplaga_token";
 
@@ -69,6 +69,10 @@ export function markAllTechNotificationsRead(): Promise<{ marked_read: number }>
 
 export function fetchPilotFarmers(): Promise<PilotFarmer[]> {
   return request<PilotFarmer[]>("/api/v1/tech/farmers");
+}
+
+export function fetchTechIncidents(activeOnly = true): Promise<TechIncident[]> {
+  return request<TechIncident[]>(`/api/v1/tech/incidents?active_only=${activeOnly}`);
 }
 
 export function validateScan(scanId: number, payload: ScanValidatePayload): Promise<void> {

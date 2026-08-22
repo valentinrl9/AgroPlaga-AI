@@ -8,6 +8,7 @@ from app.models.scan import Scan
 from app.models.user import User
 from app.schemas.scan import PilotFarmerItem, ScanValidateRequest, TechScanQueueItem
 from app.services.outbreak_event_service import sync_scan_validation_to_outbreak
+from app.services.scan_validation import effective_plague
 from app.services.tech_notification_service import mark_read_for_scan
 
 
@@ -29,6 +30,8 @@ def get_pending_scans(db: Session) -> list[TechScanQueueItem]:
             id=scan.id,
             crop=scan.crop,
             plague=scan.plague,
+            farmer_plague=scan.farmer_plague,
+            effective_plague=effective_plague(scan),
             confidence=scan.confidence,
             severity=scan.severity,
             farm_id=scan.farm_id,

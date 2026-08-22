@@ -99,7 +99,7 @@
 - [x] `NEXO_CONTEXT.md` + `portfolio_nexoagro.md`
 - [x] `ROADMAP_NEXO.md` (este documento)
 - [x] Archivar roadmaps AgroPlaga
-- [ ] Actualizar `GUIA_ROLES.md` con módulos Nexo
+- [x] Actualizar `GUIA_ROLES.md` con módulos Nexo V2
 
 ### Validación local (checklist)
 - [x] Login → 3 pestañas visibles

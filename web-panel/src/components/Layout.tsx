@@ -86,6 +86,7 @@ export default function Layout() {
           {pendingScans > 0 ? <span className="nav-badge">{pendingScans}</span> : null}
         </NavLink>
         <NavLink to="/siex">Cuaderno SIEX</NavLink>
+        <NavLink to="/incidencias">Incidencias</NavLink>
         <NavLink to="/agricultores">Agricultores</NavLink>
       </nav>
       <main className="content">

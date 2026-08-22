@@ -87,3 +87,8 @@ class IncidentRead(BaseModel):
     closed_at: datetime | None = None
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class TechIncidentRead(IncidentRead):
+    farmer_name: str
+    farmer_email: str

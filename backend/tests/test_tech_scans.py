@@ -295,6 +295,43 @@ def _first_zone_id(client, token: str) -> int:
     return response.json()[0]["id"]
 
 
+def test_pending_scans_include_farmer_plague(client, unique_email):
+    farmer_token = register_and_login(client, unique_email)
+    farmer_headers = auth_headers(farmer_token)
+    admin_headers = _admin_headers(client)
+
+    files = {"image": ("leaf.jpg", _jpeg_bytes(), "image/jpeg")}
+    data = {
+        "crop": "Tomate",
+        "plague": "trips",
+        "severity": "Moderado",
+        "confidence": "0.72",
+        "share_with_tech": "true",
+    }
+    created = client.post(
+        "/api/v1/scans/with-image",
+        headers=farmer_headers,
+        data=data,
+        files=files,
+    )
+    assert created.status_code == 201
+    scan_id = created.json()["id"]
+
+    patched = client.patch(
+        f"/api/v1/scans/{scan_id}/farmer-plague",
+        headers=farmer_headers,
+        json={"farmer_plague": "tuta absoluta"},
+    )
+    assert patched.status_code == 200
+
+    pending = client.get("/api/v1/tech/pending-scans", headers=admin_headers)
+    assert pending.status_code == 200
+    item = next(row for row in pending.json() if row["id"] == scan_id)
+    assert item["plague"] == "trips"
+    assert item["farmer_plague"] == "tuta absoluta"
+    assert item["effective_plague"] == "tuta absoluta"
+
+
 def test_pilot_farmers_list(client, unique_email):
     register_and_login(client, unique_email)
     admin_headers = _admin_headers(client)

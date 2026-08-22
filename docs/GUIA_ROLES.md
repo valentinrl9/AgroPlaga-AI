@@ -1,6 +1,6 @@
-# AgroPlaga AI — Guía por roles (piloto)
+# NEXO Agro — Guía por roles (piloto V2)
 
-**Versión:** v1.6-core · **URL producción:** `https://agroplaga-ai.farm`  
+**Versión:** NEXO Field Pro 2.0 · **URL producción:** `https://agroplaga-ai.farm`  
 **Panel B2B:** `https://agroplaga-ai.farm/panel/`
 
 Esta guía explica **qué puede hacer cada rol** en el piloto: agricultor, técnico/perito y cooperativa.
@@ -12,10 +12,10 @@ Esta guía explica **qué puede hacer cada rol** en el piloto: agricultor, técn
 | Rol | Código piloto | App móvil (APK) | Panel web |
 |-----|---------------|-----------------|-----------|
 | **Agricultor** | `PLG-PILOT-F01` … `F07` | ✅ Uso principal | ❌ No accede |
-| **Técnico / perito** | `PLG-PILOT-T01`, `T02` | ✅ Opcional (escaneo + validación mapa) | ✅ **Uso principal** |
+| **Técnico / perito** | `PLG-PILOT-T01`, `T02` | ✅ Opcional (validación escaneos + mapa) | ✅ **Uso principal** |
 | **Cooperativa** | `PLG-PILOT-C01` | ✅ Opcional | ✅ **Uso principal** |
 
-> Los tres roles se registran con **código de invitación + email + contraseña**. La APK ya apunta al servidor del piloto.
+> Registro con **código de invitación + email + contraseña**. Al registrarse, el agricultor **acepta el mapa comunitario anónimo** (obligatorio). La APK apunta a `https://agroplaga-ai.farm`.
 
 ---
 
@@ -32,13 +32,19 @@ Esta guía explica **qué puede hacer cada rol** en el piloto: agricultor, técn
 
 # Rol 1 — Agricultor
 
-**Objetivo:** escanear plagas en el invernadero, guardar orientación y, si quiere, colaborar con el mapa comarcal.
+**Objetivo:** escanear plagas, gestionar fincas e incidencias fitosanitarias, colaborar con el mapa comunitario y (opcional) cuaderno SIEX.
 
 **Herramienta:** app móvil (APK). No usa el panel web.
 
+## Primer acceso (V2)
+
+1. **Registro** con código piloto + aceptación del **mapa comunitario anónimo**.
+2. **Onboarding obligatorio:** crear al menos una finca/invernadero (municipio Almería, cultivo, fase fenológica, nave/sector, superficie).
+3. **SIGPAC recinto:** opcional al alta; **obligatorio solo** si usa el cuaderno SIEX (se indica en «Mis fincas»).
+
 ## Inicio
 
-Pantalla principal con acceso a todas las funciones del agricultor. Mensaje de bienvenida con tu nombre.
+Pantalla principal Field con acceso a escaneo, historial, mapa, incidencias, fincas, clima (si licencia) y SIEX (si licencia/preview).
 
 ---
 
@@ -51,22 +57,24 @@ Pantalla principal con acceso a todas las funciones del agricultor. Mensaje de b
 | 1. Foto | *Tomar foto* o *Elegir de galería*. Enfocar una hoja afectada, buena luz, ~20 cm. |
 | 2. Cultivo | Selector: tomate, pimiento, calabacín, etc. |
 | 3. Análisis | La IA local (TFLite) propone **plaga**, **confianza** y **severidad sugerida**. Funciona offline. |
-| 4. Ajustes | Puedes cambiar severidad (Leve / Moderado / Alto) y vincular una **finca** (opcional). |
-| 5. Compartir con técnico | Checkbox **«Compartir foto con mi técnico/cooperativa»** (opt-in). Si lo marcas, la foto y el diagnóstico van a la cola del perito en el panel. **Sin marcar, el técnico no ve nada.** |
-| 6. Guardar | *Guardar diagnóstico* → se guarda en tu historial en el servidor. |
+| 4. Ajustes | Puedes cambiar severidad, vincular **finca** y **corregir la plaga** si no coincide con lo que ves en campo. |
+| 5. Compartir con técnico | Checkbox **«Compartir foto con mi técnico/cooperativa»** (opt-in). Sin marcar, el perito no ve la foto. |
+| 6. Guardar | *Guardar diagnóstico* → historial en servidor. |
 
-**Importante:** la IA es **orientativa**, no un diagnóstico oficial. Si dudas, consulta a tu técnico.
+**Importante:** la IA es **orientativa**. Si corriges la plaga, esa corrección se usa en tratamientos e incidencias; el perito la verá en su cola de validación.
 
 ---
 
 ## Resultado del escaneo
 
-Tras guardar, ves:
+Tras guardar:
 
-- **Diagnóstico:** plaga, confianza, severidad.
-- **¿Te resultó útil?** — *Sí, me orienta* / *No, no me fío* (no se pide corregir la plaga).
-- **Recomendaciones personalizadas** según plaga, cultivo y severidad.
-- **Contribuir al mapa** — botón para añadir el foco al mapa comunitario (ver abajo).
+- **Diagnóstico** y selector para **corregir plaga** (si difiere de la IA).
+- **Abrir incidencia** — inicia el CRM fitosanitario y publica foco anónimo en el mapa del municipio (sin volver a preguntar consentimiento).
+- **Registrar tratamiento** / recomendaciones MAPA.
+- **¿Te resultó útil?** — feedback.
+
+Ya **no** hace falta pulsar «Contribuir al mapa» por separado: las **incidencias abiertas** alimentan el mapa comunitario.
 
 ---
 
@@ -98,11 +106,21 @@ Sirve para ver patrones en tus propias parcelas, no datos de otros agricultores.
 
 **Ruta:** *Mis fincas*
 
-- Crear fincas con **nombre**, **cultivo** y tipo.
-- Eliminar fincas.
-- Al escanear, puedes **vincular** un escaneo a una finca para la analítica.
+- Listado de fincas registradas (tocar para editar cultivo, fase y **SIGPAC recinto**).
+- Botón **«Añadir finca»** para nuevas unidades.
+- **SIGPAC:** manual, consulta el visor SIGPAC del MAPA; necesario para cuaderno SIEX completo.
 
-No expone la ubicación exacta de la parcela en el mapa público.
+---
+
+## Incidencias (CRM fitosanitario)
+
+**Ruta:** *Incidencias*
+
+Ciclo en 6 etapas: Detección → Diagnóstico → Prescripción MAPA → Tratamiento → Evaluación (foto comparativa) → Cierre.
+
+- Al **abrir incidencia** desde un escaneo relevante, el foco entra en el mapa comunitario del municipio.
+- Al **cerrar** (resuelto / cosecha perdida), el foco **sale del mapa**.
+- Tratamientos generan carencia y, si aplica, entrada SIEX borrador.
 
 ---
 
@@ -110,54 +128,24 @@ No expone la ubicación exacta de la parcela en el mapa público.
 
 **Ruta:** *Mapa de focos*
 
-Mapa comarcal con **focos agregados por zona SIGPAC** (municipio/recinto, no parcela concreta):
-
-- Calor según intensidad de reportes.
-- Qué plagas se están viendo en la comarca.
-- Eventos validados por técnicos tienen más peso en el mapa.
+- **Freemium:** vista **24 h** (tiempo real).
+- **Premium (`has_field_premium`):** histórico **7 y 30 días**.
+- Focos de **incidencias activas** agregados por municipio SIGPAC (sin parcela ni nombre).
 
 ---
 
-## Contribuir al mapa (desde un escaneo)
+## NEXO Climate / SIEX (si licencia o preview piloto)
 
-**Ruta:** *Resultado del escaneo* → *Contribuir al mapa*
-
-| Qué haces | Qué pasa |
-|-----------|----------|
-| Eliges tu **municipio SIGPAC** | El foco se publica **anonimizado** en el mapa comunitario. |
-| Confirmas plaga y severidad | No se sube tu nombre ni la foto al mapa público. |
-| Contribuyes | Suma al heatmap y puede generar alertas para la zona. |
-
-Puedes contribuir **sin** haber marcado «compartir con técnico»; son dos cosas distintas:
-
-- **Mapa** = anonimizado, sin foto.
-- **Compartir con técnico** = identificado, con foto, solo para el panel B2B.
-
----
-
-## Alertas
-
-**Ruta:** *Alertas*
-
-Lista de **alertas tempranas** por zona: brotes recientes, picos de severidad, etc. Te ayudan a saber qué se mueve en la comarca (no alertas de tu parcela exacta).
-
----
-
-## Comunidad
-
-**Ruta:** *Comunidad*
-
-- Tu **perfil colaborativo**: cuántas contribuciones llevas.
-- **Insignias** por participación (gamificación ligera).
-- Ranking comarcal agregado (sin identificar parcelas).
+- **Climate:** estación meteorológica según finca/municipio; alertas, riesgo, informe PDF.
+- **SIEX:** cuaderno borrador automático al registrar tratamientos. Requiere **SIGPAC del recinto** en la finca; hasta entonces las entradas quedan «Pendiente SIGPAC».
 
 ---
 
 ## Lo que el agricultor NO hace
 
 - No accede al panel web B2B.
-- No valida escaneos de otros.
-- No corrige plagas en nombre del sistema (eso lo hace el técnico en el panel).
+- No valida escaneos de otros agricultores.
+- No valida entradas SIEX de cooperativa (eso es rol perito en panel, modo enterprise).
 
 ---
 
@@ -206,21 +194,39 @@ Cola de escaneos que el agricultor marcó **«Compartir foto con mi técnico»**
 Por cada escaneo ves:
 
 - **Foto** de la hoja.
-- **Plaga IA**, confianza, cultivo, severidad.
-- **Agricultor** (nombre y email) y finca si la vinculó.
-- **Fecha** del escaneo.
+- **Plaga efectiva** (prioridad: corrección perito → corrección agricultor → IA).
+- Si el agricultor **corrigió la plaga**, verás **IA sugirió … · Agricultor indica …**
+- Cultivo, severidad, agricultor, finca, fecha.
 
 **Acciones:**
 
 | Botón | Efecto |
 |-------|--------|
-| **Confirmar** | El diagnóstico IA es correcto. |
+| **Confirmar** | Validas la plaga efectiva mostrada (IA o corrección del agricultor). |
 | **Corregir** | Eliges la plaga correcta en el desplegable + opcional notas. |
-| **Descartar** | El escaneo no es válido (foto mala, no es plaga, etc.). |
+| **Descartar** | Escaneo no válido (foto mala, no es plaga, etc.). |
 
-Puedes añadir **notas** en todos los casos.
+---
 
-Este es el flujo profesional principal del piloto B2B: **ver foto + criterio técnico + trazabilidad**.
+## Incidencias activas (CRM) — solo lectura
+
+**Ruta panel:** *Incidencias*
+
+Listado de incidencias fitosanitarias que gestionan los agricultores en la app:
+
+- Etapa actual (detección … evaluación).
+- Agricultor, finca, municipio, plaga, cultivo, severidad.
+- Prescripción/tratamiento si ya existe.
+
+**No editable desde panel** — supervisión y priorización de llamadas. Las incidencias cerradas pueden ocultarse con el filtro «Solo abiertas».
+
+---
+
+## Cuaderno SIEX
+
+**Ruta panel:** *Cuaderno SIEX*
+
+Cola de entradas en **`pendiente_validacion`** (modo cooperativa enterprise). Las entradas **`pendiente_sigpac`** las resuelve el agricultor añadiendo SIGPAC en «Mis fincas»; no aparecen aquí.
 
 ---
 
@@ -272,16 +278,19 @@ Lista de **contribuciones anónimas al mapa** pendientes de validar (plaga + zon
 Tiene **las mismas pantallas** que el técnico:
 
 1. **Dashboard** — panorama comarcal, mapa, alertas, CSV.
-2. **Validar escaneos** — cola con foto de agricultores que optaron por compartir.
-3. **Agricultores** — semáforo del piloto.
+2. **Validar escaneos** — cola con foto (plaga IA + corrección agricultor si aplica).
+3. **Incidencias** — seguimiento CRM de solo lectura.
+4. **Cuaderno SIEX** — validación enterprise (cuando aplique licencia).
+5. **Agricultores** — semáforo del piloto.
 
 **Enfoque recomendado para cooperativa:**
 
 | Uso | Pantalla |
 |-----|----------|
 | «¿Qué pasa en la comarca?» | Dashboard + mapa + alertas |
-| «¿Qué me mandan mis agricultores?» | Validar escaneos + Agricultores |
-| Informe interno | Exportar CSV |
+| «¿Qué me mandan mis agricultores?» | Validar escaneos + Incidencias + Agricultores |
+| Cuaderno de campo cooperativa | SIEX (enterprise) |
+| Informe interno | Exportar CSV / export SIEX JSON |
 
 ---
 
@@ -317,14 +326,19 @@ No es un rol de campo, pero existe para ti:
 ```
 AGRICULTOR                          TÉCNICO / COOPERATIVA
     │                                        │
+    ├─ Onboarding + fincas (SIGPAC manual)   │
     ├─ Escanea (offline IA)                  │
+    ├─ Corrige plaga (opcional)              │
     ├─ Guarda diagnóstico                    │
     │                                        │
-    ├─ [opt-in] Comparte foto ──────────────►│ Validar escaneos (panel)
-    │                                        │  Confirmar / Corregir / Descartar
+    ├─ [opt-in] Comparte foto ──────────────►│ Validar escaneos (panel/app)
+    │         (ve plaga efectiva)            │  Confirmar / Corregir / Descartar
     │                                        │
-    └─ [opcional] Contribuye al mapa ───────►│ Dashboard + mapa (anonimizado)
-         (sin foto, sin nombre)              │ Validar eventos mapa (app, opcional)
+    ├─ Abre incidencia CRM ─────────────────►│ Incidencias (panel, lectura)
+    │    → mapa anónimo municipio            │  Dashboard + mapa
+    │                                        │
+    └─ Tratamiento → SIEX borrador ────────►│ SIEX (enterprise, validación)
+         (SIGPAC en finca si cuaderno)      │
 ```
 
 ---
@@ -332,13 +346,13 @@ AGRICULTOR                          TÉCNICO / COOPERATIVA
 # Mensajes clave para explicar en campo
 
 **Al agricultor:**  
-*«La app te orienta con la cámara. Si quieres que tu técnico vea la foto, marca la casilla al guardar. El mapa de la comarca no enseña tu nombre ni tu parcela.»*
+*«La app te orienta con la cámara. Puedes corregir la plaga si no cuadra. Si quieres que tu técnico vea la foto, marca la casilla al guardar. Al abrir una incidencia, tu municipio entra en el mapa sin enseñar tu parcela.»*
 
 **Al técnico:**  
-*«El panel te muestra las fotos que te comparten. Ahí confirmas o corriges. El mapa te da el panorama de zona, pero sin foto.»*
+*«El panel te muestra las fotos compartidas con la plaga que usa el agricultor (no solo la IA). Ahí confirmas o corriges. Incidencias te deja ver en qué etapa va cada caso.»*
 
 **A la cooperativa:**  
-*«El dashboard es la foto de la comarca; la cola de escaneos es el seguimiento fino de quien confía en vosotros.»*
+*«El dashboard es la foto de la comarca; la cola de escaneos es el seguimiento fino; Incidencias y SIEX completan el cuaderno de campo.»*
 
 ---
 

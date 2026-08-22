@@ -99,10 +99,17 @@ export default function ValidationPage() {
                 )}
               </div>
               <div className="validation-body">
-                <h3>{scan.plague}</h3>
-                <p>
-                  <strong>Confianza IA:</strong> {(scan.confidence * 100).toFixed(0)}%
-                </p>
+                <h3>{scan.effective_plague}</h3>
+                {scan.farmer_plague && scan.farmer_plague.toLowerCase() !== scan.plague.toLowerCase() ? (
+                  <p className="validation-plague-note">
+                    <strong>IA sugirió:</strong> {scan.plague} ({(scan.confidence * 100).toFixed(0)}%) ·{" "}
+                    <strong>Agricultor indica:</strong> {scan.farmer_plague}
+                  </p>
+                ) : (
+                  <p>
+                    <strong>Confianza IA:</strong> {(scan.confidence * 100).toFixed(0)}%
+                  </p>
+                )}
                 <p>
                   <strong>Cultivo:</strong> {scan.crop} · <strong>Severidad:</strong> {scan.severity}
                 </p>
@@ -128,7 +135,7 @@ export default function ValidationPage() {
                 <label>
                   Plaga corregida (si aplica)
                   <select
-                    value={correctPlague[scan.id] ?? scan.plague}
+                    value={correctPlague[scan.id] ?? scan.effective_plague}
                     onChange={(e) => setCorrectPlague({ ...correctPlague, [scan.id]: e.target.value })}
                   >
                     {PLAGUE_OPTIONS.map((p) => (

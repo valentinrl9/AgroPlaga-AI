@@ -6,6 +6,7 @@ from app.api.deps import get_db
 from app.core.security import require_roles
 from app.models.user import User
 from app.schemas.scan import PilotFarmerItem, TechScanQueueItem
+from app.schemas.pest_incident import TechIncidentRead
 from app.schemas.tech_dashboard import TechDashboardResponse
 from app.schemas.tech_notification import TechNotificationRead, TechNotificationUnreadCount
 from app.services.tech_dashboard_service import (
@@ -16,6 +17,7 @@ from app.services.tech_dashboard_service import (
     get_zone_comparison,
 )
 from app.services.tech_scan_service import get_pending_scans, get_pilot_farmers
+from app.services.pest_incident_service import list_incidents_for_tech
 from app.services import tech_notification_service as notif_svc
 
 router = APIRouter()
@@ -65,6 +67,15 @@ def list_pilot_farmers(
     db: Session = Depends(get_db),
 ):
     return get_pilot_farmers(db)
+
+
+@router.get("/incidents", response_model=list[TechIncidentRead])
+def list_tech_incidents(
+    active_only: bool = Query(default=True),
+    _current_user: User = Depends(TECH_OR_ADMIN),
+    db: Session = Depends(get_db),
+):
+    return list_incidents_for_tech(db, active_only=active_only)
 
 
 @router.get("/notifications", response_model=list[TechNotificationRead])

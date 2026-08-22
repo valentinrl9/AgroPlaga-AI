@@ -32,15 +32,19 @@ class _TechScanValidationScreenState extends State<TechScanValidationScreen> {
 
   List<String> _plagueOptionsFor(Map<String, dynamic> scan) {
     final options = List<String>.from(PlagueCatalog.labels);
-    final raw = scan["plague"]?.toString().trim().toLowerCase();
-    if (raw != null && raw.isNotEmpty && !options.any((o) => o.toLowerCase() == raw)) {
-      options.insert(0, raw);
+    for (final key in ["plague", "farmer_plague", "effective_plague"]) {
+      final raw = scan[key]?.toString().trim().toLowerCase();
+      if (raw != null && raw.isNotEmpty && !options.any((o) => o.toLowerCase() == raw)) {
+        options.insert(0, raw);
+      }
     }
     return options;
   }
 
   String? _selectedPlague(int id, Map<String, dynamic> scan, List<String> options) {
-    final preferred = (_correctPlague[id] ?? scan["plague"]?.toString())?.trim().toLowerCase();
+    final preferred = (_correctPlague[id] ?? scan["effective_plague"] ?? scan["plague"]?.toString())
+        ?.trim()
+        .toLowerCase();
     if (preferred == null || preferred.isEmpty) return null;
     for (final option in options) {
       if (option.toLowerCase() == preferred) return option;
@@ -125,6 +129,14 @@ class _TechScanValidationScreenState extends State<TechScanValidationScreen> {
                         final busy = _busyId == id;
                         final plagueOptions = _plagueOptionsFor(scan);
                         final selectedPlague = _selectedPlague(id, scan, plagueOptions);
+                        final effectivePlague =
+                            scan["effective_plague"]?.toString() ?? scan["plague"]?.toString() ?? "—";
+                        final aiPlague = scan["plague"]?.toString();
+                        final farmerPlague = scan["farmer_plague"]?.toString();
+                        final farmerDiffers = farmerPlague != null &&
+                            farmerPlague.isNotEmpty &&
+                            aiPlague != null &&
+                            farmerPlague.toLowerCase() != aiPlague.toLowerCase();
                         return Card(
                           margin: const EdgeInsets.only(bottom: 16),
                           child: Column(
@@ -137,14 +149,27 @@ class _TechScanValidationScreenState extends State<TechScanValidationScreen> {
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text(
-                                      "${scan["plague"]} · ${scan["crop"]}",
+                                      "$effectivePlague · ${scan["crop"]}",
                                       style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                                     ),
+                                    if (farmerDiffers)
+                                      Padding(
+                                        padding: const EdgeInsets.only(top: 6),
+                                        child: Text(
+                                          "IA: $aiPlague · Agricultor: $farmerPlague",
+                                          style: const TextStyle(
+                                            color: NexoColors.warningAmber,
+                                            fontSize: 13,
+                                          ),
+                                        ),
+                                      ),
                                     Text(
                                       "${scan["farmer_name"]} · ${scan["farm_name"] ?? "Sin finca"}",
                                       style: const TextStyle(color: NexoColors.textSecondary),
                                     ),
-                                    Text("Confianza ${((scan["confidence"] as num) * 100).toStringAsFixed(0)}%"),
+                                    Text(
+                                      "Confianza ${((scan["confidence"] as num) * 100).toStringAsFixed(0)}%",
+                                    ),
                                     const SizedBox(height: 10),
                                     DropdownButtonFormField<String>(
                                       value: selectedPlague,
@@ -200,4 +225,4 @@ class _TechScanValidationScreenState extends State<TechScanValidationScreen> {
     );
   }
 }
-
+
