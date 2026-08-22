@@ -143,18 +143,20 @@ def test_siex_access_endpoint(client, unique_email):
     assert body["preview_open"] is True
 
 
-def test_treatment_without_sigpac_skips_siex_entry(client, unique_email):
+def test_treatment_without_sigpac_creates_pending_sigpac_entry(client, unique_email):
     token = register_and_login(client, unique_email)
     farm = _create_farm(client, token, sigpac=None)
     scan_id = _create_scan(client, token, farm_id=farm["id"])
 
     result = _create_treatment(client, token, farm_id=farm["id"], scan_id=scan_id)
-    assert result["siex_entry_id"] is None
+    assert result["siex_entry_id"] is not None
     assert "SIGPAC" in (result["siex_message"] or "")
 
     entries = client.get("/api/v1/siex/entries", headers=auth_headers(token))
     assert entries.status_code == 200
-    assert entries.json() == []
+    data = entries.json()
+    assert len(data) == 1
+    assert data[0]["status"] == "pendiente_sigpac"
 
 
 def test_treatment_with_sigpac_compiles_siex_entry(client, unique_email):
@@ -215,7 +217,30 @@ def test_enterprise_treatment_pending_tech_validation(client, unique_email):
     assert body["entries"][0]["sigpac"] == "04079A00100001"
 
 
-def test_invalid_sigpac_rejected_on_farm_create(client, unique_email):
+def test_incident_apply_treatment_creates_siex_entry(client, unique_email):
+    from tests.test_incidents import (
+        _advance_to_diagnosis,
+        _apply_treatment,
+        _open_incident,
+        _prescribe,
+        _setup_farmer_with_farm,
+        _create_scan,
+    )
+
+    _, headers, farm_id = _setup_farmer_with_farm(client, unique_email)
+    scan = _create_scan(client, headers, farm_id)
+    incident_id = _open_incident(client, headers, scan["id"])["id"]
+    _advance_to_diagnosis(client, headers, incident_id)
+    _prescribe(client, headers, incident_id)
+    treated = _apply_treatment(client, headers, incident_id)
+
+    assert treated["stage"] == "treatment"
+    assert treated.get("siex_entry_id") is not None
+
+    entries = client.get("/api/v1/siex/entries", headers=headers)
+    assert entries.status_code == 200
+    assert len(entries.json()) >= 1
+
     token = register_and_login(client, unique_email)
     zone_id = _first_zone_id(client, token)
     response = client.post(

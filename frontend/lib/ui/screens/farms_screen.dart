@@ -123,6 +123,7 @@ class _FarmsScreenState extends State<FarmsScreen> {
 
   Future<void> _editFarm(Farm farm) async {
     final cropController = TextEditingController(text: farm.crop);
+    final sigpacController = TextEditingController(text: farm.sigpacCode ?? "");
     String? stage = farm.cropStage;
     CropCatalogEntry? cropMatch;
     for (final crop in _crops) {
@@ -156,6 +157,15 @@ class _FarmsScreenState extends State<FarmsScreen> {
                       .toList(),
                   onChanged: (v) => stage = v,
                 ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: sigpacController,
+                  decoration: const InputDecoration(
+                    labelText: "SIGPAC recinto",
+                    hintText: "Ej. 04079A00100001",
+                    helperText: "Obligatorio para cuaderno SIEX · visor SIGPAC (MAPA)",
+                  ),
+                ),
               ],
             ),
           ),
@@ -167,14 +177,29 @@ class _FarmsScreenState extends State<FarmsScreen> {
       },
     );
 
-    if (saved != true) return;
+    if (saved != true) {
+      cropController.dispose();
+      sigpacController.dispose();
+      return;
+    }
 
-    await _repository.updateFarm(
-      farm.id,
-      crop: cropController.text.trim(),
-      cropStage: stage,
-    );
-    cropController.dispose();
+    try {
+      await _repository.updateFarm(
+        farm.id,
+        crop: cropController.text.trim(),
+        cropStage: stage,
+        sigpacCode: sigpacController.text.trim(),
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text("No se pudo guardar: $e")),
+        );
+      }
+    } finally {
+      cropController.dispose();
+      sigpacController.dispose();
+    }
     _reload();
   }
 
@@ -184,7 +209,7 @@ class _FarmsScreenState extends State<FarmsScreen> {
       children: [
         const Text(
           "Registra fincas, naves y sectores con municipio, cultivo y fase. "
-          "SIGPAC recinto es opcional (obligatorio para SIEX cooperativa).",
+          "El SIGPAC del recinto solo hace falta si usas el cuaderno SIEX.",
           style: TextStyle(color: NexoColors.textSecondary, fontSize: 13),
         ),
         const SizedBox(height: 16),
@@ -284,7 +309,9 @@ class _FarmsScreenState extends State<FarmsScreen> {
         TextField(
           controller: _sigpacController,
           decoration: const InputDecoration(
-            labelText: "SIGPAC recinto (opcional)",
+            labelText: "SIGPAC recinto (solo SIEX)",
+            hintText: "Ej. 04079A00100001",
+            helperText: "Opcional ahora · visor SIGPAC del MAPA",
             border: OutlineInputBorder(),
           ),
         ),
@@ -345,12 +372,25 @@ class _FarmsScreenState extends State<FarmsScreen> {
                       return Card(
                         child: ListTile(
                           title: Text(farm.name),
-                          subtitle: Text(
-                            "${farm.typeLabel} · ${farm.crop}\n"
-                            "Municipio: ${_zoneLabel(farm.zoneId)}\n"
-                            "Nave/sector: ${farm.nave ?? "—"} / ${farm.sector ?? "—"}\n"
-                            "Fase: ${farm.cropStage ?? "—"} · Variante: ${farm.cropVariant ?? "—"}\n"
-                            "SIGPAC: ${farm.sigpacCode ?? "—"} · Sup.: ${farm.surfaceM2?.toStringAsFixed(0) ?? "—"} m²",
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                "${farm.typeLabel} · ${farm.crop}\n"
+                                "Municipio: ${_zoneLabel(farm.zoneId)}\n"
+                                "Nave/sector: ${farm.nave ?? "—"} / ${farm.sector ?? "—"}\n"
+                                "Fase: ${farm.cropStage ?? "—"} · Variante: ${farm.cropVariant ?? "—"}\n"
+                                "SIGPAC: ${farm.sigpacCode ?? "—"} · Sup.: ${farm.surfaceM2?.toStringAsFixed(0) ?? "—"} m²",
+                              ),
+                              if (!farm.hasSigpac)
+                                const Padding(
+                                  padding: EdgeInsets.only(top: 6),
+                                  child: Text(
+                                    "Sin SIGPAC — cuaderno SIEX incompleto",
+                                    style: TextStyle(color: NexoColors.warningAmber, fontSize: 12),
+                                  ),
+                                ),
+                            ],
                           ),
                           isThreeLine: false,
                           onTap: () => _editFarm(farm),

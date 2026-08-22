@@ -1,9 +1,11 @@
 import "package:flutter/material.dart";
 
 import "../../core/nexo_colors.dart";
+import "../../core/routes.dart";
 import "../../core/session.dart";
 import "../../data/repositories/farm_repository.dart";
 import "../../data/repositories/scan_repository.dart";
+import "../../data/repositories/siex_repository.dart";
 import "../../data/repositories/treatment_repository.dart";
 import "../../models/farm.dart";
 import "../../models/scan.dart";
@@ -11,6 +13,7 @@ import "../layout/mobile_layout.dart";
 import "../widgets/farmer_plague_selector.dart";
 import "../widgets/primary_button.dart";
 import "../widgets/scan_validation_banner.dart";
+import "../widgets/sigpac_siex_banner.dart";
 
 class RegisterTreatmentScreen extends StatefulWidget {
   final Scan? scan;
@@ -25,8 +28,10 @@ class _RegisterTreatmentScreenState extends State<RegisterTreatmentScreen> {
   final _repo = TreatmentRepository();
   final _farmRepo = FarmRepository();
   final _scanRepo = ScanRepository();
+  final _siexRepo = SiexRepository();
   List<Farm> _farms = [];
   int? _selectedFarmId;
+  bool _hasSiexAccess = false;
   Scan? _scan;
   String? _selectedPlague;
   final _productController = TextEditingController();
@@ -54,6 +59,7 @@ class _RegisterTreatmentScreenState extends State<RegisterTreatmentScreen> {
   Future<void> _loadData() async {
     try {
       _isEnterprise = await Session.hasSiexEnterprise;
+      _hasSiexAccess = await _siexRepo.hasAccess();
       if (widget.scan != null) {
         _scan = await _scanRepo.fetchScan(widget.scan!.id);
         _selectedPlague = _scan?.effectivePlague;
@@ -200,6 +206,14 @@ class _RegisterTreatmentScreenState extends State<RegisterTreatmentScreen> {
     return false;
   }
 
+  Farm? get _selectedFarm {
+    if (_selectedFarmId == null) return null;
+    for (final farm in _farms) {
+      if (farm.id == _selectedFarmId) return farm;
+    }
+    return null;
+  }
+
   Future<void> _save() async {
     if (_scan?.isRejectedByTech == true) return;
     if (_scan != null && _scan!.isUnverified && !_ackUnverified) {
@@ -224,8 +238,22 @@ class _RegisterTreatmentScreenState extends State<RegisterTreatmentScreen> {
         if (_scan != null && _scan!.isUnverified) "ack_unverified": true,
       });
       if (!mounted) return;
+      final farm = _selectedFarm;
+      final missingSigpac = _hasSiexAccess && farm != null && !farm.hasSigpac;
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Tratamiento registrado correctamente.")),
+        SnackBar(
+          content: Text(
+            missingSigpac
+                ? "Tratamiento registrado. Añade el SIGPAC de «${farm.name}» en Mis fincas para completar SIEX."
+                : "Tratamiento registrado correctamente.",
+          ),
+          action: missingSigpac
+              ? SnackBarAction(
+                  label: "Mis fincas",
+                  onPressed: () => Navigator.pushNamed(context, Routes.farms),
+                )
+              : null,
+        ),
       );
       Navigator.pop(context, true);
     } catch (e) {
@@ -294,10 +322,14 @@ class _RegisterTreatmentScreenState extends State<RegisterTreatmentScreen> {
                     ),
                   ],
                   const SizedBox(height: 16),
+                  if (_hasSiexAccess && _selectedFarm != null && !_selectedFarm!.hasSigpac) ...[
+                    const SigpacSiexBanner(compact: true),
+                    const SizedBox(height: 12),
+                  ],
                   if (_farms.isNotEmpty)
                     DropdownButtonFormField<int>(
                       value: _farms.any((f) => f.id == _selectedFarmId) ? _selectedFarmId : null,
-                      decoration: const InputDecoration(labelText: "Finca / invernadero (SIGPAC)"),
+                      decoration: const InputDecoration(labelText: "Finca / invernadero"),
                       items: _farms
                           .map(
                             (f) => DropdownMenuItem(
@@ -313,7 +345,7 @@ class _RegisterTreatmentScreenState extends State<RegisterTreatmentScreen> {
                     ),
                   if (_farms.isEmpty)
                     const Text(
-                      "Añade una finca con SIGPAC en «Mis fincas» para generar entrada SIEX.",
+                      "Añade una finca en «Mis fincas». El SIGPAC del recinto solo hace falta para el cuaderno SIEX.",
                       style: TextStyle(color: NexoColors.warningAmber, fontSize: 12),
                     ),
                   const SizedBox(height: 12),

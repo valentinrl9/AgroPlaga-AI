@@ -315,8 +315,9 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
                   TextField(
                     controller: _sigpacController,
                     decoration: const InputDecoration(
-                      labelText: "SIGPAC recinto (opcional)",
-                      hintText: "Obligatorio solo para SIEX cooperativa",
+                      labelText: "SIGPAC recinto (solo SIEX)",
+                      hintText: "Ej. 04079A00100001",
+                      helperText: "Opcional ahora · obligatorio solo para cuaderno SIEX",
                       border: OutlineInputBorder(),
                     ),
                   ),

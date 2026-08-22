@@ -80,6 +80,8 @@ class IncidentRead(BaseModel):
     farm_surface_m2: float | None = None
     treatment: IncidentTreatmentSummary | None = None
     evaluation_scan_id: int | None = None
+    siex_entry_id: int | None = None
+    siex_message: str | None = None
     created_at: datetime
     updated_at: datetime
     closed_at: datetime | None = None

@@ -47,6 +47,8 @@ class PestIncident {
   final double? farmSurfaceM2;
   final IncidentTreatmentSummary? treatment;
   final int? evaluationScanId;
+  final int? siexEntryId;
+  final String? siexMessage;
   final DateTime createdAt;
   final DateTime updatedAt;
   final DateTime? closedAt;
@@ -105,6 +107,8 @@ class PestIncident {
           ? IncidentTreatmentSummary.fromJson(Map<String, dynamic>.from(json["treatment"] as Map))
           : null,
       evaluationScanId: json["evaluation_scan_id"] as int?,
+      siexEntryId: json["siex_entry_id"] as int?,
+      siexMessage: json["siex_message"] as String?,
       createdAt: DateTime.parse(json["created_at"] as String),
       updatedAt: DateTime.parse(json["updated_at"] as String),
       closedAt: json["closed_at"] != null ? DateTime.parse(json["closed_at"] as String) : null,

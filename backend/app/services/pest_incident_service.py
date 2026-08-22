@@ -17,7 +17,7 @@ from app.schemas.pest_incident import (
     IncidentEvaluate,
     IncidentPrescribe,
 )
-from app.schemas.treatment import DoseCalculateRequest, TreatmentCreate
+from app.schemas.treatment import DoseCalculateRequest, TreatmentCreate, TreatmentRead
 from app.services.outbreak_event_service import create_anonymous_event
 from app.services.recommendation_service import _severity_level
 from app.services import treatment_service
@@ -155,17 +155,20 @@ def apply_treatment_to_incident(
     user: User,
     incident: PestIncident,
     payload: IncidentApplyTreatment,
-) -> PestIncident:
+) -> tuple[PestIncident, TreatmentRead]:
     if incident.stage != "prescription":
         raise ValueError("Registra la prescripción antes de aplicar tratamiento")
     if not incident.prescription_product_name or incident.prescription_safety_hours is None:
         raise ValueError("Falta prescripción MAPA en la incidencia")
 
+    scan = db.query(Scan).filter(Scan.id == incident.scan_id).first()
+    farm_id = incident.farm_id or (scan.farm_id if scan else None)
+
     treatment = treatment_service.create_treatment(
         db,
         user,
         TreatmentCreate(
-            farm_id=incident.farm_id,
+            farm_id=farm_id,
             scan_id=incident.scan_id,
             product_name=incident.prescription_product_name,
             registry_number=incident.prescription_registry_number,
@@ -179,12 +182,14 @@ def apply_treatment_to_incident(
 
     row = db.query(FarmTreatment).filter(FarmTreatment.id == treatment.id).first()
     incident.treatment_id = row.id if row else treatment.id
+    if incident.farm_id is None and farm_id is not None:
+        incident.farm_id = farm_id
     incident.stage = "treatment"
     incident.updated_at = _now()
     db.add(incident)
     db.commit()
     db.refresh(incident)
-    return incident
+    return incident, treatment
 
 
 def start_evaluation(db: Session, incident: PestIncident) -> PestIncident:

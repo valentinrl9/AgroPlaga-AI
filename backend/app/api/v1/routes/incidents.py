@@ -34,7 +34,13 @@ from app.services import treatment_service
 router = APIRouter()
 
 
-def _incident_read(db: Session, incident: PestIncident) -> IncidentRead:
+def _incident_read(
+    db: Session,
+    incident: PestIncident,
+    *,
+    siex_entry_id: int | None = None,
+    siex_message: str | None = None,
+) -> IncidentRead:
     zone = db.query(AgriZone).filter(AgriZone.id == incident.zone_id).first()
     farm_name = None
     farm_surface_m2 = None
@@ -80,6 +86,8 @@ def _incident_read(db: Session, incident: PestIncident) -> IncidentRead:
         farm_surface_m2=farm_surface_m2,
         treatment=treatment_summary,
         evaluation_scan_id=incident.evaluation_scan_id,
+        siex_entry_id=siex_entry_id,
+        siex_message=siex_message,
         created_at=incident.created_at,
         updated_at=incident.updated_at,
         closed_at=incident.closed_at,
@@ -172,14 +180,19 @@ def apply_treatment_stage(
 ):
     incident = _get_user_incident(db, current_user, incident_id)
     try:
-        incident = apply_treatment_to_incident(db, current_user, incident, body)
+        incident, treatment = apply_treatment_to_incident(db, current_user, incident, body)
     except ValueError as exc:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
     except HTTPException:
         raise
     except Exception as exc:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
-    return _incident_read(db, incident)
+    return _incident_read(
+        db,
+        incident,
+        siex_entry_id=treatment.siex_entry_id,
+        siex_message=treatment.siex_message,
+    )
 
 
 @router.patch("/{incident_id}/start-evaluation", response_model=IncidentRead)

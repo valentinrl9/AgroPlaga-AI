@@ -12,6 +12,7 @@ from sqlalchemy.orm import Session
 from app.climate import service as climate_service
 from app.models.farm import Farm
 from app.models.farm_treatment import FarmTreatment
+from app.models.pest_incident import PestIncident
 from app.models.scan import Scan
 from app.models.siex_entry import SiexCuadernoEntry
 from app.models.user import User
@@ -57,7 +58,39 @@ def validate_sigpac(code: str) -> str:
     return normalized
 
 
-def _initial_status(user: User) -> str:
+def _resolve_farm(db: Session, user: User, treatment: FarmTreatment, scan: Scan | None) -> Farm | None:
+    if treatment.farm_id is not None:
+        farm = db.query(Farm).filter(Farm.id == treatment.farm_id, Farm.user_id == user.id).first()
+        if farm is not None:
+            return farm
+    if scan is not None and scan.farm_id is not None:
+        return db.query(Farm).filter(Farm.id == scan.farm_id, Farm.user_id == user.id).first()
+    return None
+
+
+def _resolve_incident(db: Session, treatment: FarmTreatment, scan: Scan | None) -> PestIncident | None:
+    if treatment.scan_id is not None:
+        incident = db.query(PestIncident).filter(PestIncident.scan_id == treatment.scan_id).first()
+        if incident is not None:
+            return incident
+    return db.query(PestIncident).filter(PestIncident.treatment_id == treatment.id).first()
+
+
+def _resolve_sigpac_for_entry(farm: Farm) -> tuple[str, str, bool]:
+    """Devuelve (código SIGPAC, nota extra, ¿recinto real?)."""
+    if farm.sigpac_code:
+        return validate_sigpac(farm.sigpac_code), "", True
+    placeholder = f"PEND{farm.id:06d}"
+    note = (
+        f"\n\nNota: falta el código SIGPAC del recinto invernadero en «{farm.name}». "
+        "Añádelo en «Mis fincas» para completar el cuaderno con validez normativa plena."
+    )
+    return placeholder, note, False
+
+
+def _entry_status(user: User, *, has_parcel_sigpac: bool) -> str:
+    if not has_parcel_sigpac:
+        return "pendiente_sigpac"
     if user.has_siex_enterprise:
         return "pendiente_validacion"
     return "registrado"
@@ -169,29 +202,33 @@ def compile_from_treatment(db: Session, user: User, treatment: FarmTreatment) ->
     if existing:
         return existing
 
-    farm: Farm | None = None
-    if treatment.farm_id:
-        farm = db.query(Farm).filter(Farm.id == treatment.farm_id, Farm.user_id == user.id).first()
-
     scan: Scan | None = None
     if treatment.scan_id:
         scan = db.query(Scan).filter(Scan.id == treatment.scan_id).first()
 
-    if farm is None or not farm.sigpac_code:
+    farm = _resolve_farm(db, user, treatment, scan)
+    if farm is None:
         return None
+
+    incident = _resolve_incident(db, treatment, scan)
 
     verified = is_scan_verified(scan)
     if scan and not verified and user.has_siex_enterprise:
         return None
 
-    sigpac = validate_sigpac(farm.sigpac_code)
+    sigpac, sigpac_note, has_parcel_sigpac = _resolve_sigpac_for_entry(farm)
     zone_name = None
     if farm.zone_id:
         zone = db.query(AgriZone).filter(AgriZone.id == farm.zone_id).first()
         zone_name = zone.name if zone else None
 
-    plague = effective_plague(scan, "plaga no indicada")
-    crop = scan.crop if scan else farm.crop
+    plague = incident.plague if incident else effective_plague(scan, "plaga no indicada")
+    crop = incident.crop if incident else (scan.crop if scan else farm.crop)
+    surface_m2 = (
+        incident.prescription_surface_m2
+        if incident and incident.prescription_surface_m2 is not None
+        else farm.surface_m2
+    )
 
     climate_context = _climate_snippet(db, user, plague)
     que, justificacion = _build_texts(
@@ -201,12 +238,14 @@ def compile_from_treatment(db: Session, user: User, treatment: FarmTreatment) ->
         product_name=treatment.product_name,
         registry_number=treatment.registry_number,
         dose_ml=treatment.dose_ml,
-        surface_m2=farm.surface_m2,
+        surface_m2=surface_m2,
         safety_hours=treatment.safety_hours,
         scan=scan,
         climate_context=climate_context,
         verified=verified,
     )
+    if sigpac_note:
+        justificacion += sigpac_note
 
     row = SiexCuadernoEntry(
         user_id=user.id,
@@ -222,13 +261,13 @@ def compile_from_treatment(db: Session, user: User, treatment: FarmTreatment) ->
         registry_number=treatment.registry_number,
         active_substance=treatment.active_substance,
         dose_ml=treatment.dose_ml,
-        surface_m2=farm.surface_m2,
+        surface_m2=surface_m2,
         safety_hours=treatment.safety_hours,
         applied_at=treatment.applied_at,
         que_se_hizo=que,
         justificacion=justificacion,
         climate_context=climate_context,
-        status=_initial_status(user),
+        status=_entry_status(user, has_parcel_sigpac=has_parcel_sigpac),
     )
     db.add(row)
     db.commit()
@@ -237,6 +276,9 @@ def compile_from_treatment(db: Session, user: User, treatment: FarmTreatment) ->
 
 
 def list_my_entries(db: Session, user_id: int) -> list[SiexEntryRead]:
+    user = db.query(User).filter(User.id == user_id).first()
+    if user is not None:
+        _sync_missing_entries(db, user)
     rows = (
         db.query(SiexCuadernoEntry)
         .filter(SiexCuadernoEntry.user_id == user_id)
@@ -244,6 +286,26 @@ def list_my_entries(db: Session, user_id: int) -> list[SiexEntryRead]:
         .all()
     )
     return [_entry_read(db, r) for r in rows]
+
+
+def _sync_missing_entries(db: Session, user: User) -> None:
+    if not user_has_siex_access(user):
+        return
+    treatments = (
+        db.query(FarmTreatment)
+        .filter(FarmTreatment.user_id == user.id)
+        .order_by(FarmTreatment.applied_at.desc())
+        .limit(100)
+        .all()
+    )
+    for treatment in treatments:
+        exists = (
+            db.query(SiexCuadernoEntry)
+            .filter(SiexCuadernoEntry.treatment_id == treatment.id)
+            .first()
+        )
+        if exists is None:
+            compile_from_treatment(db, user, treatment)
 
 
 def list_pending_for_tech(db: Session) -> list[SiexEntryRead]:

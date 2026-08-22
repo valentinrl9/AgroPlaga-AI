@@ -3,13 +3,17 @@ import "package:flutter/material.dart";
 import "package:image_picker/image_picker.dart";
 
 import "../../core/nexo_colors.dart";
+import "../../core/routes.dart";
+import "../../data/repositories/farm_repository.dart";
 import "../../data/repositories/incident_repository.dart";
 import "../../data/repositories/scan_repository.dart";
+import "../../data/repositories/siex_repository.dart";
 import "../../data/repositories/treatment_repository.dart";
 import "../../ml/plaga_classifier.dart";
 import "../../models/pest_incident.dart";
 import "../../models/scan.dart";
 import "../widgets/primary_button.dart";
+import "../widgets/sigpac_siex_banner.dart";
 
 class IncidentDetailScreen extends StatefulWidget {
   final int incidentId;
@@ -24,6 +28,8 @@ class _IncidentDetailScreenState extends State<IncidentDetailScreen> {
   final _incidentRepo = IncidentRepository();
   final _treatmentRepo = TreatmentRepository();
   final _scanRepo = ScanRepository();
+  final _farmRepo = FarmRepository();
+  final _siexRepo = SiexRepository();
   final _imagePicker = ImagePicker();
 
   late Future<PestIncident> _future;
@@ -39,6 +45,8 @@ class _IncidentDetailScreenState extends State<IncidentDetailScreen> {
   bool _loadingScans = false;
   bool _capturingEvalPhoto = false;
   bool _busy = false;
+  bool _hasSiexAccess = false;
+  bool _farmMissingSigpac = false;
   String? _error;
   Map<String, dynamic>? _dosePreview;
   String? _viewStage;
@@ -95,7 +103,23 @@ class _IncidentDetailScreenState extends State<IncidentDetailScreen> {
     final incident = await _incidentRepo.fetchIncident(widget.incidentId);
     if (!mounted) return incident;
 
+    final hasSiex = await _siexRepo.hasAccess();
+    var farmMissingSigpac = false;
+    if (hasSiex && incident.farmId != null) {
+      try {
+        final farms = await _farmRepo.fetchFarms();
+        for (final farm in farms) {
+          if (farm.id == incident.farmId) {
+            farmMissingSigpac = !farm.hasSigpac;
+            break;
+          }
+        }
+      } catch (_) {}
+    }
+
     setState(() {
+      _hasSiexAccess = hasSiex;
+      _farmMissingSigpac = farmMissingSigpac;
       _viewStage ??= incident.stage;
       if (_viewStage != null && _stages.indexOf(_viewStage!) > incident.stageIndex) {
         _viewStage = incident.stage;
@@ -837,6 +861,10 @@ class _IncidentDetailScreenState extends State<IncidentDetailScreen> {
             ],
           ),
           const SizedBox(height: 20),
+          if (_hasSiexAccess && _farmMissingSigpac) ...[
+            const SigpacSiexBanner(compact: true),
+            const SizedBox(height: 12),
+          ],
           _infoCard(
             title: "Aplicación en campo",
             children: [
@@ -862,10 +890,30 @@ class _IncidentDetailScreenState extends State<IncidentDetailScreen> {
             label: "Registrar tratamiento y activar carencia",
             onPressed: _busy
                 ? null
-                : () => _run(() => _incidentRepo.applyTreatment(
-                      incident.id,
-                      ackUnverified: _ackUnverified,
-                    )),
+                : () => _run(() async {
+                      final updated = await _incidentRepo.applyTreatment(
+                        incident.id,
+                        ackUnverified: _ackUnverified,
+                      );
+                      if (!mounted) return;
+                      final msg = updated.siexMessage;
+                      if (msg != null && msg.isNotEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(msg),
+                            backgroundColor: updated.siexEntryId != null
+                                ? NexoColors.bioGreen
+                                : NexoColors.warningAmber,
+                            action: _farmMissingSigpac
+                                ? SnackBarAction(
+                                    label: "Mis fincas",
+                                    onPressed: () => Navigator.pushNamed(context, Routes.farms),
+                                  )
+                                : null,
+                          ),
+                        );
+                      }
+                    }),
           ),
         ],
       ],

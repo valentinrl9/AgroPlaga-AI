@@ -103,6 +103,95 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
     }
   }
 
+  bool get _isClimateBusy => _loading || _refreshing || _savingStation;
+
+  Widget _climateBusyBanner() {
+    if (!_isClimateBusy) return const SizedBox.shrink();
+    final message = _savingStation
+        ? "Cambiando estación y actualizando datos meteorológicos…"
+        : _loading
+            ? "Cargando módulo climático…"
+            : "Actualizando datos meteorológicos…";
+    return Material(
+      elevation: 1,
+      color: NexoColors.bioGreen.withValues(alpha: 0.14),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        child: Row(
+          children: [
+            const SizedBox(
+              width: 22,
+              height: 22,
+              child: CircularProgressIndicator(strokeWidth: 2.5, color: NexoColors.bioGreen),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                message,
+                style: const TextStyle(
+                  fontSize: 13,
+                  fontWeight: FontWeight.w600,
+                  color: NexoColors.textPrimary,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _wrapTabWhileBusy(Widget child) {
+    if (!_isClimateBusy) return child;
+    return Stack(
+      children: [
+        Opacity(opacity: _actual == null ? 0.45 : 0.72, child: child),
+        if (_actual == null)
+          const Positioned.fill(
+            child: ColoredBox(color: Color(0x18FFFFFF)),
+          ),
+      ],
+    );
+  }
+
+  Widget _metricSkeleton(String title) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Row(
+          children: [
+            Container(
+              width: 36,
+              height: 36,
+              decoration: BoxDecoration(
+                color: NexoColors.surfaceElevated,
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: const TextStyle(color: NexoColors.textSecondary, fontSize: 13)),
+                  const SizedBox(height: 8),
+                  Container(
+                    height: 18,
+                    width: 96,
+                    decoration: BoxDecoration(
+                      color: NexoColors.surfaceElevated,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   Future<void> _bootstrap({bool silent = false, bool notifyError = false}) async {
     final firstLoad = !_hasLoadedOnce;
     if (!silent) {
@@ -199,7 +288,10 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
   }
 
   void _onFarmChanged(int? farmId) {
-    setState(() => _selectedFarmId = farmId);
+    setState(() {
+      _selectedFarmId = farmId;
+      _refreshing = true;
+    });
     _bootstrap();
   }
 
@@ -217,7 +309,6 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
     setState(() {
       _savingStation = true;
       _error = null;
-      _clearClimateData();
       _refreshing = true;
     });
     try {
@@ -263,7 +354,7 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
             ),
           )
           .toList(),
-      onChanged: _loading || _savingStation ? null : _onFarmChanged,
+      onChanged: _isClimateBusy ? null : _onFarmChanged,
     );
   }
 
@@ -296,7 +387,7 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
               ),
             ),
           ],
-          onChanged: _loading || _savingStation ? null : _onStationChanged,
+          onChanged: _isClimateBusy ? null : _onStationChanged,
         ),
         if (_stationLabel != null) ...[
           const SizedBox(height: 6),
@@ -372,9 +463,20 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
           ],
         ),
         actions: [
+          if (_isClimateBusy)
+            const Padding(
+              padding: EdgeInsets.only(right: 8),
+              child: Center(
+                child: SizedBox(
+                  width: 22,
+                  height: 22,
+                  child: CircularProgressIndicator(strokeWidth: 2.5, color: NexoColors.bioGreen),
+                ),
+              ),
+            ),
           IconButton(
             icon: const Icon(Icons.refresh),
-            onPressed: _loading || _refreshing ? null : () => _bootstrap(),
+            onPressed: _isClimateBusy ? null : () => _bootstrap(),
           ),
         ],
       ),
@@ -384,18 +486,26 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
               ? Center(child: Text(_error!, style: const TextStyle(color: NexoColors.errorRed)))
               : Column(
                   children: [
-                    if (_refreshing || _savingStation)
-                      const LinearProgressIndicator(minHeight: 3),
+                    if (_isClimateBusy)
+                      LinearProgressIndicator(
+                        minHeight: 4,
+                        color: NexoColors.bioGreen,
+                        backgroundColor: NexoColors.bioGreen.withValues(alpha: 0.15),
+                      ),
+                    _climateBusyBanner(),
                     Expanded(
-                      child: TabBarView(
-                        controller: _tabs,
-                        children: [
-                          _buildInicio(),
-                          _buildRecomendaciones(),
-                          _buildAlertas(),
-                          _buildRiesgo(),
-                          _buildInforme(),
-                        ],
+                      child: AbsorbPointer(
+                        absorbing: _savingStation,
+                        child: TabBarView(
+                          controller: _tabs,
+                          children: [
+                            _wrapTabWhileBusy(_buildInicio()),
+                            _wrapTabWhileBusy(_buildRecomendaciones()),
+                            _wrapTabWhileBusy(_buildAlertas()),
+                            _wrapTabWhileBusy(_buildRiesgo()),
+                            _wrapTabWhileBusy(_buildInforme()),
+                          ],
+                        ),
                       ),
                     ),
                   ],
@@ -435,11 +545,6 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
           _farmSelector(),
           const SizedBox(height: 12),
           _stationSelector(),
-          if (_savingStation || _refreshing)
-            const Padding(
-              padding: EdgeInsets.only(top: 8),
-              child: LinearProgressIndicator(),
-            ),
           const SizedBox(height: 8),
           if (_actual != null) ...[
             ClimateMetricCard(
@@ -475,13 +580,25 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
               hint: "Condensación en cubierta plástica",
               accent: _statusColor(_actual!["punto_rocio_status"] as String?),
             ),
+          ] else if (_isClimateBusy) ...[
+            _metricSkeleton("Temperatura"),
+            const SizedBox(height: 8),
+            _metricSkeleton("Humedad"),
+            const SizedBox(height: 8),
+            _metricSkeleton("ET0 día"),
           ],
           const SizedBox(height: 16),
-          ClimateLineChart(title: "ET0 (mm/día)", labels: labels, values: et0, color: NexoColors.bioGreen),
-          const SizedBox(height: 10),
-          ClimateLineChart(title: "Estrés térmico", labels: labels, values: estres, color: NexoColors.warningAmber),
-          const SizedBox(height: 10),
-          ClimateLineChart(title: "Humedad (%)", labels: labels, values: humedad, color: NexoColors.techCyan),
+          if (serie.isNotEmpty) ...[
+            ClimateLineChart(title: "ET0 (mm/día)", labels: labels, values: et0, color: NexoColors.bioGreen),
+            const SizedBox(height: 10),
+            ClimateLineChart(title: "Estrés térmico", labels: labels, values: estres, color: NexoColors.warningAmber),
+            const SizedBox(height: 10),
+            ClimateLineChart(title: "Humedad (%)", labels: labels, values: humedad, color: NexoColors.techCyan),
+          ] else if (_isClimateBusy)
+            const Padding(
+              padding: EdgeInsets.symmetric(vertical: 24),
+              child: Center(child: Text("Preparando gráficos…", style: TextStyle(color: NexoColors.textSecondary))),
+            ),
           const SizedBox(height: 16),
           const Text("Panel IA agronómico", style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700)),
           const SizedBox(height: 8),
@@ -493,6 +610,18 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
   }
 
   Widget _buildRecomendaciones() {
+    if (_isClimateBusy && (_recomendaciones?["diario"] as List?)?.isEmpty != false) {
+      return const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(color: NexoColors.bioGreen),
+            SizedBox(height: 12),
+            Text("Cargando recomendaciones…", style: TextStyle(color: NexoColors.textSecondary)),
+          ],
+        ),
+      );
+    }
     final diario = (_recomendaciones?["diario"] as List?) ?? [];
     if (diario.isEmpty) {
       return const Center(child: Text("Sin recomendaciones disponibles"));
@@ -524,6 +653,18 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
   }
 
   Widget _buildAlertas() {
+    if (_isClimateBusy && _alertas == null) {
+      return const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(color: NexoColors.bioGreen),
+            SizedBox(height: 12),
+            Text("Cargando alertas…", style: TextStyle(color: NexoColors.textSecondary)),
+          ],
+        ),
+      );
+    }
     final prioritarias = (_alertas?["alertas_prioritarias"] as List?)?.cast<String>() ?? [];
     final reales = (_alertas?["alertas_reales"] as List?)?.cast<String>() ?? [];
     final pred = (_alertas?["alertas_prediccion"] as List?)?.cast<String>() ?? [];
@@ -546,6 +687,18 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
   }
 
   Widget _buildRiesgo() {
+    if (_isClimateBusy && _riesgo == null) {
+      return const Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            CircularProgressIndicator(color: NexoColors.bioGreen),
+            SizedBox(height: 12),
+            Text("Calculando riesgo…", style: TextStyle(color: NexoColors.textSecondary)),
+          ],
+        ),
+      );
+    }
     final score = (_riesgo?["score_pct"] as num?)?.toInt() ?? 0;
     final diario = (_riesgo?["diario"] as List?)?.cast<Map<String, dynamic>>() ?? [];
 

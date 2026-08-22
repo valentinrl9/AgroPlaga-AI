@@ -194,10 +194,14 @@ def create_treatment(db: Session, user: User, payload: TreatmentCreate) -> Treat
     siex_message = None
     from app.siex import service as siex_service
 
+    siex_farm = farm
+    if siex_farm is None and scan is not None and scan.farm_id is not None:
+        siex_farm = db.query(Farm).filter(Farm.id == scan.farm_id, Farm.user_id == user.id).first()
+
     if siex_service.user_has_siex_access(user):
-        if farm is None or not farm.sigpac_code:
+        if siex_farm is None:
             siex_message = (
-                "Tratamiento registrado. Para cuaderno SIEX, vincula una finca con código SIGPAC del recinto."
+                "Tratamiento registrado. Para cuaderno SIEX, vincula el escaneo o la incidencia a una finca."
             )
         elif scan and not is_scan_verified(scan) and user.has_siex_enterprise:
             siex_message = (
@@ -207,14 +211,24 @@ def create_treatment(db: Session, user: User, payload: TreatmentCreate) -> Treat
             entry = siex_service.compile_from_treatment(db, user, row)
             if entry:
                 siex_entry_id = entry.id
-                siex_message = (
-                    "Entrada SIEX generada."
-                    if entry.status == "registrado"
-                    else "Entrada SIEX enviada a validación del perito."
-                )
+                if entry.status == "pendiente_sigpac":
+                    siex_message = (
+                        "Entrada SIEX en borrador. Añade el código SIGPAC del recinto en «Mis fincas» "
+                        "para completar el cuaderno."
+                    )
+                else:
+                    siex_message = (
+                        "Entrada SIEX generada."
+                        if entry.status == "registrado"
+                        else "Entrada SIEX enviada a validación del perito."
+                    )
             elif scan and not is_scan_verified(scan):
                 siex_message = (
                     "Tratamiento registrado. Entrada SIEX omitida: plaga no validada por perito."
+                )
+            elif not siex_farm.sigpac_code:
+                siex_message = (
+                    "Tratamiento registrado. Entrada SIEX en borrador sin SIGPAC de recinto."
                 )
 
     result = _treatment_read(row)
