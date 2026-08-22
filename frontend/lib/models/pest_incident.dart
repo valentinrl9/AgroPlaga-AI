@@ -76,6 +76,8 @@ class PestIncident {
     this.farmSurfaceM2,
     this.treatment,
     this.evaluationScanId,
+    this.siexEntryId,
+    this.siexMessage,
     required this.createdAt,
     required this.updatedAt,
     this.closedAt,
