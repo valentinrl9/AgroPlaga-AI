@@ -35,9 +35,12 @@ class ScanValidationBanner extends StatelessWidget {
       color: NexoColors.warningAmber,
       icon: Icons.warning_amber_outlined,
       title: "Sospecha no verificada por perito",
-      body: scan.shareWithTech
-          ? "Enviado a tu perito. Recibirá un aviso y lo revisará en cuanto pueda."
-          : "Orientación automática (IA). Comparte la foto con tu perito para validación.",
+      body: scan.hasFarmerOverride
+          ? "IA: ${scan.plague} → Tu criterio: ${scan.effectivePlague}. "
+              "Tratamiento e incidencia usan tu elección bajo tu responsabilidad."
+          : scan.shareWithTech
+              ? "Enviado a tu perito. Recibirá un aviso y lo revisará en cuanto pueda."
+              : "Orientación automática (IA). Puedes corregir la plaga o compartir la foto con tu perito.",
     );
   }
 

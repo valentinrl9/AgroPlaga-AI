@@ -114,6 +114,34 @@ def test_open_incident_from_scan(client, unique_email):
     assert len(listing.json()) == 1
 
 
+def test_open_incident_backfills_legacy_map_consent(client, unique_email):
+    from app.db.session import SessionLocal
+    from app.models.user import User
+
+    _, headers, farm_id = _setup_farmer_with_farm(client, unique_email)
+    scan = _create_scan(client, headers, farm_id)
+
+    db = SessionLocal()
+    try:
+        user = db.query(User).filter(User.email == unique_email).first()
+        assert user is not None
+        user.consent_accepted_at = None
+        db.commit()
+    finally:
+        db.close()
+
+    body = _open_incident(client, headers, scan["id"])
+    assert body["scan_id"] == scan["id"]
+
+    db = SessionLocal()
+    try:
+        user = db.query(User).filter(User.email == unique_email).first()
+        assert user is not None
+        assert user.consent_accepted_at is not None
+    finally:
+        db.close()
+
+
 def test_open_incident_rejects_sana(client, unique_email):
     _, headers, farm_id = _setup_farmer_with_farm(client, unique_email)
     scan = _create_scan(client, headers, farm_id, plague="sana")

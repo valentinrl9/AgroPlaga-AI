@@ -1,5 +1,6 @@
 import os
 import time
+from datetime import datetime, timezone
 from pathlib import Path
 
 from alembic import command
@@ -80,14 +81,19 @@ def seed_admin_user() -> None:
     db = SessionLocal()
     try:
         existing_admin = db.query(User).filter(User.role == "admin").first()
+        now = datetime.now(timezone.utc)
         if not existing_admin:
             admin = User(
                 name=admin_name,
                 email=admin_email,
                 hashed_password=get_password_hash(admin_password),
                 role="admin",
+                consent_accepted_at=now,
             )
             db.add(admin)
+            db.commit()
+        elif existing_admin.consent_accepted_at is None:
+            existing_admin.consent_accepted_at = now
             db.commit()
     finally:
         db.close()
@@ -107,6 +113,7 @@ def seed_master_user() -> None:
     db = SessionLocal()
     try:
         existing = db.query(User).filter(User.email == email).first()
+        now = datetime.now(timezone.utc)
         if existing:
             existing.name = name
             existing.role = "admin"
@@ -116,6 +123,8 @@ def seed_master_user() -> None:
             existing.has_climate_module = True
             existing.has_siex_module = True
             existing.has_siex_enterprise = True
+            if existing.consent_accepted_at is None:
+                existing.consent_accepted_at = now
         else:
             db.add(
                 User(
@@ -127,6 +136,7 @@ def seed_master_user() -> None:
                     has_climate_module=True,
                     has_siex_module=True,
                     has_siex_enterprise=True,
+                    consent_accepted_at=now,
                 )
             )
         db.commit()

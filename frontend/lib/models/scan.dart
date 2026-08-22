@@ -10,6 +10,7 @@ class Scan {
   final bool shareWithTech;
   final String? techStatus;
   final String? correctedPlague;
+  final String? farmerPlague;
   final String? techNotes;
 
   Scan({
@@ -24,6 +25,7 @@ class Scan {
     this.shareWithTech = false,
     this.techStatus,
     this.correctedPlague,
+    this.farmerPlague,
     this.techNotes,
   });
 
@@ -40,6 +42,7 @@ class Scan {
       shareWithTech: json["share_with_tech"] as bool? ?? false,
       techStatus: json["tech_status"] as String?,
       correctedPlague: json["corrected_plague"] as String?,
+      farmerPlague: json["farmer_plague"] as String?,
       techNotes: json["tech_notes"] as String?,
     );
   }
@@ -50,5 +53,8 @@ class Scan {
 
   bool get isUnverified => !isVerifiedByTech && !isRejectedByTech;
 
-  String get effectivePlague => correctedPlague ?? plague;
+  String get effectivePlague => correctedPlague ?? farmerPlague ?? plague;
+
+  bool get hasFarmerOverride =>
+      farmerPlague != null && farmerPlague!.trim().toLowerCase() != plague.trim().toLowerCase();
 }

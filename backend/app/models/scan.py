@@ -24,6 +24,7 @@ class Scan(Base):
     share_with_tech = Column(Boolean, default=False, nullable=False, index=True)
     tech_status = Column(String(20), nullable=True, index=True)
     corrected_plague = Column(String(50), nullable=True)
+    farmer_plague = Column(String(50), nullable=True)
     tech_notes = Column(String(500), nullable=True)
     validated_by_id = Column(Integer, ForeignKey("users.id"), nullable=True)
     validated_at = Column(DateTime(timezone=True), nullable=True)

@@ -21,6 +21,8 @@ from app.schemas.treatment import DoseCalculateRequest, TreatmentCreate
 from app.services.outbreak_event_service import create_anonymous_event
 from app.services.recommendation_service import _severity_level
 from app.services import treatment_service
+from app.services.scan_validation import effective_plague
+from app.services.user_consent_service import ensure_map_consent
 from app.data.plague_catalog import normalize_plague
 
 
@@ -30,12 +32,6 @@ def _now() -> datetime:
 
 def is_trackable_plague(plague: str) -> bool:
     return normalize_plague(plague) != "sana"
-
-
-def _effective_plague(scan: Scan) -> str:
-    if scan.corrected_plague:
-        return scan.corrected_plague.strip().lower()
-    return scan.plague.strip().lower()
 
 
 def _resolve_zone_id(db: Session, scan: Scan) -> int:
@@ -48,14 +44,13 @@ def _resolve_zone_id(db: Session, scan: Scan) -> int:
 
 
 def create_incident_from_scan(db: Session, user: User, scan_id: int) -> PestIncident:
-    if user.consent_accepted_at is None:
-        raise ValueError("Se requiere consentimiento de mapa anónimo para abrir incidencias")
+    ensure_map_consent(db, user)
 
     scan = db.query(Scan).filter(Scan.id == scan_id, Scan.user_id == user.id).first()
     if scan is None:
         raise ValueError("Escaneo no encontrado")
 
-    plague = _effective_plague(scan)
+    plague = effective_plague(scan)
     if not is_trackable_plague(plague):
         raise ValueError("Los escaneos sin plaga relevante no generan incidencia")
 

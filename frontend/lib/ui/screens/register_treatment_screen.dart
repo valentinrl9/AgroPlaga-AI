@@ -8,6 +8,7 @@ import "../../data/repositories/treatment_repository.dart";
 import "../../models/farm.dart";
 import "../../models/scan.dart";
 import "../layout/mobile_layout.dart";
+import "../widgets/farmer_plague_selector.dart";
 import "../widgets/primary_button.dart";
 import "../widgets/scan_validation_banner.dart";
 
@@ -27,6 +28,7 @@ class _RegisterTreatmentScreenState extends State<RegisterTreatmentScreen> {
   List<Farm> _farms = [];
   int? _selectedFarmId;
   Scan? _scan;
+  String? _selectedPlague;
   final _productController = TextEditingController();
   final _hoursController = TextEditingController(text: "48");
   final _surfaceController = TextEditingController(text: "5000");
@@ -37,6 +39,7 @@ class _RegisterTreatmentScreenState extends State<RegisterTreatmentScreen> {
   bool _loading = true;
   bool _saving = false;
   bool _ackUnverified = false;
+  bool _savingPlague = false;
   bool _isEnterprise = false;
   String? _error;
   Map<String, dynamic>? _dosePreview;
@@ -53,6 +56,7 @@ class _RegisterTreatmentScreenState extends State<RegisterTreatmentScreen> {
       _isEnterprise = await Session.hasSiexEnterprise;
       if (widget.scan != null) {
         _scan = await _scanRepo.fetchScan(widget.scan!.id);
+        _selectedPlague = _scan?.effectivePlague;
       }
       if (_scan?.isRejectedByTech == true) {
         if (mounted) {
@@ -85,7 +89,46 @@ class _RegisterTreatmentScreenState extends State<RegisterTreatmentScreen> {
     super.dispose();
   }
 
-  String get _plagueKey => _scan?.effectivePlague ?? "tuta absoluta";
+  String get _plagueKey => _selectedPlague ?? _scan?.effectivePlague ?? "tuta absoluta";
+
+  bool get _canEditPlague =>
+      _scan != null && !_scan!.isVerifiedByTech && !_scan!.isRejectedByTech;
+
+  Future<void> _applyPlagueSelection(String? plague) async {
+    if (_scan == null) {
+      setState(() => _selectedPlague = plague);
+      return;
+    }
+    setState(() {
+      _selectedPlague = plague;
+      _loading = true;
+      _savingPlague = true;
+      _error = null;
+    });
+    try {
+      final updated = await _scanRepo.setFarmerPlague(
+        _scan!.id,
+        farmerPlague: farmerPlaguePayload(
+          aiPlague: _scan!.plague,
+          selectedPlague: plague,
+        ),
+      );
+      if (!mounted) return;
+      setState(() {
+        _scan = updated;
+        _selectedPlague = updated.effectivePlague;
+      });
+      await _loadBiocides();
+    } catch (e) {
+      if (!mounted) return;
+      setState(() {
+        _error = e.toString();
+        _loading = false;
+      });
+    } finally {
+      if (mounted) setState(() => _savingPlague = false);
+    }
+  }
 
   String get _cropKey => _scan?.crop ?? "tomate";
 
@@ -140,9 +183,9 @@ class _RegisterTreatmentScreenState extends State<RegisterTreatmentScreen> {
               ? "El diagnóstico «${_scan!.plague}» no ha sido validado por el perito. "
                   "Puedes registrar la carencia local, pero el cuaderno SIEX de cooperativa "
                   "no se generará hasta validación."
-              : "El producto MAPA se selecciona para «${_scan!.effectivePlague}» según la IA, "
-                  "sin confirmación del perito. Al continuar, asumes la responsabilidad "
-                  "de la elección fitosanitaria.",
+              : "El producto MAPA se selecciona para «${_scan!.effectivePlague}» según tu criterio "
+                  "(IA sugirió «${_scan!.plague}»), sin confirmación del perito. Al continuar, "
+                  "asumes la responsabilidad de la elección fitosanitaria.",
         ),
         actions: [
           TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text("Cancelar")),
@@ -211,10 +254,23 @@ class _RegisterTreatmentScreenState extends State<RegisterTreatmentScreen> {
                   if (scan != null) ...[
                     ScanValidationBanner(scan: scan),
                     const SizedBox(height: 12),
-                    Text(
-                      "Plaga para MAPA: ${scan.effectivePlague} · ${scan.crop}",
-                      style: const TextStyle(fontWeight: FontWeight.w600),
-                    ),
+                    if (_canEditPlague)
+                      FarmerPlagueSelector(
+                        scan: scan,
+                        selectedPlague: _selectedPlague,
+                        enabled: !blocked && !_savingPlague && !_loading,
+                        onChanged: blocked ? (_) {} : (v) => _applyPlagueSelection(v),
+                      )
+                    else
+                      Text(
+                        "Plaga para MAPA: ${scan.effectivePlague} · ${scan.crop}",
+                        style: const TextStyle(fontWeight: FontWeight.w600),
+                      ),
+                    if (_savingPlague)
+                      const Padding(
+                        padding: EdgeInsets.only(top: 8),
+                        child: LinearProgressIndicator(),
+                      ),
                     const SizedBox(height: 8),
                   ],
                   Text(

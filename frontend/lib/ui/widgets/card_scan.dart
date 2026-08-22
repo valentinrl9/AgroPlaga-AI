@@ -28,7 +28,9 @@ class CardScan extends StatelessWidget {
   factory CardScan.fromScan(Scan scan, {String? title, List<Widget>? extra}) {
     return CardScan(
       scan: scan,
-      plague: scan.plague,
+      plague: scan.hasFarmerOverride || scan.isVerifiedByTech
+          ? "${scan.effectivePlague}${scan.hasFarmerOverride && !scan.isVerifiedByTech ? " (tu criterio)" : ""}"
+          : scan.plague,
       crop: scan.crop,
       severity: scan.severity,
       confidence: scan.confidence,

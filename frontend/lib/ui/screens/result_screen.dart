@@ -6,9 +6,11 @@ import "../../core/routes.dart";
 import "../../data/repositories/analytics_repository.dart";
 import "../../data/repositories/feedback_repository.dart";
 import "../../data/repositories/incident_repository.dart";
+import "../../data/repositories/scan_repository.dart";
 import "../../models/analytics.dart";
 import "../../models/scan.dart";
 import "../widgets/card_scan.dart";
+import "../widgets/farmer_plague_selector.dart";
 import "../widgets/primary_button.dart";
 import "../widgets/scan_validation_banner.dart";
 
@@ -25,8 +27,13 @@ class _ResultScreenState extends State<ResultScreen> {
   final _feedbackRepo = FeedbackRepository();
   final _analyticsRepo = AnalyticsRepository();
   final _incidentRepo = IncidentRepository();
+  final _scanRepo = ScanRepository();
+  late Scan _scan;
   late Future<PlagaRecommendation> _recommendationFuture;
+  String? _selectedPlague;
   bool _feedbackSent = false;
+  bool _savingPlague = false;
+  bool _plagueDirty = false;
   bool _sending = false;
   bool _openingIncident = false;
   bool _incidentOpened = false;
@@ -34,19 +41,60 @@ class _ResultScreenState extends State<ResultScreen> {
   String? _incidentError;
 
   bool get _isTrackablePlague {
-    final plague = widget.scan.effectivePlague.trim().toLowerCase();
+    final plague = _scan.effectivePlague.trim().toLowerCase();
     return plague.isNotEmpty && plague != "sana";
   }
+
+  bool get _canEditPlague => !_scan.isVerifiedByTech && !_scan.isRejectedByTech;
 
   @override
   void initState() {
     super.initState();
-    final scan = widget.scan;
+    _scan = widget.scan;
+    _selectedPlague = _scan.effectivePlague;
+    _reloadRecommendations();
+  }
+
+  void _reloadRecommendations() {
     _recommendationFuture = _analyticsRepo.fetchRecommendation(
-      plague: scan.plague,
-      crop: scan.crop,
-      severity: scan.severity,
+      plague: _scan.effectivePlague,
+      crop: _scan.crop,
+      severity: _scan.severity,
     );
+  }
+
+  Future<void> _saveFarmerPlague() async {
+    setState(() {
+      _savingPlague = true;
+      _incidentError = null;
+    });
+    try {
+      final updated = await _scanRepo.setFarmerPlague(
+        _scan.id,
+        farmerPlague: farmerPlaguePayload(
+          aiPlague: _scan.plague,
+          selectedPlague: _selectedPlague,
+        ),
+      );
+      if (!mounted) return;
+      setState(() {
+        _scan = updated;
+        _selectedPlague = updated.effectivePlague;
+        _plagueDirty = false;
+        _reloadRecommendations();
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Plaga actualizada. Tratamiento e incidencia usarán tu criterio."),
+          backgroundColor: NexoColors.bioGreen,
+        ),
+      );
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text("Error: $error")));
+    } finally {
+      if (mounted) setState(() => _savingPlague = false);
+    }
   }
 
   Future<void> _openIncident() async {
@@ -55,7 +103,7 @@ class _ResultScreenState extends State<ResultScreen> {
       _incidentError = null;
     });
     try {
-      final incident = await _incidentRepo.openFromScan(widget.scan.id);
+      final incident = await _incidentRepo.openFromScan(_scan.id);
       if (!mounted) return;
       setState(() {
         _incidentOpened = true;
@@ -79,7 +127,7 @@ class _ResultScreenState extends State<ResultScreen> {
     setState(() => _sending = true);
     try {
       await _feedbackRepo.submit(
-        scanId: widget.scan.id,
+        scanId: _scan.id,
         isCorrect: isHelpful,
         comment: isHelpful ? "util_orientacion" : "no_confianza_utilidad",
       );
@@ -95,7 +143,7 @@ class _ResultScreenState extends State<ResultScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final scan = widget.scan;
+    final scan = _scan;
 
     return Scaffold(
       appBar: AppBar(title: const Text("Resultado del escaneo")),
@@ -118,6 +166,31 @@ class _ResultScreenState extends State<ResultScreen> {
             const SizedBox(height: 12),
             CardScan.fromScan(scan),
             const SizedBox(height: 16),
+            if (_canEditPlague) ...[
+              FarmerPlagueSelector(
+                scan: scan,
+                selectedPlague: _selectedPlague,
+                enabled: !_savingPlague,
+                onChanged: (v) => setState(() {
+                  _selectedPlague = v;
+                  _plagueDirty = v?.trim().toLowerCase() != scan.effectivePlague.trim().toLowerCase();
+                }),
+              ),
+              if (_plagueDirty || scan.hasFarmerOverride) ...[
+                const SizedBox(height: 8),
+                OutlinedButton(
+                  onPressed: _savingPlague || !_plagueDirty ? null : _saveFarmerPlague,
+                  child: Text(_savingPlague ? "Guardando plaga..." : "Guardar plaga elegida"),
+                ),
+              ],
+              const SizedBox(height: 16),
+            ] else if (scan.hasFarmerOverride) ...[
+              Text(
+                "Tu criterio: ${scan.effectivePlague} (IA: ${scan.plague})",
+                style: const TextStyle(fontWeight: FontWeight.w600),
+              ),
+              const SizedBox(height: 16),
+            ],
             const Text(
               "¿Te resultó útil este diagnóstico?",
               style: TextStyle(fontWeight: FontWeight.w600),
@@ -155,6 +228,7 @@ class _ResultScreenState extends State<ResultScreen> {
             const Text("Recomendaciones personalizadas", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 12),
             FutureBuilder<PlagaRecommendation>(
+              key: ValueKey("${scan.effectivePlague}-${scan.severity}"),
               future: _recommendationFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -230,7 +304,7 @@ class _ResultScreenState extends State<ResultScreen> {
                   label: _openingIncident ? "Abriendo incidencia..." : "Abrir incidencia fitosanitaria",
                   onPressed: _openingIncident ? null : _openIncident,
                 ),
-                if (widget.scan.farmId == null)
+                if (scan.farmId == null)
                   const Padding(
                     padding: EdgeInsets.only(top: 8),
                     child: Text(

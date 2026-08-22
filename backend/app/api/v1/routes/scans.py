@@ -7,10 +7,11 @@ from app.core.security import get_current_active_user, require_roles
 from app.models.farm import Farm
 from app.models.scan import Scan
 from app.models.user import User
-from app.schemas.scan import ScanCreate, ScanRead, ScanValidateRequest
+from app.schemas.scan import ScanCreate, ScanFarmerPlagueUpdate, ScanRead, ScanValidateRequest
 from app.services.gamification_service import check_scan_badges
 from app.services.scan_image_service import assert_upload_quota, resolve_image_path, save_scan_image
 from app.services.tech_scan_service import user_can_view_scan_image, validate_scan
+from app.data.plague_catalog import is_known_plague
 
 router = APIRouter()
 TECH_OR_ADMIN = require_roles(["tech", "admin"])
@@ -31,6 +32,7 @@ def _scan_to_read(scan: Scan) -> ScanRead:
         share_with_tech=scan.share_with_tech,
         tech_status=scan.tech_status,
         corrected_plague=scan.corrected_plague,
+        farmer_plague=scan.farmer_plague,
         tech_notes=scan.tech_notes,
         validated_at=scan.validated_at,
         has_image=scan.image_path is not None,
@@ -43,6 +45,20 @@ def _validate_farm(db: Session, farm_id: int | None, user_id: int) -> None:
     farm = db.query(Farm).filter(Farm.id == farm_id, Farm.user_id == user_id).first()
     if not farm:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Finca no válida")
+
+
+def _normalize_farmer_plague(ai_plague: str, farmer_plague: str | None) -> str | None:
+    if farmer_plague is None:
+        return None
+    normalized = farmer_plague.strip().lower()
+    if not normalized or normalized == ai_plague.strip().lower():
+        return None
+    if not is_known_plague(normalized):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Plaga no reconocida. Elige una del catálogo.",
+        )
+    return normalized
 
 
 @router.get("", response_model=list[ScanRead])
@@ -95,6 +111,7 @@ def create_scan(
         longitude=scan_data.longitude,
         farm_id=scan_data.farm_id,
         share_with_tech=False,
+        farmer_plague=_normalize_farmer_plague(scan_data.plague, scan_data.farmer_plague),
     )
     db.add(scan)
     db.commit()
@@ -114,6 +131,7 @@ async def create_scan_with_image(
     latitude: float | None = Form(None),
     longitude: float | None = Form(None),
     farm_id: int | None = Form(None),
+    farmer_plague: str | None = Form(None),
     image: UploadFile = File(...),
     current_user: User = Depends(get_current_active_user),
     db: Session = Depends(get_db),
@@ -144,6 +162,7 @@ async def create_scan_with_image(
         farm_id=farm_id,
         share_with_tech=True,
         tech_status="pending",
+        farmer_plague=_normalize_farmer_plague(plague, farmer_plague),
     )
     db.add(scan)
     db.flush()
@@ -181,6 +200,28 @@ def get_scan_image(
     elif path.suffix == ".webp":
         media_type = "image/webp"
     return FileResponse(path, media_type=media_type)
+
+
+@router.patch("/{scan_id}/farmer-plague", response_model=ScanRead)
+def update_farmer_plague(
+    scan_id: int,
+    payload: ScanFarmerPlagueUpdate,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    scan = db.query(Scan).filter(Scan.id == scan_id, Scan.user_id == current_user.id).first()
+    if not scan:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Escaneo no encontrado")
+    if scan.tech_status in {"confirmed", "corrected"}:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El perito ya validó este escaneo. No puedes cambiar la plaga.",
+        )
+    scan.farmer_plague = _normalize_farmer_plague(scan.plague, payload.farmer_plague)
+    db.add(scan)
+    db.commit()
+    db.refresh(scan)
+    return _scan_to_read(scan)
 
 
 @router.patch("/{scan_id}/validate", response_model=ScanRead)

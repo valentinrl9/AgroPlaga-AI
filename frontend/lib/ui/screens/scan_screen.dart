@@ -12,6 +12,7 @@ import "../../models/scan.dart";
 import "../../ml/plaga_classifier.dart";
 import "../layout/mobile_layout.dart";
 import "../widgets/app_logo.dart";
+import "../widgets/farmer_plague_selector.dart";
 import "../widgets/primary_button.dart";
 import "../widgets/severity_badge.dart";
 
@@ -30,6 +31,7 @@ class _ScanScreenState extends State<ScanScreen> {
   String _crop = "Tomate";
   Uint8List? _imageBytes;
   PlagaResult? _diagnosis;
+  String? _selectedPlague;
   int _severityLevel = 2;
   int? _selectedFarmId;
   List<Farm> _farms = [];
@@ -101,6 +103,7 @@ class _ScanScreenState extends State<ScanScreen> {
       if (!mounted) return;
       setState(() {
         _diagnosis = result;
+        _selectedPlague = result.plague;
         _severityLevel = result.suggestedSeverity;
       });
     } catch (error) {
@@ -148,6 +151,10 @@ class _ScanScreenState extends State<ScanScreen> {
     });
 
     try {
+      final farmerPlague = farmerPlaguePayload(
+        aiPlague: _diagnosis!.plague,
+        selectedPlague: _selectedPlague,
+      );
       final Scan scan;
       if (_shareWithTech && _imageBytes != null) {
         scan = await _scanRepository.createScanWithImage(
@@ -157,6 +164,7 @@ class _ScanScreenState extends State<ScanScreen> {
           confidence: _diagnosis!.confidence,
           farmId: _selectedFarmId,
           imageBytes: _imageBytes!.toList(),
+          farmerPlague: farmerPlague,
         );
       } else {
         scan = await _scanRepository.createScan(
@@ -165,6 +173,7 @@ class _ScanScreenState extends State<ScanScreen> {
           severity: _severityOptions[_severityLevel]!,
           confidence: _diagnosis!.confidence,
           farmId: _selectedFarmId,
+          farmerPlague: farmerPlague,
         );
       }
 
@@ -310,6 +319,13 @@ class _ScanScreenState extends State<ScanScreen> {
                   padding: EdgeInsets.only(bottom: 12),
                   child: LinearProgressIndicator(),
                 ),
+              FarmerPlagueSelector(
+                aiPlague: _diagnosis!.plague,
+                selectedPlague: _selectedPlague,
+                enabled: !_isBusy,
+                onChanged: (v) => setState(() => _selectedPlague = v),
+              ),
+              const SizedBox(height: 12),
               InputDecorator(
                 decoration: const InputDecoration(
                   labelText: "Ajustar severidad",

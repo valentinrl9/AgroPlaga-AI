@@ -14,6 +14,14 @@ class ScanCreate(BaseModel):
     longitude: float | None = Field(default=None, ge=-180, le=180)
     farm_id: int | None = None
     share_with_tech: bool = False
+    farmer_plague: str | None = Field(default=None, max_length=50)
+
+    @field_validator("farmer_plague")
+    @classmethod
+    def normalize_farmer_plague(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        return value.strip().lower() or None
 
     @model_validator(mode="after")
     def gps_pair(self):
@@ -36,11 +44,23 @@ class ScanRead(BaseModel):
     share_with_tech: bool = False
     tech_status: str | None = None
     corrected_plague: str | None = None
+    farmer_plague: str | None = None
     tech_notes: str | None = None
     validated_at: datetime | None = None
     has_image: bool = False
 
     model_config = ConfigDict(from_attributes=True)
+
+
+class ScanFarmerPlagueUpdate(BaseModel):
+    farmer_plague: str | None = Field(default=None, max_length=50)
+
+    @field_validator("farmer_plague")
+    @classmethod
+    def normalize_plague(cls, value: str | None) -> str | None:
+        if value is None:
+            return None
+        return value.strip().lower() or None
 
 
 class ScanValidateRequest(BaseModel):

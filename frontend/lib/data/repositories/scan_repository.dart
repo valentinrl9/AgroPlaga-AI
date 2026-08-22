@@ -21,6 +21,7 @@ class ScanRepository {
     double confidence = 0.0,
     String? location,
     int? farmId,
+    String? farmerPlague,
   }) async {
     final response = await _client.postAuth("/api/v1/scans", {
       "crop": crop,
@@ -29,8 +30,16 @@ class ScanRepository {
       "confidence": confidence,
       if (location != null) "location": location,
       if (farmId != null) "farm_id": farmId,
+      if (farmerPlague != null) "farmer_plague": farmerPlague,
     });
 
+    return Scan.fromJson(response);
+  }
+
+  Future<Scan> setFarmerPlague(int scanId, {String? farmerPlague}) async {
+    final response = await _client.patchAuth("/api/v1/scans/$scanId/farmer-plague", {
+      "farmer_plague": farmerPlague,
+    });
     return Scan.fromJson(response);
   }
 
@@ -42,6 +51,7 @@ class ScanRepository {
     double confidence = 0.0,
     String? location,
     int? farmId,
+    String? farmerPlague,
   }) async {
     final response = await _client.postMultipartAuth(
       "/api/v1/scans/with-image",
@@ -53,6 +63,7 @@ class ScanRepository {
         "share_with_tech": "true",
         if (location != null) "location": location,
         if (farmId != null) "farm_id": farmId.toString(),
+        if (farmerPlague != null) "farmer_plague": farmerPlague,
       },
       "image",
       imageBytes,

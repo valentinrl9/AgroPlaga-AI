@@ -24,6 +24,8 @@ def effective_plague(scan: Scan | None, fallback: str | None = None) -> str:
         return (fallback or "plaga no indicada").strip().lower()
     if scan.corrected_plague:
         return scan.corrected_plague.strip().lower()
+    if scan.farmer_plague:
+        return scan.farmer_plague.strip().lower()
     return scan.plague.strip().lower()
 
 
