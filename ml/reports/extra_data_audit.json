@@ -1,0 +1,23 @@
+{
+  "total": 3476,
+  "per_class": {
+    "arañuela roja": 239,
+    "botritis": 235,
+    "clorosis viral": 209,
+    "fusarium": 80,
+    "mancha bacteriana": 354,
+    "mildiu": 400,
+    "minador": 189,
+    "mosca blanca": 203,
+    "oruga": 252,
+    "oídio": 298,
+    "piojo harinoso": 157,
+    "pulgón": 157,
+    "sana": 400,
+    "trips": 179,
+    "tuta absoluta": 124
+  },
+  "missing_classes": [],
+  "min_count": 80,
+  "max_count": 400
+}

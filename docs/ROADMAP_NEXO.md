@@ -141,9 +141,17 @@
 - [x] **Mapa histórico 7 / 30 días** para `has_field_premium` (`heatmap_access.py` + `MapScreen`)
 - [ ] Historial resistencias cruzadas (48 días)
 
-### IA (ex v1.5 — pausado)
-- [ ] Reentrenamiento TFLite con fotos validadas por perito
+### IA — PlagaScan (priorizado post-piloto)
+
+> Plan detallado: **`docs/ROADMAP_ML_PLAGASCAN.md`** · Modelo desplegado: **`v1.6-tflite-b2`** (ago 2026: top-1 hold-out ~14%, +4 pp vs v1.5).
+
+- [x] **Fase 0 ML (parcial):** sync semilla, eval + scripts (`sync_semilla_to_extra`, `evaluate_plagascan`, `data_utils`)
+- [ ] **Fase 0 ML:** export automático escaneos perito → `extra_data/`
+- [ ] **Fase 1 ML:** ≥600 fotos campo validadas durante piloto
+- [x] **Reentreno offline** con datos internet+semilla (top-1 ~14%; top-6 piloto aún bajo)
+- [ ] **Fase 3 ML:** top-3 en UI + gates ≥65% top-6 en benchmark piloto
 - [x] Mensaje honesto en UI: IA orientativa, perito valida (`ScanValidationBanner`, corrección agricultor)
+- [x] APK Field con `v1.6-tflite-b2` (ago 2026)
 
 ### Infra
 - [ ] FCM push alertas

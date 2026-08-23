@@ -1,0 +1,42 @@
+{
+  "date": "2026-08-23",
+  "deployed_model": "v1.6-tflite-b2",
+  "deployed_path": "frontend/assets/ml/plaga_model.tflite",
+  "baseline_backup": "ml/models/plagascan_baseline_v1.5.tflite",
+  "data": {
+    "extra_data_total": 3476,
+    "semilla_synced": true,
+    "min_per_class": 80,
+    "max_per_class": 400,
+    "tuta_absoluta_before": 1,
+    "tuta_absoluta_after": 124
+  },
+  "eval_holdout_648_images": {
+    "baseline_v1.5": {
+      "top1": 0.0957,
+      "top3": 0.3102,
+      "top6_top1": 0.0039,
+      "top6_top3": 0.3191
+    },
+    "v1.6_b2_deployed": {
+      "top1": 0.1389,
+      "top3": 0.3009,
+      "top6_top1": 0.0039,
+      "top6_top3": 0.1128
+    },
+    "v1.6_semilla_only": {
+      "top1": 0.0509,
+      "top3": 0.142,
+      "top6_top1": 0.1206,
+      "top6_top3": 0.2101
+    }
+  },
+  "conclusion": "Mejora modesta en top-1 (+4.3 pp). Las 6 plagas piloto siguen mal con datos de internet. Se necesitan escaneos validados en campo para salto grande.",
+  "new_scripts": [
+    "ml/data_utils.py",
+    "ml/evaluate_plagascan.py",
+    "ml/scripts/sync_semilla_to_extra.py",
+    "ml/scripts/audit_extra_data.py"
+  ],
+  "next_apk": "Recompilar APK para incluir plaga_model.tflite v1.6-tflite-b2"
+}

@@ -9,7 +9,7 @@ import "plaga_result.dart";
 import "severity_helper.dart";
 
 const _modelAsset = "assets/ml/plaga_model.tflite";
-const _modelVersion = "v1.0-tflite";
+const _modelVersion = "v1.6-tflite-b2";
 
 Interpreter? _interpreter;
 
