@@ -9,15 +9,22 @@ import "../../data/repositories/incident_repository.dart";
 import "../../data/repositories/scan_repository.dart";
 import "../../models/analytics.dart";
 import "../../models/scan.dart";
+import "../../ml/plaga_result.dart";
 import "../widgets/card_scan.dart";
 import "../widgets/farmer_plague_selector.dart";
+import "../widgets/low_confidence_banner.dart";
 import "../widgets/primary_button.dart";
 import "../widgets/scan_validation_banner.dart";
 
 class ResultScreen extends StatefulWidget {
   final Scan scan;
+  final List<PlagueCandidate>? topCandidates;
 
-  const ResultScreen({super.key, required this.scan});
+  const ResultScreen({
+    super.key,
+    required this.scan,
+    this.topCandidates,
+  });
 
   @override
   State<ResultScreen> createState() => _ResultScreenState();
@@ -164,18 +171,25 @@ class _ResultScreenState extends State<ResultScreen> {
             const SizedBox(height: 20),
             ScanValidationBanner(scan: scan),
             const SizedBox(height: 12),
+            LowConfidenceBanner(confidence: scan.confidence),
+            const SizedBox(height: 12),
             CardScan.fromScan(scan),
             const SizedBox(height: 16),
-            if (_canEditPlague) ...[
-              FarmerPlagueSelector(
-                scan: scan,
-                selectedPlague: _selectedPlague,
-                enabled: !_savingPlague,
-                onChanged: (v) => setState(() {
-                  _selectedPlague = v;
-                  _plagueDirty = v?.trim().toLowerCase() != scan.effectivePlague.trim().toLowerCase();
-                }),
+            if (_canEditPlague)
+              PlagueSelectionHighlight(
+                confidence: scan.confidence,
+                child: FarmerPlagueSelector(
+                  scan: scan,
+                  selectedPlague: _selectedPlague,
+                  topCandidates: widget.topCandidates,
+                  enabled: !_savingPlague,
+                  onChanged: (v) => setState(() {
+                    _selectedPlague = v;
+                    _plagueDirty = v?.trim().toLowerCase() != scan.effectivePlague.trim().toLowerCase();
+                  }),
+                ),
               ),
+            if (_canEditPlague) ...[
               if (_plagueDirty || scan.hasFarmerOverride) ...[
                 const SizedBox(height: 8),
                 OutlinedButton(

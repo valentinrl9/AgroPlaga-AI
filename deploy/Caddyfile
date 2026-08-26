@@ -1,8 +1,9 @@
-# Dominio público del piloto (variable API_DOMAIN en deploy/pilot.env)
-{$API_DOMAIN} {
+# Piloto NEXO — Fase 2 dominio: agroplaga.es principal; .farm legacy (API APK antigua + redirect web)
+
+# Sitio principal (.es)
+agroplaga.es, www.agroplaga.es {
 	encode gzip
 
-	# Panel web B2B (React estático)
 	redir /panel /panel/ permanent
 	handle /panel* {
 		uri strip_prefix /panel
@@ -11,7 +12,6 @@
 		file_server
 	}
 
-	# API FastAPI
 	handle /api/* {
 		reverse_proxy backend:8000
 	}
@@ -24,10 +24,23 @@
 		reverse_proxy backend:8000
 	}
 
-	# Landing pública (raíz del dominio)
 	handle {
 		root * /srv/landing
 		try_files {path} /index.html
 		file_server
+	}
+}
+
+# Legacy .farm — mantiene /api para APK antigua; web y panel redirigen a .es
+agroplaga-ai.farm {
+	encode gzip
+
+	@legacy_api path /api/* /docs* /openapi.json
+	handle @legacy_api {
+		reverse_proxy backend:8000
+	}
+
+	handle {
+		redir https://agroplaga.es{uri} permanent
 	}
 }

@@ -12,7 +12,9 @@ import "../../models/scan.dart";
 import "../../ml/plaga_classifier.dart";
 import "../layout/mobile_layout.dart";
 import "../widgets/app_logo.dart";
+import "result_screen_args.dart";
 import "../widgets/farmer_plague_selector.dart";
+import "../widgets/low_confidence_banner.dart";
 import "../widgets/primary_button.dart";
 import "../widgets/severity_badge.dart";
 
@@ -178,7 +180,14 @@ class _ScanScreenState extends State<ScanScreen> {
       }
 
       if (!mounted) return;
-      Navigator.pushReplacementNamed(context, Routes.result, arguments: scan);
+      Navigator.pushReplacementNamed(
+        context,
+        Routes.result,
+        arguments: ResultScreenArgs(
+          scan: scan,
+          topCandidates: _diagnosis!.displayCandidates,
+        ),
+      );
     } catch (error) {
       final msg = error.toString();
       if (msg.contains("401")) {
@@ -281,10 +290,27 @@ class _ScanScreenState extends State<ScanScreen> {
                         "Modelo: ${_diagnosis!.modelVersion}",
                         style: const TextStyle(fontSize: 12, color: NexoColors.textSecondary),
                       ),
+                      if (_diagnosis!.displayCandidates.length >= 2) ...[
+                        const SizedBox(height: 12),
+                        const Text(
+                          "Alternativas IA",
+                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          _diagnosis!.displayCandidates
+                              .take(3)
+                              .map((c) => "${c.plague} (${c.confidencePercent})")
+                              .join(" · "),
+                          style: const TextStyle(fontSize: 13, color: NexoColors.textSecondary),
+                        ),
+                      ],
                     ],
                   ),
                 ),
               ),
+              const SizedBox(height: 12),
+              LowConfidenceBanner(confidence: _diagnosis!.confidence),
               const SizedBox(height: 12),
               if (_farms.isNotEmpty)
                 InputDecorator(
@@ -319,11 +345,15 @@ class _ScanScreenState extends State<ScanScreen> {
                   padding: EdgeInsets.only(bottom: 12),
                   child: LinearProgressIndicator(),
                 ),
-              FarmerPlagueSelector(
-                aiPlague: _diagnosis!.plague,
-                selectedPlague: _selectedPlague,
-                enabled: !_isBusy,
-                onChanged: (v) => setState(() => _selectedPlague = v),
+              PlagueSelectionHighlight(
+                confidence: _diagnosis!.confidence,
+                child: FarmerPlagueSelector(
+                  aiPlague: _diagnosis!.plague,
+                  selectedPlague: _selectedPlague,
+                  topCandidates: _diagnosis!.displayCandidates,
+                  enabled: !_isBusy,
+                  onChanged: (v) => setState(() => _selectedPlague = v),
+                ),
               ),
               const SizedBox(height: 12),
               InputDecorator(

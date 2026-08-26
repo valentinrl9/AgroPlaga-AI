@@ -46,22 +46,20 @@ Future<PlagaResult> classifyWithTflite(Uint8List imageBytes) async {
   interpreter.run(input, output);
 
   final scores = output.first;
-  var bestIndex = 0;
-  var bestScore = scores.first;
-  for (var i = 1; i < scores.length; i++) {
-    if (scores[i] > bestScore) {
-      bestScore = scores[i];
-      bestIndex = i;
-    }
+  final topCandidates = topCandidatesFromScores(scores, labels);
+  if (topCandidates.isEmpty) {
+    throw StateError("inferencia sin candidatos");
   }
 
-  final plague = labels[bestIndex].toLowerCase();
-  final confidence = bestScore.clamp(0.0, 1.0);
+  final best = topCandidates.first;
+  final plague = best.plague;
+  final confidence = best.confidence;
 
   return PlagaResult(
     plague: plague,
     confidence: confidence,
     suggestedSeverity: severityFromConfidence(plague, confidence),
     modelVersion: _modelVersion,
+    topCandidates: topCandidates,
   );
 }

@@ -1,7 +1,8 @@
 # NEXO Agro — Guía por roles (piloto V2)
 
-**Versión:** NEXO Field Pro 2.0 · **URL producción:** `https://agroplaga-ai.farm`  
-**Panel B2B:** `https://agroplaga-ai.farm/panel/`
+**Versión:** NEXO Field Pro 2.0 · **URL producción:** `https://agroplaga.es`  
+**Panel B2B:** `https://agroplaga.es/panel/`  
+**Legacy:** `agroplaga-ai.farm` redirige a `.es` (la API en `.farm` sigue para APK antigua).
 
 Esta guía explica **qué puede hacer cada rol** en el piloto: agricultor, técnico/perito y cooperativa.
 
@@ -15,7 +16,7 @@ Esta guía explica **qué puede hacer cada rol** en el piloto: agricultor, técn
 | **Técnico / perito** | `PLG-PILOT-T01`, `T02` | ✅ Opcional (validación escaneos + mapa) | ✅ **Uso principal** |
 | **Cooperativa** | `PLG-PILOT-C01` | ✅ Opcional | ✅ **Uso principal** |
 
-> Registro con **código de invitación + email + contraseña**. Al registrarse, el agricultor **acepta el mapa comunitario anónimo** (obligatorio). La APK apunta a `https://agroplaga-ai.farm`.
+> Registro con **código de invitación + email + contraseña**. Al registrarse, el agricultor **acepta el mapa comunitario anónimo** (obligatorio). La APK piloto apunta a `https://agroplaga.es`.
 
 ---
 
@@ -161,7 +162,7 @@ Ciclo en 6 etapas: Detección → Diagnóstico → Prescripción MAPA → Tratam
 
 ## Panel web — acceso
 
-1. Abrir `https://agroplaga-ai.farm/panel/`
+1. Abrir `https://agroplaga.es/panel/`
 2. Mismo **email y contraseña** que en la app.
 3. Solo entran roles `tech` y `admin`.
 
@@ -358,7 +359,7 @@ AGRICULTOR                          TÉCNICO / COOPERATIVA
 
 # Soporte técnico piloto
 
-- **API caída / login:** comprobar `https://agroplaga-ai.farm/docs`
+- **API caída / login:** comprobar `https://agroplaga.es/docs`
 - **Panel vacío en validación:** ningún agricultor ha marcado aún «Compartir foto con técnico»
 - **IA imprecisa:** esperado en piloto; el valor B2B está en la validación del perito, no en la IA sola
 

@@ -100,10 +100,52 @@ Future<PlagaResult> classifyPlaga(Uint8List imageBytes) async {
 
   confidence = confidence.clamp(0.55, 0.92);
 
+  final topCandidates = _heuristicTopCandidates(
+    labels: labels,
+    primaryPlague: plague,
+    primaryConfidence: confidence,
+    imageBytes: imageBytes,
+  );
+
   return PlagaResult(
     plague: plague,
     confidence: confidence,
     suggestedSeverity: severityFromConfidence(plague, confidence),
     modelVersion: "v1.5-web-heuristic",
+    topCandidates: topCandidates,
   );
+}
+
+List<PlagueCandidate> _heuristicTopCandidates({
+  required List<String> labels,
+  required String primaryPlague,
+  required double primaryConfidence,
+  required Uint8List imageBytes,
+}) {
+  final normalizedPrimary = primaryPlague.trim().toLowerCase();
+  final pool = labels.map((l) => l.trim().toLowerCase()).where((l) => l.isNotEmpty).toList();
+  if (pool.isEmpty) {
+    return [PlagueCandidate(plague: normalizedPrimary, confidence: primaryConfidence)];
+  }
+
+  final hash = imageBytes.fold<int>(0, (sum, byte) => (sum + byte) % 9973);
+  final candidates = <PlagueCandidate>[
+    PlagueCandidate(plague: normalizedPrimary, confidence: primaryConfidence),
+  ];
+
+  var offset = 1;
+  while (candidates.length < 3 && offset < pool.length + 3) {
+    final candidate = pool[(hash + offset * 17) % pool.length];
+    offset++;
+    if (candidates.any((c) => c.plague == candidate)) continue;
+    final drop = 0.08 + (candidates.length * 0.06);
+    candidates.add(
+      PlagueCandidate(
+        plague: candidate,
+        confidence: (primaryConfidence - drop).clamp(0.15, 0.99),
+      ),
+    );
+  }
+
+  return candidates;
 }

@@ -24,6 +24,7 @@ import "ui/screens/incidents_screen.dart";
 import "ui/screens/onboarding_wizard_screen.dart";
 import "ui/screens/register_screen.dart";
 import "ui/screens/result_screen.dart";
+import "ui/screens/result_screen_args.dart";
 import "ui/screens/scan_screen.dart";
 import "ui/screens/settings_screen.dart";
 import "ui/screens/splash_screen.dart";
@@ -78,9 +79,17 @@ class NexoAgroApp extends StatelessWidget {
           );
         }
         if (settings.name == Routes.result) {
-          final scan = settings.arguments as Scan?;
-          if (scan != null) {
-            return MaterialPageRoute(builder: (context) => ResultScreen(scan: scan));
+          final args = settings.arguments;
+          if (args is ResultScreenArgs) {
+            return MaterialPageRoute(
+              builder: (context) => ResultScreen(
+                scan: args.scan,
+                topCandidates: args.topCandidates,
+              ),
+            );
+          }
+          if (args is Scan) {
+            return MaterialPageRoute(builder: (context) => ResultScreen(scan: args));
           }
         }
         if (settings.name == Routes.contribute) {

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Deploy NEXO Field Pro V2.0 en VPS piloto (agroplaga-ai.farm)
+# Deploy NEXO Field Pro V2.0 en VPS piloto (agroplaga.es)
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "$0")/.." && pwd)"

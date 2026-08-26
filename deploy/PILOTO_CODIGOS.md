@@ -2,7 +2,7 @@
 
 **Caducidad:** 15 ago 2026 · **Usos:** 1 por código  
 **Registro:** app → Regístrate → código + email + contraseña  
-**URL API:** `https://agroplaga-ai.farm` (ya incluida en la APK piloto)
+**URL API:** `https://agroplaga.es` (incluida en APK piloto nueva)
 
 ---
 
