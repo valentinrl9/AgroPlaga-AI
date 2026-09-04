@@ -10,7 +10,7 @@ _INSECURE_SECRET_KEYS = frozenset({"change-me-in-production", "secret", "changem
 
 
 class Settings:
-    app_name: str = os.getenv("APP_NAME", "NEXO Agro")
+    app_name: str = os.getenv("APP_NAME", "AgroPlaga")
     environment: str = os.getenv("ENVIRONMENT", "development").strip().lower()
     allow_insecure_secrets: bool = os.getenv("ALLOW_INSECURE_SECRETS", "").strip().lower() in {
         "1",
@@ -43,7 +43,12 @@ class Settings:
     smtp_user: str = os.getenv("SMTP_USER", "").strip()
     smtp_password: str = os.getenv("SMTP_PASSWORD", "").strip()
     smtp_from: str = os.getenv("SMTP_FROM", "").strip()
-    smtp_use_tls: bool = os.getenv("SMTP_USE_TLS", "true").strip().lower() in {"1", "true", "yes"}
+    notifications_enabled: bool = os.getenv("NOTIFICATIONS_ENABLED", "true").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+    }
+    pilot_scan_goal: int = int(os.getenv("PILOT_SCAN_GOAL", "1000"))
 
     @property
     def is_production(self) -> bool:

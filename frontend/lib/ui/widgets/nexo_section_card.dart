@@ -56,12 +56,14 @@ class NexoActionTile extends StatelessWidget {
   final IconData icon;
   final String label;
   final VoidCallback? onTap;
+  final bool showBadge;
 
   const NexoActionTile({
     super.key,
     required this.icon,
     required this.label,
     required this.onTap,
+    this.showBadge = false,
   });
 
   @override
@@ -78,19 +80,37 @@ class NexoActionTile extends StatelessWidget {
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: NexoColors.borderSubtle),
           ),
-          child: Column(
+          child: Stack(
+            clipBehavior: Clip.none,
             children: [
-              Icon(icon, color: NexoColors.techCyan, size: 22),
-              const SizedBox(height: 6),
-              Text(
-                label,
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontSize: 13,
-                  fontWeight: FontWeight.w600,
-                  color: NexoColors.textPrimary,
-                ),
+              Column(
+                children: [
+                  Icon(icon, color: NexoColors.techCyan, size: 22),
+                  const SizedBox(height: 6),
+                  Text(
+                    label,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      color: NexoColors.textPrimary,
+                    ),
+                  ),
+                ],
               ),
+              if (showBadge)
+                Positioned(
+                  top: -2,
+                  right: -2,
+                  child: Container(
+                    width: 10,
+                    height: 10,
+                    decoration: const BoxDecoration(
+                      color: NexoColors.errorRed,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                ),
             ],
           ),
         ),

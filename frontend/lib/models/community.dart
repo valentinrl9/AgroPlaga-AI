@@ -1,3 +1,7 @@
+import "../../models/activity_summary.dart";
+
+export "../../models/activity_summary.dart" show WeeklyVigilance, PilotCollective;
+
 class UserBadge {
   final String code;
   final String label;
@@ -37,43 +41,19 @@ class ZoneRankingEntry {
   }
 }
 
-class WeeklyVigilance {
-  final int goal;
-  final int current;
-  final bool completed;
-  final DateTime endsAt;
-  final String description;
-
-  WeeklyVigilance({
-    required this.goal,
-    required this.current,
-    required this.completed,
-    required this.endsAt,
-    required this.description,
-  });
-
-  factory WeeklyVigilance.fromJson(Map<String, dynamic> json) {
-    return WeeklyVigilance(
-      goal: json["goal"] as int,
-      current: json["current"] as int,
-      completed: json["completed"] as bool? ?? false,
-      endsAt: DateTime.parse(json["ends_at"] as String),
-      description: json["description"] as String,
-    );
-  }
-}
-
 class CommunityProfile {
   final int contributionCount;
   final List<UserBadge> badges;
   final WeeklyVigilance weeklyVigilance;
   final List<ZoneRankingEntry> zoneRanking;
+  final PilotCollective pilotCollective;
 
   CommunityProfile({
     required this.contributionCount,
     required this.badges,
     required this.weeklyVigilance,
     required this.zoneRanking,
+    required this.pilotCollective,
   });
 
   factory CommunityProfile.fromJson(Map<String, dynamic> json) {
@@ -88,6 +68,9 @@ class CommunityProfile {
       zoneRanking: (json["zone_ranking"] as List? ?? [])
           .map((e) => ZoneRankingEntry.fromJson(Map<String, dynamic>.from(e as Map)))
           .toList(),
+      pilotCollective: PilotCollective.fromJson(
+        Map<String, dynamic>.from(json["pilot_collective"] as Map? ?? {"total_scans": 0, "active_farmers": 0, "goal": 1000}),
+      ),
     );
   }
 }

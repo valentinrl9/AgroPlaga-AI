@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 
 import "../../core/nexo_colors.dart";
 import "../../core/routes.dart";
+import "../../data/repositories/activity_repository.dart";
 import "../../data/repositories/incident_repository.dart";
 import "../../models/pest_incident.dart";
 import "../layout/mobile_layout.dart";
@@ -40,6 +41,7 @@ class _IncidentsScreenState extends State<IncidentsScreen> {
   void initState() {
     super.initState();
     _reload();
+    ActivityRepository().markSectionRead("incidents").catchError((_) {});
   }
 
   void _reload() {

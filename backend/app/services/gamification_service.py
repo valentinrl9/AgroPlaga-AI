@@ -1,10 +1,11 @@
-"""Insignias, ranking y vigilancia semanal."""
+"""Insignias, ranking, vigilancia semanal y racha."""
 
 from datetime import datetime, timedelta, timezone
 
 from sqlalchemy import Integer, cast, func
 from sqlalchemy.orm import Session
 
+from app.core.config import settings
 from app.models.feedback import Feedback
 from app.models.outbreak_event import OutbreakEvent
 from app.models.scan import Scan
@@ -30,9 +31,21 @@ def _week_start() -> datetime:
     return now - timedelta(days=now.weekday())
 
 
-def _award_badge(db: Session, user_id: int, badge_code: str) -> UserBadge | None:
-    if badge_code not in BADGE_CATALOG:
-        return None
+def _badge_label(code: str) -> str:
+    if code.startswith("weekly_vigilance_") and "_W" in code:
+        week_part = code.rsplit("_W", 1)[-1]
+        return f"Vigilante semana {week_part.lstrip('0') or week_part}"
+    return BADGE_CATALOG.get(code, code.replace("_", " ").title())
+
+
+def _award_badge(
+    db: Session,
+    user_id: int,
+    badge_code: str,
+    *,
+    custom_label: str | None = None,
+    notify: bool = True,
+) -> UserBadge | None:
     exists = (
         db.query(UserBadge)
         .filter(UserBadge.user_id == user_id, UserBadge.badge_code == badge_code)
@@ -44,6 +57,10 @@ def _award_badge(db: Session, user_id: int, badge_code: str) -> UserBadge | None
     db.add(badge)
     db.commit()
     db.refresh(badge)
+    if notify:
+        from app.services.user_notification_service import notify_badge_earned
+
+        notify_badge_earned(db, user_id, badge_code, custom_label or _badge_label(badge_code))
     return badge
 
 
@@ -53,6 +70,33 @@ def _weekly_scans(db: Session, user_id: int) -> int:
         .filter(Scan.user_id == user_id, Scan.created_at >= _week_start())
         .count()
     )
+
+
+def get_weekly_streak(db: Session, user_id: int) -> int:
+    """Semanas consecutivas con al menos 1 escaneo."""
+    now = datetime.now(timezone.utc)
+    week_start = _week_start()
+    current_has = _weekly_scans(db, user_id) >= WEEKLY_SCAN_GOAL
+    offset = 0 if current_has else 1
+
+    streak = 0
+    for i in range(offset, 52):
+        ws = week_start - timedelta(weeks=i)
+        we = ws + timedelta(days=7)
+        count = (
+            db.query(Scan)
+            .filter(
+                Scan.user_id == user_id,
+                Scan.created_at >= ws,
+                Scan.created_at < we,
+            )
+            .count()
+        )
+        if count >= WEEKLY_SCAN_GOAL:
+            streak += 1
+        else:
+            break
+    return streak
 
 
 def check_contribution_badges(db: Session, user: User) -> list[str]:
@@ -66,8 +110,15 @@ def check_contribution_badges(db: Session, user: User) -> list[str]:
 
 def check_scan_badges(db: Session, user_id: int) -> list[str]:
     earned: list[str] = []
-    if _weekly_scans(db, user_id) >= WEEKLY_SCAN_GOAL and _award_badge(db, user_id, "weekly_vigilance"):
-        earned.append("weekly_vigilance")
+    if _weekly_scans(db, user_id) >= WEEKLY_SCAN_GOAL:
+        now = datetime.now(timezone.utc)
+        year, week, _ = now.isocalendar()
+        weekly_code = f"weekly_vigilance_{year}_W{week:02d}"
+        label = f"Vigilante semana {week}"
+        if _award_badge(db, user_id, weekly_code, custom_label=label):
+            earned.append(weekly_code)
+        if _award_badge(db, user_id, "weekly_vigilance", notify=False):
+            earned.append("weekly_vigilance")
     return earned
 
 
@@ -102,7 +153,7 @@ def get_user_badges(db: Session, user_id: int) -> list[dict]:
     return [
         {
             "code": row.badge_code,
-            "label": BADGE_CATALOG.get(row.badge_code, row.badge_code),
+            "label": _badge_label(row.badge_code),
             "earned_at": row.earned_at,
         }
         for row in rows
@@ -146,8 +197,25 @@ def get_weekly_vigilance(db: Session, user: User) -> dict:
         "current": current,
         "completed": current >= WEEKLY_SCAN_GOAL,
         "ends_at": week_end,
+        "streak_weeks": get_weekly_streak(db, user.id),
         "description": (
             "Haz al menos 1 escaneo esta semana con PlagaScan "
             "(aunque la hoja esté sana). La vigilancia previene brotes."
         ),
+    }
+
+
+def get_pilot_collective_stats(db: Session) -> dict:
+    since = datetime.now(timezone.utc) - timedelta(days=30)
+    total_scans = db.query(Scan).count()
+    active_farmers = (
+        db.query(func.count(func.distinct(Scan.user_id)))
+        .filter(Scan.created_at >= since)
+        .scalar()
+        or 0
+    )
+    return {
+        "total_scans": int(total_scans),
+        "active_farmers": int(active_farmers),
+        "goal": settings.pilot_scan_goal,
     }

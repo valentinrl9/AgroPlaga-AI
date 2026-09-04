@@ -119,6 +119,16 @@ def validate_scan(
     db.refresh(scan)
     sync_scan_validation_to_outbreak(db, scan, validator)
     mark_read_for_scan(db, scan.id)
+    from app.services.user_notification_service import notify_scan_validated
+
+    notify_scan_validated(
+        db,
+        farmer_id=scan.user_id,
+        scan_id=scan.id,
+        action=payload.action,
+        plague=scan.plague or "plaga",
+        corrected_plague=payload.corrected_plague or scan.corrected_plague,
+    )
     return scan
 
 

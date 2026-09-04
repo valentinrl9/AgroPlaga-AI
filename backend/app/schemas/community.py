@@ -21,7 +21,14 @@ class WeeklyVigilanceRead(BaseModel):
     current: int
     completed: bool
     ends_at: datetime
+    streak_weeks: int = 0
     description: str
+
+
+class PilotCollectiveRead(BaseModel):
+    total_scans: int
+    active_farmers: int
+    goal: int
 
 
 class CommunityProfileRead(BaseModel):
@@ -29,3 +36,4 @@ class CommunityProfileRead(BaseModel):
     badges: list[BadgeRead]
     weekly_vigilance: WeeklyVigilanceRead
     zone_ranking: list[ZoneRankingEntry]
+    pilot_collective: PilotCollectiveRead

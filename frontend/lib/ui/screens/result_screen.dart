@@ -3,6 +3,7 @@ import "package:flutter/material.dart";
 import "../../core/nexo_colors.dart";
 import "../../core/navigation.dart";
 import "../../core/routes.dart";
+import "../../data/repositories/activity_repository.dart";
 import "../../data/repositories/analytics_repository.dart";
 import "../../data/repositories/feedback_repository.dart";
 import "../../data/repositories/incident_repository.dart";
@@ -13,6 +14,7 @@ import "../../ml/plaga_result.dart";
 import "../widgets/card_scan.dart";
 import "../widgets/farmer_plague_selector.dart";
 import "../widgets/low_confidence_banner.dart";
+import "../widgets/official_attribution_line.dart";
 import "../widgets/primary_button.dart";
 import "../widgets/scan_validation_banner.dart";
 
@@ -60,6 +62,24 @@ class _ResultScreenState extends State<ResultScreen> {
     _scan = widget.scan;
     _selectedPlague = _scan.effectivePlague;
     _reloadRecommendations();
+    _showScanGamificationToast();
+  }
+
+  Future<void> _showScanGamificationToast() async {
+    try {
+      final summary = await ActivityRepository().fetchSummary();
+      if (!mounted) return;
+      final v = summary.weeklyVigilance;
+      final msg = v.completed
+          ? "Reto semanal completado (${v.current}/${v.goal})"
+          : "Reto semanal: ${v.current}/${v.goal} escaneo(s) esta semana";
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(msg),
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    } catch (_) {}
   }
 
   void _reloadRecommendations() {
@@ -266,6 +286,7 @@ class _ResultScreenState extends State<ResultScreen> {
                     ),
                     const SizedBox(height: 12),
                     Text(rec.recommendation, style: const TextStyle(fontSize: 14)),
+                    OfficialAttributionLine(text: rec.displayAttribution),
                     const SizedBox(height: 16),
                     const Text("Prevención", style: TextStyle(fontWeight: FontWeight.bold)),
                     const SizedBox(height: 6),

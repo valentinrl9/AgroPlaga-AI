@@ -14,7 +14,7 @@ from app.db.session import SessionLocal, engine
 from app.db.seed_pilot_invites import seed_pilot_invites
 from app.db.seed_climate_stations import seed_climate_stations
 from app.db.seed_demo_users import seed_local_demo_users
-from app.models import user, scan, feedback, zone, outbreak_event, alert, alert_preference, user_badge, farm, contribution_log, pilot_invite, climate, climate_station, pest_incident, farm_treatment, biocide_product, siex_entry
+from app.models import user, scan, feedback, zone, outbreak_event, alert, alert_preference, user_badge, farm, contribution_log, pilot_invite, climate, climate_station, pest_incident, farm_treatment, biocide_product, siex_entry, user_notification
 from app.models.user import User
 from app.models.zone import AgriZone
 from app.services.geo_service import point_wkt

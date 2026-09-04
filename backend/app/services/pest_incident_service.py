@@ -192,6 +192,22 @@ def apply_treatment_to_incident(
     db.add(incident)
     db.commit()
     db.refresh(incident)
+
+    from app.services.user_notification_service import create_user_notification
+
+    product = incident.prescription_product_name or "tratamiento"
+    create_user_notification(
+        db,
+        user_id=user.id,
+        notification_type="incident_carencia",
+        title="Tratamiento registrado",
+        body=f"{product} · respeta la carencia antes de recolectar.",
+        section="incidents",
+        reference_type="incident",
+        reference_id=incident.id,
+        dedupe_key=f"treatment_applied:{incident.id}",
+        skip_dedupe=True,
+    )
     return incident, treatment
 
 

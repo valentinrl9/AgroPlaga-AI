@@ -51,6 +51,19 @@ def _mapa_etl_job() -> None:
         db.close()
 
 
+def _notification_reminder_job() -> None:
+    db = SessionLocal()
+    try:
+        from app.services.notification_reminder_service import run_all_scheduled_reminders
+
+        result = run_all_scheduled_reminders(db)
+        print(f"[scheduler] recordatorios: {result}")
+    except Exception as exc:
+        print(f"[scheduler] error recordatorios: {exc}")
+    finally:
+        db.close()
+
+
 def start_scheduler() -> None:
     global _scheduler
     if _scheduler is not None:
@@ -75,6 +88,13 @@ def start_scheduler() -> None:
         hour=ETL_CRON_HOUR,
         minute=0,
         id="mapa_etl",
+        replace_existing=True,
+    )
+    scheduler.add_job(
+        _notification_reminder_job,
+        "interval",
+        hours=1,
+        id="notification_reminders",
         replace_existing=True,
     )
     scheduler.start()

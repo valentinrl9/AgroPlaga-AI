@@ -1,372 +1,500 @@
-import "dart:async";
-
-import "package:flutter/material.dart";
-
-import "../../core/nexo_colors.dart";
-import "../../core/routes.dart";
-import "../../core/session.dart";
-import "../../data/repositories/auth_repository.dart";
-import "../../data/repositories/tech_repository.dart";
-import "../layout/mobile_layout.dart";
-import "../widgets/carencia_banner.dart";
-import "../widgets/nexo_section_card.dart";
-import "../widgets/primary_button.dart";
-
-class FieldHomeScreen extends StatefulWidget {
-  final bool isActive;
-
-  const FieldHomeScreen({super.key, this.isActive = true});
-
-  @override
-  State<FieldHomeScreen> createState() => _FieldHomeScreenState();
-}
-
-class _FieldHomeScreenState extends State<FieldHomeScreen> {
-  bool _isTech = false;
-  String? _userName;
-  Map<String, dynamic>? _techOverview;
-  int _pendingScans = 0;
-  int _unreadNotifications = 0;
-  Timer? _techPollTimer;
-  int _lastPendingCount = 0;
-
-  @override
-  void initState() {
-    super.initState();
-    _loadProfile();
-  }
-
-  @override
-  void didUpdateWidget(FieldHomeScreen oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (widget.isActive && !oldWidget.isActive && _isTech) {
-      _loadTechDashboard();
-    }
-    _syncTechPolling();
-  }
-
-  void _syncTechPolling() {
-    _techPollTimer?.cancel();
-    if (!widget.isActive || !_isTech) return;
-    _techPollTimer = Timer.periodic(const Duration(seconds: 30), (_) {
-      if (widget.isActive) _loadTechDashboard(notifyOnNew: true);
-    });
-  }
-
-  @override
-  void dispose() {
-    _techPollTimer?.cancel();
-    super.dispose();
-  }
-
-  Future<void> _loadProfile() async {
-    final isTech = await Session.isTechOrAdmin;
-    final name = await Session.name;
-    if (mounted) {
-      setState(() {
-        _isTech = isTech;
-        _userName = name;
-      });
-    }
-    if (isTech) {
-      await _loadTechDashboard();
-      _syncTechPolling();
-    }
-  }
-
-  Future<void> _loadTechDashboard({bool notifyOnNew = false}) async {
-    try {
-      final repo = TechDashboardRepository();
-      final dash = await repo.fetchDashboard();
-      final summary = await repo.fetchNotificationSummary();
-      final pending = summary["pending_scans"] as int? ?? 0;
-      if (notifyOnNew && pending > _lastPendingCount && _lastPendingCount > 0 && mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Nueva validación pendiente ($pending en cola)"),
-            action: SnackBarAction(
-              label: "Ver",
-              onPressed: () => Navigator.pushNamed(context, Routes.techScanValidation),
-            ),
-          ),
-        );
-      }
-      if (!mounted) return;
-      setState(() {
-        _techOverview = dash["overview"] as Map<String, dynamic>?;
-        _pendingScans = pending;
-        _unreadNotifications = summary["unread_count"] as int? ?? 0;
-        _lastPendingCount = pending;
-      });
-    } catch (_) {}
-  }
-
-  Future<void> _logout(BuildContext context) async {
-    await AuthRepository().logout();
-    if (!context.mounted) return;
-    Navigator.pushNamedAndRemoveUntil(context, Routes.login, (_) => false);
-  }
-
-  Widget _actionGrid(List<Widget> tiles) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final tileWidth = (constraints.maxWidth - 10) / 2;
-        return Wrap(
-          spacing: 10,
-          runSpacing: 10,
-          children: tiles
-              .map((tile) => SizedBox(width: tiles.length == 1 ? constraints.maxWidth : tileWidth, child: tile))
-              .toList(),
-        );
-      },
-    );
-  }
-
-  Widget _actionRow(List<Widget> tiles) {
-    return Row(
-      children: [
-        for (var i = 0; i < tiles.length; i++) ...[
-          if (i > 0) const SizedBox(width: 10),
-          Expanded(child: tiles[i]),
-        ],
-      ],
-    );
-  }
-
-  Widget _kpiTile(String label, String value) {
-    return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: NexoColors.surfaceElevated,
-          borderRadius: BorderRadius.circular(12),
-          border: Border.all(color: NexoColors.borderSubtle),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(label, style: const TextStyle(fontSize: 11, color: NexoColors.textSecondary)),
-            const SizedBox(height: 4),
-            Text(value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildTechHome(String greeting) {
-    final o = _techOverview;
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          NexoSectionCard(
-            title: "CENTRO DE MANDO",
-            children: [
-              Row(
-                children: [
-                  _kpiTile("Eventos 7d", "${o?["events_recent"] ?? "-"}"),
-                  const SizedBox(width: 8),
-                  _kpiTile("Validados", "${o?["validated_recent"] ?? "-"}"),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Row(
-                children: [
-                  _kpiTile("Alertas", "${o?["active_alerts"] ?? "-"}"),
-                  const SizedBox(width: 8),
-                  _kpiTile("Zonas", "${o?["active_zones"] ?? "-"}"),
-                ],
-              ),
-              const SizedBox(height: 14),
-              if (_pendingScans > 0)
-                Container(
-                  margin: const EdgeInsets.only(bottom: 12),
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: NexoColors.warningAmber.withValues(alpha: 0.15),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: NexoColors.warningAmber.withValues(alpha: 0.5)),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.notifications_active, color: NexoColors.warningAmber),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                          "$_pendingScans escaneo(s) pendientes de validar"
-                          "${_unreadNotifications > 0 ? " · $_unreadNotifications aviso(s) nuevo(s)" : ""}",
-                          style: const TextStyle(fontSize: 13),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              PrimaryButton(
-                label: "Validar escaneos ($_pendingScans)",
-                onPressed: () => Navigator.pushNamed(context, Routes.techScanValidation),
-              ),
-              const SizedBox(height: 10),
-              _actionRow([
-                NexoActionTile(
-                  icon: Icons.map_outlined,
-                  label: "Mapa técnico",
-                  onTap: () => Navigator.pushNamed(context, Routes.map),
-                ),
-                NexoActionTile(
-                  icon: Icons.fact_check_outlined,
-                  label: "Eventos mapa",
-                  onTap: () => Navigator.pushNamed(context, Routes.techValidation),
-                ),
-              ]),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildFarmerHome() {
-    return Padding(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          const CarenciaBanner(),
-          NexoSectionCard(
-            title: "ESCANEAR",
-            children: [
-              PrimaryButton(
-                label: "Nuevo escaneo",
-                onPressed: () => Navigator.pushNamed(context, Routes.scan),
-              ),
-              const SizedBox(height: 10),
-              _actionRow([
-                NexoActionTile(
-                  icon: Icons.history_rounded,
-                  label: "Historial",
-                  onTap: () => Navigator.pushNamed(context, Routes.history),
-                ),
-                NexoActionTile(
-                  icon: Icons.insights_rounded,
-                  label: "Mi analítica",
-                  onTap: () => Navigator.pushNamed(context, Routes.analytics),
-                ),
-              ]),
-            ],
-          ),
-          NexoSectionCard(
-            title: "COLABORACIÓN",
-            children: [
-              PrimaryButton(
-                label: "Mapa de focos",
-                onPressed: () => Navigator.pushNamed(context, Routes.map),
-              ),
-              const SizedBox(height: 10),
-              _actionRow([
-                NexoActionTile(
-                  icon: Icons.notifications_active_outlined,
-                  label: "Alertas",
-                  onTap: () => Navigator.pushNamed(context, Routes.alerts),
-                ),
-                NexoActionTile(
-                  icon: Icons.groups_outlined,
-                  label: "Comunidad",
-                  onTap: () => Navigator.pushNamed(context, Routes.community),
-                ),
-              ]),
-            ],
-          ),
-          NexoSectionCard(
-            title: "GESTIÓN",
-            children: [
-              _actionGrid([
-                NexoActionTile(
-                  icon: Icons.settings_outlined,
-                  label: "Ajustes API",
-                  onTap: () => Navigator.pushNamed(context, Routes.settings),
-                ),
-                NexoActionTile(
-                  icon: Icons.agriculture_outlined,
-                  label: "Mis fincas",
-                  onTap: () => Navigator.pushNamed(context, Routes.farms),
-                ),
-                NexoActionTile(
-                  icon: Icons.bug_report_outlined,
-                  label: "Incidencias",
-                  onTap: () => Navigator.pushNamed(context, Routes.incidents),
-                ),
-              ]),
-            ],
-          ),
-        ],
-      ),
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final greeting = _userName != null && _userName!.isNotEmpty ? "Hola, $_userName" : "Bienvenido";
-
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(_isTech ? "NEXO Field · Perito" : "NEXO Field"),
-        actions: [
-          if (_isTech)
-            IconButton(icon: const Icon(Icons.refresh), onPressed: _loadTechDashboard),
-          IconButton(
-            icon: const Icon(Icons.logout),
-            onPressed: () => _logout(context),
-            tooltip: "Cerrar sesión",
-          ),
-        ],
-      ),
-      body: SingleChildScrollView(
-        padding: MobileLayout.scrollPadding(context),
-        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
-              decoration: BoxDecoration(
-                gradient: const LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [NexoColors.deepBlue, NexoColors.surfaceElevated],
-                ),
-                border: Border(
-                  bottom: BorderSide(color: NexoColors.techCyan.withValues(alpha: 0.25)),
-                ),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    greeting,
-                    style: const TextStyle(
-                      fontSize: 26,
-                      fontWeight: FontWeight.w800,
-                      color: NexoColors.textPrimary,
-                      letterSpacing: -0.5,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    _isTech
-                        ? "Centro de mando móvil para validación y supervisión de campo."
-                        : "Diagnostica plagas y contribuye al mapa de tu comarca.",
-                    style: const TextStyle(fontSize: 14, color: NexoColors.textSecondary, height: 1.4),
-                  ),
-                ],
-              ),
-            ),
-            _isTech ? _buildTechHome(greeting) : _buildFarmerHome(),
-          ],
-        ),
-      ),
-    );
-  }
-}
+import "dart:async";
+
+import "package:flutter/material.dart";
+
+import "../../core/nexo_colors.dart";
+import "../../core/routes.dart";
+import "../../core/session.dart";
+import "../../data/repositories/activity_repository.dart";
+import "../../data/repositories/auth_repository.dart";
+import "../../data/repositories/tech_repository.dart";
+import "../../models/activity_summary.dart";
+import "../layout/mobile_layout.dart";
+import "../widgets/carencia_banner.dart";
+import "../widgets/nexo_section_card.dart";
+import "../widgets/primary_button.dart";
+import "../widgets/weekly_vigilance_card.dart";
+
+class FieldHomeScreen extends StatefulWidget {
+  final bool isActive;
+
+  const FieldHomeScreen({super.key, this.isActive = true});
+
+  @override
+  State<FieldHomeScreen> createState() => _FieldHomeScreenState();
+}
+
+class _FieldHomeScreenState extends State<FieldHomeScreen> {
+  bool _isTech = false;
+  String? _userName;
+  Map<String, dynamic>? _techOverview;
+  int _pendingScans = 0;
+  int _unreadNotifications = 0;
+  Timer? _pollTimer;
+  int _lastPendingCount = 0;
+  int _lastFarmerUnread = 0;
+
+  ActivitySummary? _activity;
+  final _activityRepo = ActivityRepository();
+
+  @override
+  void initState() {
+    super.initState();
+    _loadProfile();
+  }
+
+  @override
+  void didUpdateWidget(FieldHomeScreen oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.isActive && !oldWidget.isActive) {
+      if (_isTech) {
+        _loadTechDashboard();
+      } else {
+        _loadFarmerActivity();
+      }
+    }
+    _syncPolling();
+  }
+
+  void _syncPolling() {
+    _pollTimer?.cancel();
+    if (!widget.isActive) return;
+    _pollTimer = Timer.periodic(const Duration(seconds: 30), (_) {
+      if (!widget.isActive) return;
+      if (_isTech) {
+        _loadTechDashboard(notifyOnNew: true);
+      } else {
+        _loadFarmerActivity(notifyOnNew: true);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _pollTimer?.cancel();
+    super.dispose();
+  }
+
+  Future<void> _loadProfile() async {
+    final isTech = await Session.isTechOrAdmin;
+    final name = await Session.name;
+    if (mounted) {
+      setState(() {
+        _isTech = isTech;
+        _userName = name;
+      });
+    }
+    if (isTech) {
+      await _loadTechDashboard();
+    } else {
+      await _loadFarmerActivity();
+    }
+    _syncPolling();
+  }
+
+  Future<void> _loadFarmerActivity({bool notifyOnNew = false}) async {
+    try {
+      final summary = await _activityRepo.fetchSummary();
+      if (notifyOnNew && summary.unreadCount > _lastFarmerUnread && _lastFarmerUnread > 0 && mounted) {
+        final notifs = await _activityRepo.fetchNotifications(unreadOnly: true);
+        if (notifs.isNotEmpty) {
+          final latest = notifs.first;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text("${latest.title}: ${latest.body}"),
+              action: SnackBarAction(
+                label: "Ver",
+                onPressed: () => _openNotification(context, latest),
+              ),
+            ),
+          );
+        }
+      }
+      if (!mounted) return;
+      setState(() {
+        _activity = summary;
+        _lastFarmerUnread = summary.unreadCount;
+      });
+    } catch (_) {}
+  }
+
+  void _openNotification(BuildContext context, UserNotificationItem item) {
+    if (item.referenceType == "incident" && item.referenceId != null) {
+      Navigator.pushNamed(context, Routes.incidentDetail, arguments: item.referenceId);
+      return;
+    }
+    if (item.section == "history") {
+      Navigator.pushNamed(context, Routes.history);
+      return;
+    }
+    if (item.section == "incidents") {
+      Navigator.pushNamed(context, Routes.incidents);
+      return;
+    }
+    if (item.section == "community") {
+      Navigator.pushNamed(context, Routes.community);
+      return;
+    }
+    Navigator.pushNamed(context, Routes.alerts);
+  }
+
+  Future<void> _loadTechDashboard({bool notifyOnNew = false}) async {
+    try {
+      final repo = TechDashboardRepository();
+      final dash = await repo.fetchDashboard();
+      final summary = await repo.fetchNotificationSummary();
+      final pending = summary["pending_scans"] as int? ?? 0;
+      if (notifyOnNew && pending > _lastPendingCount && _lastPendingCount > 0 && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Nueva validación pendiente ($pending en cola)"),
+            action: SnackBarAction(
+              label: "Ver",
+              onPressed: () => Navigator.pushNamed(context, Routes.techScanValidation),
+            ),
+          ),
+        );
+      }
+      if (!mounted) return;
+      setState(() {
+        _techOverview = dash["overview"] as Map<String, dynamic>?;
+        _pendingScans = pending;
+        _unreadNotifications = summary["unread_count"] as int? ?? 0;
+        _lastPendingCount = pending;
+      });
+    } catch (_) {}
+  }
+
+  Future<void> _logout(BuildContext context) async {
+    await AuthRepository().logout();
+    if (!context.mounted) return;
+    Navigator.pushNamedAndRemoveUntil(context, Routes.login, (_) => false);
+  }
+
+  Widget _actionGrid(List<Widget> tiles) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final tileWidth = (constraints.maxWidth - 10) / 2;
+        return Wrap(
+          spacing: 10,
+          runSpacing: 10,
+          children: tiles
+              .map((tile) => SizedBox(width: tiles.length == 1 ? constraints.maxWidth : tileWidth, child: tile))
+              .toList(),
+        );
+      },
+    );
+  }
+
+  Widget _actionRow(List<Widget> tiles) {
+    return Row(
+      children: [
+        for (var i = 0; i < tiles.length; i++) ...[
+          if (i > 0) const SizedBox(width: 10),
+          Expanded(child: tiles[i]),
+        ],
+      ],
+    );
+  }
+
+  Widget _kpiTile(String label, String value) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: NexoColors.surfaceElevated,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: NexoColors.borderSubtle),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(label, style: const TextStyle(fontSize: 11, color: NexoColors.textSecondary)),
+            const SizedBox(height: 4),
+            Text(value, style: const TextStyle(fontSize: 20, fontWeight: FontWeight.w800)),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTechHome(String greeting) {
+    final o = _techOverview;
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          NexoSectionCard(
+            title: "CENTRO DE MANDO",
+            children: [
+              Row(
+                children: [
+                  _kpiTile("Eventos 7d", "${o?["events_recent"] ?? "-"}"),
+                  const SizedBox(width: 8),
+                  _kpiTile("Validados", "${o?["validated_recent"] ?? "-"}"),
+                ],
+              ),
+              const SizedBox(height: 8),
+              Row(
+                children: [
+                  _kpiTile("Alertas", "${o?["active_alerts"] ?? "-"}"),
+                  const SizedBox(width: 8),
+                  _kpiTile("Zonas", "${o?["active_zones"] ?? "-"}"),
+                ],
+              ),
+              const SizedBox(height: 14),
+              if (_pendingScans > 0)
+                Container(
+                  margin: const EdgeInsets.only(bottom: 12),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: NexoColors.warningAmber.withValues(alpha: 0.15),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: NexoColors.warningAmber.withValues(alpha: 0.5)),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.notifications_active, color: NexoColors.warningAmber),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          "$_pendingScans escaneo(s) pendientes de validar"
+                          "${_unreadNotifications > 0 ? " · $_unreadNotifications aviso(s) nuevo(s)" : ""}",
+                          style: const TextStyle(fontSize: 13),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              PrimaryButton(
+                label: "Validar escaneos ($_pendingScans)",
+                onPressed: () => Navigator.pushNamed(context, Routes.techScanValidation),
+              ),
+              const SizedBox(height: 10),
+              _actionRow([
+                NexoActionTile(
+                  icon: Icons.map_outlined,
+                  label: "Mapa técnico",
+                  onTap: () => Navigator.pushNamed(context, Routes.map),
+                ),
+                NexoActionTile(
+                  icon: Icons.fact_check_outlined,
+                  label: "Eventos mapa",
+                  onTap: () => Navigator.pushNamed(context, Routes.techValidation),
+                ),
+              ]),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFarmerHome() {
+    final activity = _activity;
+    final vigilance = activity?.weeklyVigilance;
+    final incidentsPending = activity?.openIncidentsActionCount ?? 0;
+
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          const CarenciaBanner(),
+          if (vigilance != null)
+            WeeklyVigilanceCard(
+              vigilance: vigilance,
+              streakWeeks: activity?.streakWeeks ?? vigilance.streakWeeks,
+            ),
+          if (incidentsPending > 0)
+            Container(
+              margin: const EdgeInsets.only(bottom: 16),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: NexoColors.warningAmber.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: NexoColors.warningAmber.withValues(alpha: 0.45)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.bug_report, color: NexoColors.warningAmber),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      "$incidentsPending incidencia(s) requieren acción (tratar, foto o carencia)",
+                      style: const TextStyle(fontSize: 13),
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => Navigator.pushNamed(context, Routes.incidents),
+                    child: const Text("Ver"),
+                  ),
+                ],
+              ),
+            ),
+          if ((activity?.unreadCount ?? 0) > 0)
+            Container(
+              margin: const EdgeInsets.only(bottom: 16),
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: NexoColors.techCyan.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(color: NexoColors.techCyan.withValues(alpha: 0.35)),
+              ),
+              child: Row(
+                children: [
+                  const Icon(Icons.mark_email_unread_outlined, color: NexoColors.techCyan),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      "${activity!.unreadCount} aviso(s) sin leer",
+                      style: const TextStyle(fontSize: 13),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          NexoSectionCard(
+            title: "ESCANEAR",
+            children: [
+              PrimaryButton(
+                label: "Nuevo escaneo",
+                onPressed: () => Navigator.pushNamed(context, Routes.scan),
+              ),
+              const SizedBox(height: 10),
+              _actionRow([
+                NexoActionTile(
+                  icon: Icons.history_rounded,
+                  label: "Historial",
+                  showBadge: (activity?.sectionCount("history") ?? 0) > 0,
+                  onTap: () => Navigator.pushNamed(context, Routes.history),
+                ),
+                NexoActionTile(
+                  icon: Icons.insights_rounded,
+                  label: "Mi analítica",
+                  onTap: () => Navigator.pushNamed(context, Routes.analytics),
+                ),
+              ]),
+            ],
+          ),
+          NexoSectionCard(
+            title: "COLABORACIÓN",
+            children: [
+              PrimaryButton(
+                label: "Mapa de focos",
+                onPressed: () => Navigator.pushNamed(context, Routes.map),
+              ),
+              const SizedBox(height: 10),
+              _actionRow([
+                NexoActionTile(
+                  icon: Icons.notifications_active_outlined,
+                  label: "Alertas",
+                  showBadge: (activity?.sectionCount("alerts") ?? 0) > 0,
+                  onTap: () => Navigator.pushNamed(context, Routes.alerts),
+                ),
+                NexoActionTile(
+                  icon: Icons.groups_outlined,
+                  label: "Comunidad",
+                  showBadge: (activity?.sectionCount("community") ?? 0) > 0,
+                  onTap: () => Navigator.pushNamed(context, Routes.community),
+                ),
+              ]),
+            ],
+          ),
+          NexoSectionCard(
+            title: "GESTIÓN",
+            children: [
+              _actionGrid([
+                NexoActionTile(
+                  icon: Icons.settings_outlined,
+                  label: "Ajustes API",
+                  onTap: () => Navigator.pushNamed(context, Routes.settings),
+                ),
+                NexoActionTile(
+                  icon: Icons.agriculture_outlined,
+                  label: "Mis fincas",
+                  onTap: () => Navigator.pushNamed(context, Routes.farms),
+                ),
+                NexoActionTile(
+                  icon: Icons.bug_report_outlined,
+                  label: "Incidencias",
+                  showBadge: (activity?.sectionCount("incidents") ?? 0) > 0 || incidentsPending > 0,
+                  onTap: () => Navigator.pushNamed(context, Routes.incidents),
+                ),
+              ]),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final greeting = _userName != null && _userName!.isNotEmpty ? "Hola, $_userName" : "Bienvenido";
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(_isTech ? "AgroPlaga · Perito" : "AgroPlaga"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: _isTech ? _loadTechDashboard : _loadFarmerActivity,
+          ),
+          IconButton(
+            icon: const Icon(Icons.logout),
+            onPressed: () => _logout(context),
+            tooltip: "Cerrar sesión",
+          ),
+        ],
+      ),
+      body: SingleChildScrollView(
+        padding: MobileLayout.scrollPadding(context),
+        keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+              decoration: BoxDecoration(
+                gradient: const LinearGradient(
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                  colors: [NexoColors.deepBlue, NexoColors.surfaceElevated],
+                ),
+                border: Border(
+                  bottom: BorderSide(color: NexoColors.techCyan.withValues(alpha: 0.25)),
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    greeting,
+                    style: const TextStyle(
+                      fontSize: 26,
+                      fontWeight: FontWeight.w800,
+                      color: NexoColors.textPrimary,
+                      letterSpacing: -0.5,
+                    ),
+                  ),
+                  const SizedBox(height: 6),
+                  Text(
+                    _isTech
+                        ? "Centro de mando móvil para validación y supervisión de campo."
+                        : "Diagnostica plagas y contribuye al mapa de tu comarca.",
+                    style: const TextStyle(fontSize: 14, color: NexoColors.textSecondary, height: 1.4),
+                  ),
+                ],
+              ),
+            ),
+            _isTech ? _buildTechHome(greeting) : _buildFarmerHome(),
+          ],
+        ),
+      ),
+    );
+  }
+}
+

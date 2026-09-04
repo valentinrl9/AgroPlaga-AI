@@ -1,8 +1,9 @@
 import "package:flutter/material.dart";
 
+import "../../core/nexo_colors.dart";
+import "../../data/repositories/activity_repository.dart";
 import "../../data/repositories/community_repository.dart";
 import "../../models/community.dart";
-
 class CommunityScreen extends StatefulWidget {
   const CommunityScreen({super.key});
 
@@ -18,6 +19,7 @@ class _CommunityScreenState extends State<CommunityScreen> {
   void initState() {
     super.initState();
     _future = _repository.fetchProfile();
+    ActivityRepository().markSectionRead("community").catchError((_) {});
   }
 
   void _reload() {
@@ -46,10 +48,39 @@ class _CommunityScreenState extends State<CommunityScreen> {
 
           final data = snapshot.data!;
           final vigilance = data.weeklyVigilance;
+          final pilot = data.pilotCollective;
 
           return ListView(
             padding: const EdgeInsets.all(16),
             children: [
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text(
+                        "Piloto Almería",
+                        style: TextStyle(fontWeight: FontWeight.w800, fontSize: 16),
+                      ),
+                      const SizedBox(height: 8),
+                      LinearProgressIndicator(
+                        value: pilot.progress,
+                        backgroundColor: NexoColors.borderSubtle,
+                        color: NexoColors.bioGreen,
+                        minHeight: 8,
+                        borderRadius: BorderRadius.circular(4),
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        "${pilot.totalScans} / ${pilot.goal} escaneos · ${pilot.activeFarmers} agricultores activos (30 d)",
+                        style: const TextStyle(fontSize: 13, color: NexoColors.textSecondary),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
               Card(
                 child: ListTile(
                   leading: const CircleAvatar(child: Icon(Icons.volunteer_activism)),
@@ -76,9 +107,20 @@ class _CommunityScreenState extends State<CommunityScreen> {
                       const SizedBox(height: 8),
                       Text(
                         vigilance.completed
-                            ? "1 escaneo esta semana · ¡Completado!"
-                            : "0/1 escaneo esta semana",
+                            ? "${vigilance.current}/${vigilance.goal} escaneo esta semana · Completado"
+                            : "${vigilance.current}/${vigilance.goal} escaneo esta semana",
                       ),
+                      if (vigilance.streakWeeks > 0) ...[
+                        const SizedBox(height: 6),
+                        Text(
+                          "Racha: ${vigilance.streakWeeks} semana(s) consecutivas",
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: NexoColors.warningAmber,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),

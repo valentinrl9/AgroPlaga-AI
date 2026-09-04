@@ -6,6 +6,7 @@ from app.core.security import get_current_active_user
 from app.models.user import User
 from app.schemas.community import CommunityProfileRead
 from app.services.gamification_service import (
+    get_pilot_collective_stats,
     get_user_badges,
     get_weekly_vigilance,
     get_zone_ranking,
@@ -25,4 +26,5 @@ def community_profile(
         badges=get_user_badges(db, current_user.id),
         weekly_vigilance=get_weekly_vigilance(db, current_user),
         zone_ranking=get_zone_ranking(db, days=ranking_days),
+        pilot_collective=get_pilot_collective_stats(db),
     )

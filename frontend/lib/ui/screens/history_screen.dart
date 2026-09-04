@@ -4,6 +4,7 @@ import "../../core/auth_redirect.dart";
 import "../../core/nexo_colors.dart";
 import "../../core/routes.dart";
 import "../../core/session.dart";
+import "../../data/repositories/activity_repository.dart";
 import "../../data/repositories/scan_repository.dart";
 import "../../models/scan.dart";
 import "../widgets/app_logo.dart";
@@ -26,6 +27,7 @@ class _HistoryScreenState extends State<HistoryScreen> {
   void initState() {
     super.initState();
     _scansFuture = _loadScans();
+    ActivityRepository().markSectionRead("history").catchError((_) {});
   }
 
   Future<List<Scan>> _loadScans() async {

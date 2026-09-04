@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
 from fastapi.middleware.cors import CORSMiddleware
-from app.api.v1.routes import auth, users, scans, stats, zones, outbreak_events, alerts, heatmap, community, feedback, farms, tech_dashboard, analytics, plagues, admin, contact, climate, treatments, siex, crops, incidents
+from app.api.v1.routes import auth, users, scans, stats, zones, outbreak_events, alerts, heatmap, community, feedback, farms, tech_dashboard, analytics, plagues, admin, contact, climate, treatments, siex, crops, incidents, me_notifications
 from app.core.config import settings, validate_settings
 from app.core.security_headers import SecurityHeadersMiddleware
 from app.db.init_db import init_db
@@ -12,7 +12,7 @@ _redoc_url = "/redoc" if settings.docs_enabled else None
 _openapi_url = "/openapi.json" if settings.docs_enabled else None
 
 app = FastAPI(
-    title="NEXO Agro API",
+    title="AgroPlaga API",
     version="2.0.0",
     redirect_slashes=False,
     docs_url=_docs_url,
@@ -82,4 +82,5 @@ app.include_router(climate.router, prefix="/api/v1/climate", tags=["climate"])
 app.include_router(treatments.router, prefix="/api/v1/treatments", tags=["treatments"])
 app.include_router(crops.router, prefix="/api/v1/crops", tags=["crops"])
 app.include_router(incidents.router, prefix="/api/v1/incidents", tags=["incidents"])
+app.include_router(me_notifications.router, prefix="/api/v1/me", tags=["me"])
 app.include_router(siex.router, prefix="/api/v1/siex", tags=["siex"])
