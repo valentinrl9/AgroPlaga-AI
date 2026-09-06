@@ -19,7 +19,7 @@ def _require_siex(user: User = Depends(get_current_active_user)) -> User:
     if not siex_service.user_has_siex_access(user):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Módulo NEXO SIEX no activo para esta cuenta.",
+            detail="Módulo Cuaderno SIEX no activo para esta cuenta.",
         )
     return user
 

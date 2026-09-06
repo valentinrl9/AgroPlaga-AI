@@ -73,7 +73,7 @@ def run_mapa_etl(db: Session, *, use_cache: bool = False) -> dict:
 
         rows = transform_cex_productos(catalog["productos"], synced_at=started)
         if not rows:
-            raise MapaClientError("No se indexaron usos MAPA para el catálogo NEXO")
+            raise MapaClientError("No se indexaron usos MAPA para el catálogo AgroPlaga")
 
         indexed = replace_mapa_catalog(db, rows)
         elapsed = (datetime.now(timezone.utc) - started).total_seconds()

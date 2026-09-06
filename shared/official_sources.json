@@ -1,0 +1,100 @@
+{
+  "version": "1.0",
+  "region": "Andalucía · Poniente Almeriense",
+  "sources": [
+    {
+      "id": "raif-portal",
+      "kind": "official_bulletin",
+      "issuer": "Junta de Andalucía · RAIF",
+      "title": "Red de Alerta e Información Fitosanitaria (RAIF)",
+      "url": "https://www.juntadeandalucia.es/agriculturapescaaguaydesarrollorural/raif/",
+      "plagues": ["*"],
+      "crops": ["*"],
+      "contexts": ["recommendation", "alert"]
+    },
+    {
+      "id": "raif-horticolas-almeria",
+      "kind": "official_bulletin",
+      "issuer": "Junta de Andalucía · RAIF",
+      "title": "Situación fitosanitaria hortícolas protegidos — Almería (tomate y pimiento)",
+      "url": "https://www.juntadeandalucia.es/agriculturapescaaguaydesarrollorural/raif/situacion-fitosanitaria-actual-de-horticolas-protegidos-pimiento-y-tomate-en-la-provincia-de-almeria/",
+      "plagues": ["trips", "mosca blanca", "tuta absoluta", "arañuela roja", "mildiu", "botritis", "oídio"],
+      "crops": ["tomate", "pimiento", "pepino", "calabacín"],
+      "contexts": ["recommendation", "alert"]
+    },
+    {
+      "id": "raif-protocolo-biologico-invernadero",
+      "kind": "official_protocol",
+      "issuer": "Junta de Andalucía · IFAPA / RAIF",
+      "title": "Protocolo unificado de control biológico en invernadero (Thrips parvispinus y MIP)",
+      "url": "https://www.juntadeandalucia.es/agriculturapescaaguaydesarrollorural/raif/wp-content/uploads/2026/08/Protocolo-Control-Biologico-Invernadero.pdf",
+      "plagues": ["trips", "mosca blanca", "arañuela roja"],
+      "crops": ["pimiento", "tomate", "pepino"],
+      "contexts": ["recommendation"],
+      "note": "Incluye medidas MIP consensuadas en mesa técnica Andalucía. Consulte también normativa BOJA si aplica T. parvispinus."
+    },
+    {
+      "id": "boja-parvispinus-2026",
+      "kind": "official_protocol",
+      "issuer": "Junta de Andalucía · BOJA",
+      "title": "Medidas obligatorias Thrips parvispinus (Almería y Granada)",
+      "url": "https://www.juntadeandalucia.es/agriculturapescaaguaydesarrollorural/raif/",
+      "plagues": ["trips"],
+      "crops": ["pimiento", "pepino", "berenjena", "calabacín"],
+      "contexts": ["recommendation", "alert"],
+      "note": "Resolución abril 2026: protocolo de arranque y trampeo. Aplica a cultivos reservorio en invernadero."
+    },
+    {
+      "id": "mapa-registro-fitosanitarios",
+      "kind": "official_registry",
+      "issuer": "MAPA · Ministerio de Agricultura",
+      "title": "Registro Oficial de Productos Fitosanitarios",
+      "url": "https://servicio.mapa.gob.es/regfiweb/",
+      "plagues": ["*"],
+      "crops": ["*"],
+      "contexts": ["recommendation", "treatment"]
+    },
+    {
+      "id": "mapa-sanidad-vegetal",
+      "kind": "official_bulletin",
+      "issuer": "MAPA",
+      "title": "Sanidad vegetal — normativa y alertas nacionales",
+      "url": "https://servicio.mapa.gob.es/es/agricultura/temas/sanidad-vegetal",
+      "plagues": ["*"],
+      "crops": ["*"],
+      "contexts": ["recommendation"]
+    },
+    {
+      "id": "eppo-global-database",
+      "kind": "official_bulletin",
+      "issuer": "EPPO Global Database",
+      "title": "Fichas técnicas de plagas (códigos EPPO)",
+      "url": "https://gd.eppo.int/",
+      "plagues": ["tuta absoluta", "trips", "mosca blanca", "pulgón", "arañuela roja", "minador", "mildiu", "botritis", "oídio", "fusarium", "clorosis viral"],
+      "crops": ["*"],
+      "contexts": ["recommendation"]
+    },
+    {
+      "id": "nexo-community-map",
+      "kind": "community",
+      "issuer": "AgroPlaga",
+      "title": "Mapa comunitario anónimo de focos",
+      "url": null,
+      "plagues": ["*"],
+      "crops": ["*"],
+      "contexts": ["alert"],
+      "note": "Alerta generada por tendencia en escaneos validados de la red piloto, no por RAIF."
+    },
+    {
+      "id": "nexo-recommendation-orientation",
+      "kind": "orientation",
+      "issuer": "AgroPlaga",
+      "title": "Orientación MIP de la app",
+      "url": null,
+      "plagues": ["*"],
+      "crops": ["*"],
+      "contexts": ["recommendation"],
+      "note": "Texto orientativo. Contraste con protocolos RAIF/MAPA y confirme con su técnico o cooperativa."
+    }
+  ]
+}

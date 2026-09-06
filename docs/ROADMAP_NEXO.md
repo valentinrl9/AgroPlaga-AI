@@ -1,11 +1,11 @@
 # NEXO Agro — Roadmap de Desarrollo
 
 **Autor:** Valentín Ruiz León  
-**Actualizado:** 25 ago 2026  
+**Actualizado:** 4 sep 2026  
 **Rama:** `nexoagro`  
-**Estado:** ✅ **NEXO Field Pro 2.0** desplegado en `https://agroplaga-ai.farm` — versión piloto **aceptable para campo**  
-**Siguiente hito:** APK con `agroplaga.es` + notificaciones Fase 1 · piloto ampliado sur Almería  
-**TODO infra (más adelante):** dominio `agroplaga.es` + Workspace · seguridad avanzada (pinning, Redis, WAF)
+**Estado:** ✅ **NEXO Field Pro 2.0** en **`https://agroplaga.es`** — piloto operativo en campo  
+**Siguiente hito:** **Fase 4 FCM** (push Android) + **Fase 5** pulido (preferencias, alertas comarcal push, anti-spam) — sep 2026  
+**TODO infra (más adelante):** Google Workspace (`hola@agroplaga.es`) · seguridad avanzada (pinning, Redis, WAF)
 
 ---
 
@@ -21,16 +21,18 @@
 | **CRM incidencias** | Ciclo 1→6 (detección → cierre), prescripción MAPA, evaluación con foto cámara/galería, bucle tratamiento↔evaluación |
 | **Mapa comercial** | Freemium 24 h; Premium 7 d / 30 d; focos ligados a incidencias activas; cierre retira del heatmap |
 | **Perito** | Cola validación foto, corrección plaga, agricultor puede corregir plaga IA, notificaciones polling |
+| **Notificaciones agricultor** | In-app + badges + polling + gamificación (reto/racha) + recordatorios incidencias CRM (migración `0026`, sep 2026) |
 | **Climate** | 11 estaciones sur Almería, ETL multi-estación, selector por finca/estación, informe PDF, loading UX |
 | **SIEX** | Cuaderno borrador automático desde tratamientos; SIGPAC manual por finca; refresh al completar recinto; preview abierto en piloto |
-| **Producción** | VPS + Docker + Caddy, migraciones hasta `0025`, APK release `2.0.0+3` |
+| **Producción** | VPS + Docker + Caddy TLS · dominio **`agroplaga.es`** (ago 2026) · legacy `.farm` redirect + API APK antigua |
 
 ### Planificado para más adelante (no bloquea piloto V2)
 
 - GPS automático en escaneos / SIGPAC por coordenadas (**descartado** por cobertura invernadero y permisos; SIGPAC manual acordado)
-- Push FCM + **badges agricultor/perito** (plan: **`docs/ROADMAP_NOTIFICACIONES.md`**), catálogo plagas extendido perito, informes PDF visita, firma SIEX cooperativa, export JSON ministerial
-- Reentrenamiento IA con fotos validadas, IoT sensores, dashboard Climate web, dominio `agroplaga.es`, hardening Redis/WAF/pinning
-- Historial rotaciones/fases, recordatorios push carencia/reevaluación, resistencias cruzadas 48 d
+- **Push FCM Android** (Fase 4) + **pulido notificaciones** (Fase 5: preferencias, alertas comarcal push, anti-spam) — ver **`docs/ROADMAP_NOTIFICACIONES.md`**
+- Catálogo plagas extendido perito, informes PDF visita, firma SIEX cooperativa, export JSON ministerial
+- Reentrenamiento IA con fotos validadas, IoT sensores, dashboard Climate web, hardening Redis/WAF/pinning
+- Historial rotaciones/fases, resistencias cruzadas 48 d
 
 ---
 
@@ -129,7 +131,9 @@
 - [x] Home "Centro de mando" para rol `tech` (KPIs + CTAs)
 - [x] Cola validación con foto (`TechScanValidationScreen` → `/api/v1/tech/pending-scans`)
 - [x] Notificaciones in-app perito al compartir escaneo (polling panel + app; migración `0016`)
-- [ ] **Notificaciones agricultor + badges + FCM** — ver **`docs/ROADMAP_NOTIFICACIONES.md`** (Fase 1 in-app ~3–4 d; FCM Android +3–4 d)
+- [x] **Notificaciones agricultor in-app (Fases 1–3)** — migración `0026`, `/api/v1/me/*`, badges, polling, validación perito → agricultor, gamificación (reto/racha), recordatorios incidencias CRM (scheduler 1 h). Commit `ec889f5`, desplegado sep 2026. Detalle: **`docs/ROADMAP_NOTIFICACIONES.md`**
+- [ ] **Fase 4 — Push FCM Android** (Firebase + `device_tokens` + push con app cerrada)
+- [ ] **Fase 5 — Pulido notificaciones** (preferencias usuario, alertas comarcal push, anti-spam, horario quieto)
 - [ ] **Catálogo extendido perito:** autocomplete EPPO + `plague_registry`; «otra plaga»; cola sugerencias admin → dataset
 - [ ] Mapa técnico con capas (calor, pendientes, validados) — presets parciales vía mapa existente
 - [ ] Modo visita a finca + informe PDF
@@ -158,8 +162,9 @@
 - [x] APK Field con `v1.6-tflite-b2` (ago 2026)
 
 ### Infra
-- [ ] **FCM push + badges** — plan completo en **`docs/ROADMAP_NOTIFICACIONES.md`**
-- [x] APK release Nexo 2.0 (`flutter build apk --dart-define=API_BASE_URL=https://agroplaga-ai.farm`)
+- [ ] **FCM push** — Fase 4 (plan en **`docs/ROADMAP_NOTIFICACIONES.md`**)
+- [x] APK release Nexo 2.0 (`.farm`, histórico)
+- [x] APK piloto notificaciones con `API_BASE_URL=https://agroplaga.es` (sep 2026; reparto pilotos en curso)
 
 ---
 
@@ -310,50 +315,45 @@
 
 ---
 
-## TODO — Dominio principal `agroplaga.es` + Google Workspace
+## Dominio principal `agroplaga.es` ✅ Fase 1–2 COMPLETADA (26 ago 2026)
 
-> **Prioridad:** cuando V2 esté validada en local / antes de escalar comercial.  
-> **Situación actual:** producción en `https://agroplaga-ai.farm` (Namecheap).  
-> **Objetivo:** `https://agroplaga.es` (IONOS) como dominio principal.  
-> **SSL web/API:** Caddy + Let's Encrypt en el VPS (no Google Workspace).
+> **Producción:** `https://agroplaga.es` (IONOS → VPS `167.233.129.193`).  
+> **Legacy:** `agroplaga-ai.farm` (Namecheap) — redirect 301 web/panel → `.es`; `/api` activo para APK antigua.  
+> **Guía operativa:** `deploy/FASE2_DOMINIO_ES.md` · commit `71e7a37`.
 
-### Checklist DNS (IONOS)
+### Checklist DNS (IONOS) ✅
 
 - [x] Registro **A** `@` → IP del VPS
-- [x] Registro **A** `www` → misma IP (o CNAME `www` → `@`)
+- [x] Registro **A** `www` → misma IP
 - [x] Verificar propagación: `nslookup agroplaga.es`
 - [ ] Registros **MX** → Google Workspace (cuando el correo esté listo)
 - [ ] Registros **TXT** → verificación Google + SPF + DKIM
 
-### Checklist Google Workspace (solo correo)
+### Checklist Google Workspace (solo correo) — pendiente
 
 - [ ] Alta Google Workspace con dominio `agroplaga.es`
 - [ ] Verificar dominio (TXT en IONOS)
 - [ ] MX + SPF + DKIM según asistente Google Admin
 - [ ] Crear buzones (`hola@`, `piloto@`, `soporte@`, etc.)
 
-### Checklist VPS / despliegue
+### Checklist VPS / despliegue ✅
 
-- [ ] `API_DOMAIN=agroplaga.es` en `deploy/pilot.env` (VPS)
-- [x] `deploy/Caddyfile` — `.es` principal + legacy `.farm` (ver `deploy/FASE2_DOMINIO_ES.md`)
-- [x] Actualizar `deploy/pilot.env.example` con `agroplaga.es`
-- [ ] Redeploy Caddy en VPS: `docker compose ... up -d --force-recreate caddy`
-- [ ] Probar HTTPS: `https://agroplaga.es/`, `/panel/`, redirect `https://agroplaga-ai.farm/` → `.es`
-- [ ] Mantener `agroplaga-ai.farm` en Namecheap apuntando al VPS (hasta no renovar)
+- [x] `API_DOMAIN=agroplaga.es` en `deploy/pilot.env` (VPS)
+- [x] `deploy/Caddyfile` — `.es` principal + legacy `.farm`
+- [x] `deploy/pilot.env.example` con `agroplaga.es`
+- [x] Caddy redeploy + HTTPS verificado (`/panel/` 200, `.farm/` 301)
+- [x] `agroplaga-ai.farm` en Namecheap apuntando al VPS (mantener hasta no renovar)
 
 ### Checklist app y comunicación
 
-- [ ] APK release: `flutter build apk --dart-define=API_BASE_URL=https://agroplaga.es`
+- [ ] APK release: `flutter build apk --release --dart-define=API_BASE_URL=https://agroplaga.es` (en PC local)
 - [x] Landing y `GUIA_ROLES` con dominio `.es`
 - [ ] Avisar a pilotos / repartir nueva APK
 
-### Orden recomendado (sin cortar servicio)
+### Fase 3 dominio (futuro)
 
-1. DNS `agroplaga.es` → VPS (convive con `.farm`)
-2. Probar HTTPS en `.es` (Caddy emite cert cuando DNS resuelve)
-3. Google Workspace en paralelo (MX no afecta la web)
-4. Redirect `.farm` → `.es`
-5. Nueva APK y comunicación a usuarios
+- [ ] Cuando todos los pilotos tengan APK `.es`: redirect total `.farm` → `.es` (incl. API)
+- [ ] No renovar `agroplaga-ai.farm` al caducar en Namecheap
 
 ---
 
@@ -367,7 +367,7 @@
 - [ ] **Auditoría externa** — pentest ligero antes de registro abierto o cooperativas de pago
 - [ ] **Rotación de secretos** — procedimiento documentado para `SECRET_KEY`, DB, SMTP
 
-*(Ver también: [TODO — Dominio `agroplaga.es`](#todo--dominio-principal-agroplagaes--google-workspace) arriba.)*
+*(Ver también: [Dominio `agroplaga.es`](#dominio-principal-agroplagaes--fase-12-completada-26-ago-2026) arriba.)*
 
 ---
 
@@ -380,12 +380,27 @@ Fase 0 ✅
             Versión 2 Climate ✅ piloto (11 estaciones sur Almería)
                 SIEX borrador ✅ (SIGPAC manual + refresh)
                     Piloto ampliado sur Almería + métricas Lean
-                        Fase 1 gaps (notificaciones/badges, catálogo perito, PDF visita)
+                        Dominio agroplaga.es ✅ (Fase 1–2 ago 2026)
+                        Notificaciones in-app agricultor ✅ Fases 1–3 (sep 2026)
+                            Fase 4 FCM + Fase 5 pulido (sep 2026)
+                            Fase 1 gaps restantes (catálogo perito, PDF visita)
                             Fase 3 SIEX cooperativa (deadline 2027)
-                                Fase 4 comercial + dominio agroplaga.es
+                        Fase 4 comercial + Google Workspace
 ```
 
-**Enfoque actual:** validar V2 en campo; **próximo desarrollo:** notificaciones + badges (Fase 1 in-app); después FCM Android; SIEX cooperativa según feedback piloto.
+**Enfoque actual:** validar notificaciones in-app en piloto; mañana Fase 4 FCM + Fase 5 pulido; SIEX cooperativa según feedback.
+
+---
+
+## Notificaciones — plan Fases 4–5 (sep 2026)
+
+| Fase | Alcance | Estado |
+|------|---------|--------|
+| **1–3** | In-app, badges, polling, gamificación, recordatorios incidencias | ✅ Desplegado `0026` |
+| **4** | Firebase FCM Android, `device_tokens`, push app cerrada (validación perito, carencia, incidencia) | 📋 Siguiente |
+| **5** | Preferencias Ajustes, alertas comarcal push, anti-spam, horario quieto 22–07 | 📋 Tras Fase 4 |
+
+Detalle técnico: **`docs/ROADMAP_NOTIFICACIONES.md`**
 
 ---
 
@@ -417,9 +432,9 @@ Fase 0 ✅
 | ago 2026 | **V2 Climate:** 11 estaciones, selector finca/estación, loading UX |
 | ago 2026 | **SIEX borrador:** SIGPAC manual, `pendiente_sigpac` + refresh retroactivo, banners UX |
 | ago 2026 | UI PlagaScan: top-3 plagas + banner confianza baja |
-| ago 2026 | **Fase 1 dominio:** DNS IONOS + `agroplaga.es` en VPS |
-| ago 2026 | **Fase 2 dominio (código):** Caddy `.es` principal, redirect web `.farm`, guía `FASE2_DOMINIO_ES.md` |
+| ago 2026 | **Fase 1–2 dominio:** DNS IONOS, `agroplaga.es` HTTPS, Caddy redirect `.farm`→`.es` (301), `API_DOMAIN=agroplaga.es` |
 | ago 2026 | APK `NEXO-Field-Pro-2.0.0` + commits `c525f14`–`fe0ce2b` en `nexoagro` |
+| sep 2026 | **Notificaciones Fases 1–3:** `0026_user_notifications`, gamificación inicio, recordatorios incidencias, APK piloto `.es` (`ec889f5`) |
 
 ---
 

@@ -2,7 +2,7 @@ import "package:flutter/material.dart";
 
 import "../../core/nexo_colors.dart";
 
-/// Logotipo tipográfico NEXO Agro (NEXO_CONTEXT.md §2.3).
+/// Logotipo tipográfico AgroPlaga.
 class NexoWordmark extends StatelessWidget {
   final double fontSize;
   final bool onDark;
@@ -15,22 +15,22 @@ class NexoWordmark extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final nexoColor = onDark ? NexoColors.pureWhite : NexoColors.textPrimary;
+    final brandColor = onDark ? NexoColors.pureWhite : NexoColors.textPrimary;
 
     return RichText(
       text: TextSpan(
         style: TextStyle(fontSize: fontSize, height: 1.1),
         children: [
           TextSpan(
-            text: "NEXO",
+            text: "Agro",
             style: TextStyle(
               fontWeight: FontWeight.w900,
-              color: nexoColor,
+              color: brandColor,
               letterSpacing: -0.5,
             ),
           ),
           const TextSpan(
-            text: "Agro",
+            text: "Plaga",
             style: TextStyle(
               fontWeight: FontWeight.w300,
               color: NexoColors.bioGreen,

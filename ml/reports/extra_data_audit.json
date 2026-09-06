@@ -1,23 +1,23 @@
 {
-  "total": 3476,
+  "total": 5261,
   "per_class": {
-    "arañuela roja": 239,
-    "botritis": 235,
-    "clorosis viral": 209,
-    "fusarium": 80,
-    "mancha bacteriana": 354,
-    "mildiu": 400,
-    "minador": 189,
-    "mosca blanca": 203,
-    "oruga": 252,
-    "oídio": 298,
-    "piojo harinoso": 157,
-    "pulgón": 157,
-    "sana": 400,
-    "trips": 179,
-    "tuta absoluta": 124
+    "arañuela roja": 411,
+    "botritis": 265,
+    "clorosis viral": 255,
+    "fusarium": 105,
+    "mancha bacteriana": 379,
+    "mildiu": 533,
+    "minador": 248,
+    "mosca blanca": 451,
+    "oruga": 430,
+    "oídio": 335,
+    "piojo harinoso": 237,
+    "pulgón": 399,
+    "sana": 720,
+    "trips": 346,
+    "tuta absoluta": 147
   },
   "missing_classes": [],
-  "min_count": 80,
-  "max_count": 400
+  "min_count": 105,
+  "max_count": 720
 }

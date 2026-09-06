@@ -1,9 +1,11 @@
-# Fase 2 — Dominio principal `agroplaga.es`
+# Fase 2 — Dominio principal `agroplaga.es` ✅ COMPLETADA (26 ago 2026)
 
-**Actualizado:** 26 ago 2026
+**Estado:** Desplegado en VPS. Verificación: `agroplaga.es/panel/` → 200; `agroplaga-ai.farm/` → 301 → `.es`.
 
 Dominio principal: **`https://agroplaga.es`**.  
 Legacy **`agroplaga-ai.farm`**: la API sigue activa (APK antigua); landing y panel redirigen a `.es`.
+
+**Pendiente operativo:** compilar APK en PC local y repartir a pilotos (ver §2 abajo).
 
 ---
 

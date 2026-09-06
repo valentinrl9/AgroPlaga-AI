@@ -445,12 +445,12 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
   @override
   Widget build(BuildContext context) {
     if (!_unlocked && !_loading && !_hasLoadedOnce) {
-      return const Scaffold(body: NexoLockScreen(moduleName: "NEXO Climate", isB2C: true));
+      return const Scaffold(body: NexoLockScreen(moduleName: "AgroPlaga Clima", isB2C: true));
     }
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("NEXO Climate"),
+        title: const Text("AgroPlaga Clima"),
         bottom: TabBar(
           controller: _tabs,
           isScrollable: true,
@@ -763,7 +763,7 @@ class _ClimateModuleScreenState extends State<ClimateModuleScreen> with SingleTi
         const Text("Informe resumido", style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
         const SizedBox(height: 8),
         const Text(
-          "Generado desde datos Open-Meteo · NEXO Climate",
+          "Generado desde datos Open-Meteo · AgroPlaga Clima",
           style: TextStyle(color: NexoColors.textSecondary),
         ),
         const SizedBox(height: 20),

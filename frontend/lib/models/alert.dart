@@ -1,3 +1,5 @@
+import "official_source.dart";
+
 class PlagaAlert {
   final int id;
   final int zoneId;
@@ -8,6 +10,8 @@ class PlagaAlert {
   final double? priorityScore;
   final DateTime createdAt;
   final bool active;
+  final List<OfficialSource> officialSources;
+  final String officialAttribution;
 
   PlagaAlert({
     required this.id,
@@ -19,9 +23,14 @@ class PlagaAlert {
     this.priorityScore,
     required this.createdAt,
     required this.active,
+    this.officialSources = const [],
+    this.officialAttribution = "",
   });
 
   factory PlagaAlert.fromJson(Map<String, dynamic> json) {
+    final sources = (json["official_sources"] as List? ?? [])
+        .map((item) => OfficialSource.fromJson(Map<String, dynamic>.from(item as Map)))
+        .toList();
     return PlagaAlert(
       id: json["id"] as int,
       zoneId: json["zone_id"] as int,
@@ -32,7 +41,18 @@ class PlagaAlert {
       priorityScore: (json["priority_score"] as num?)?.toDouble(),
       createdAt: DateTime.parse(json["created_at"] as String),
       active: json["active"] as bool? ?? true,
+      officialSources: sources,
+      officialAttribution: json["official_attribution"] as String? ?? "",
     );
+  }
+
+  String get displayAttribution {
+    if (officialAttribution.trim().isNotEmpty) return officialAttribution;
+    final official = officialSources.where((source) => source.isOfficial).toList();
+    if (official.isNotEmpty) {
+      return "Para medidas oficiales en tu zona, consulta ${official.first.issuer}.";
+    }
+    return "Alerta automática del mapa comunitario AgroPlaga (no emitida por RAIF).";
   }
 }
 

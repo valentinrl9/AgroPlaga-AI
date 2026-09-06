@@ -53,6 +53,42 @@ Licencia IP102: uso académico. PlantDoc: CC BY 4.0.
 
 Otras fuentes: feedback de usuarios en la app (plaga corregida).
 
+### Paso 5 automático (presupuesto 0 €)
+
+```powershell
+python ml/scripts/run_paso5_zero_budget.py
+```
+
+Importa PlantDoc + IP102 + EPPO + iNaturalist, sincroniza semilla, reentrena en
+`ml/models/experiments/paso5/` (no pisa el `.tflite` del APK) y guarda informes en
+`ml/reports/eval_baseline_paso5.json` y `eval_paso5.json`.
+
+Mendeley (manual): descarga ZIP desde data.mendeley.com y colócalo en
+`ml/datasets/s62zm6djd2/tomato_pests_8.zip`, luego:
+
+```powershell
+python ml/scripts/import_public_datasets.py --mendeley8 --mendeley8-zip ml/datasets/s62zm6djd2/tomato_pests_8.zip
+```
+
+### Roboflow Universe (detección → recortes clasificación)
+
+1. API key gratis en [Roboflow Settings](https://app.roboflow.com/settings/api) → `ROBOFLOW_API_KEY` en `.env`
+2. Catálogo curado: `ml/datasets/roboflow/catalog.json` (tomate, pulgón/mosca, arañuela)
+3. Importar recortes:
+
+```powershell
+python ml/scripts/import_roboflow.py --project tomato-pest --max-per-class 80
+python ml/scripts/import_roboflow.py --all-catalog --max-per-class 60
+```
+
+4. Experimento completo (import + train + eval, **no pisa producción**):
+
+```powershell
+python ml/scripts/run_roboflow_experiment.py --projects tomato-pest
+```
+
+Entrena con `--roboflow-only` (solo archivos `roboflow_*`). Comparar `ml/reports/eval_roboflow.json` vs baseline antes de desplegar.
+
 ## Entrenar tras importar
 
 ```bash

@@ -20,6 +20,8 @@ from data_utils import (  # noqa: E402
     balance_samples,
     cap_per_class,
     filter_semilla,
+    filter_curated,
+    filter_roboflow,
     iter_extra_image_paths,
     load_labels,
     samples_to_dataset,
@@ -77,16 +79,44 @@ def main() -> None:
     parser.add_argument("--batch-size", type=int, default=32)
     parser.add_argument("--extra-only", action="store_true")
     parser.add_argument("--semilla-only", action="store_true", help="Solo fotos semilla_* curadas")
+    parser.add_argument(
+        "--curated-only",
+        action="store_true",
+        help="Semilla + EPPO + iNaturalist (sin PlantDoc/PlantVillage/IP102 genérico)",
+    )
+    parser.add_argument(
+        "--roboflow-only",
+        action="store_true",
+        help="Solo recortes importados desde Roboflow Universe (prefijo roboflow_)",
+    )
     parser.add_argument("--fine-tune", action="store_true")
     parser.add_argument("--balance", action="store_true", help="Oversampling por clase en train")
     parser.add_argument("--model-version", type=str, default="v1.6-tflite")
+    parser.add_argument(
+        "--output-dir",
+        type=Path,
+        default=None,
+        help="Carpeta de salida (default: frontend/assets/ml). Usar ml/models/experiments/ para no pisar producción.",
+    )
     args = parser.parse_args()
 
+    out_dir = args.output_dir.resolve() if args.output_dir else ASSETS_DIR
+    labels_file = out_dir / "labels.txt"
+    model_file = out_dir / "plaga_model.tflite"
+    metadata_file = out_dir / "model_metadata.json"
+
     labels = load_labels()
-    samples = cap_per_class(iter_extra_image_paths(), args.max_per_class)
+    samples = iter_extra_image_paths()
     if args.semilla_only:
         samples = filter_semilla(samples)
         print(f"Modo semilla-only: {len(samples)} imágenes")
+    elif args.curated_only:
+        samples = filter_curated(samples)
+        print(f"Modo curated-only: {len(samples)} imágenes")
+    elif args.roboflow_only:
+        samples = filter_roboflow(samples)
+        print(f"Modo roboflow-only: {len(samples)} imágenes")
+    samples = cap_per_class(samples, args.max_per_class)
 
     if not samples:
         raise SystemExit("No hay imágenes para entrenar.")
@@ -129,9 +159,9 @@ def main() -> None:
     if history_tail is not None:
         val_acc = max(val_acc, float(max(history_tail.history.get("val_accuracy", [0]))))
 
-    ASSETS_DIR.mkdir(parents=True, exist_ok=True)
-    LABELS_FILE.write_text("\n".join(labels) + "\n", encoding="utf-8")
-    _export_tflite(model, MODEL_FILE)
+    out_dir.mkdir(parents=True, exist_ok=True)
+    labels_file.write_text("\n".join(labels) + "\n", encoding="utf-8")
+    _export_tflite(model, model_file)
 
     metadata = {
         "model_version": args.model_version,
@@ -145,11 +175,13 @@ def main() -> None:
         "fine_tune": args.fine_tune,
         "balance": args.balance,
         "semilla_only": args.semilla_only,
+        "curated_only": args.curated_only,
+        "roboflow_only": args.roboflow_only,
         "plant_village_mapping": PLANT_VILLAGE_TO_LABEL,
     }
-    METADATA_FILE.write_text(json.dumps(metadata, indent=2, ensure_ascii=False), encoding="utf-8")
+    metadata_file.write_text(json.dumps(metadata, indent=2, ensure_ascii=False), encoding="utf-8")
     save_json(ML_DIR / "reports" / "train_latest.json", metadata)
-    print(f"Modelo exportado: {MODEL_FILE} ({MODEL_FILE.stat().st_size / 1024:.1f} KB)")
+    print(f"Modelo exportado: {model_file} ({model_file.stat().st_size / 1024:.1f} KB)")
     print(f"Precision val (Keras): {val_acc:.2%}")
 
 

@@ -174,6 +174,31 @@ def filter_semilla(samples: list[Sample]) -> list[Sample]:
     return [s for s in samples if "semilla_" in s.path.name.lower()]
 
 
+def is_curated_path(path: Path) -> bool:
+    """Fotos curadas (semilla, EPPO, iNaturalist) — excluye PlantDoc/PlantVillage genéricos."""
+    import re
+
+    name = path.name
+    lower = name.lower()
+    if lower.startswith(("semilla_", "inat_", "tutaebola_", "mendeley")):
+        return True
+    if re.match(r"^[A-Za-z]{5,6}_", name):
+        return True
+    return False
+
+
+def filter_curated(samples: list[Sample]) -> list[Sample]:
+    return [s for s in samples if is_curated_path(s.path)]
+
+
+def is_roboflow_path(path: Path) -> bool:
+    return path.name.lower().startswith("roboflow_")
+
+
+def filter_roboflow(samples: list[Sample]) -> list[Sample]:
+    return [s for s in samples if is_roboflow_path(s.path)]
+
+
 def balance_samples(samples: list[Sample]) -> list[Sample]:
     """Oversampling para igualar clases en entrenamiento."""
     rng = np.random.default_rng(SEED)

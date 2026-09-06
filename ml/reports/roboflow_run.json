@@ -1,0 +1,10 @@
+{
+  "baseline_top1": 0.1253,
+  "roboflow_top1": 0.0719,
+  "delta_pp": -5.34,
+  "projects": [
+    "tomato-pest",
+    "pestnu-aphids-whiteflies"
+  ],
+  "deployed": false
+}

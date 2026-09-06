@@ -3,6 +3,7 @@ import "dart:typed_data";
 import "package:tflite_flutter/tflite_flutter.dart";
 
 import "image_preprocessor.dart";
+import "inference_calibration.dart";
 import "label_loader.dart";
 import "plaga_classifier_stub.dart" as stub_impl;
 import "plaga_result.dart";
@@ -51,15 +52,11 @@ Future<PlagaResult> classifyWithTflite(Uint8List imageBytes) async {
     throw StateError("inferencia sin candidatos");
   }
 
-  final best = topCandidates.first;
-  final plague = best.plague;
-  final confidence = best.confidence;
-
-  return PlagaResult(
-    plague: plague,
-    confidence: confidence,
-    suggestedSeverity: severityFromConfidence(plague, confidence),
+  final plague = topCandidates.first.plague;
+  return InferenceCalibration.apply(
+    scores: scores,
+    labels: labels,
     modelVersion: _modelVersion,
-    topCandidates: topCandidates,
+    suggestedSeverity: severityFromConfidence(plague, topCandidates.first.confidence),
   );
 }

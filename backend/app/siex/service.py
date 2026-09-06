@@ -128,7 +128,7 @@ def _climate_snippet(db: Session, user: User, plague: str) -> str | None:
 
     if not lines:
         return None
-    return "Contexto NEXO Climate:\n" + "\n".join(f"• {l}" for l in lines[:4])
+    return "Contexto AgroPlaga Clima:\n" + "\n".join(f"• {l}" for l in lines[:4])
 
 
 def _build_texts(

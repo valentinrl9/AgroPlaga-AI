@@ -1,5 +1,7 @@
 """Motor de recomendaciones agronómicas (plaga + cultivo + severidad)."""
 
+from app.services.official_sources_service import format_official_attribution, resolve_official_sources
+
 SEVERITY_LEVELS = {"leve": 1, "moderado": 2, "moderada": 2, "alto": 3, "alta": 3}
 
 _DEFAULT_RULES = {
@@ -153,6 +155,12 @@ def get_recommendation(plague: str, crop: str, severity: str) -> dict:
     crop_rules = plague_rules.get(crop_key) or plague_rules.get("default", _DEFAULT_RULES)
     action = crop_rules.get(level_key) or crop_rules.get("medium", _DEFAULT_RULES["medium"])
 
+    sources = resolve_official_sources(
+        plague=plague_key,
+        crop=crop_key,
+        context="recommendation",
+        include_orientation=True,
+    )
     return {
         "plague": plague_key,
         "crop": crop_key,
@@ -161,6 +169,8 @@ def get_recommendation(plague: str, crop: str, severity: str) -> dict:
         "urgency": urgency,
         "recommendation": action,
         "prevention_tip": _prevention_tip(plague_key),
+        "official_sources": sources,
+        "official_attribution": format_official_attribution(sources),
     }
 
 

@@ -1,3 +1,5 @@
+import "official_source.dart";
+
 class CountItem {
   final String name;
   final int count;
@@ -142,6 +144,8 @@ class PlagaRecommendation {
   final String urgency;
   final String recommendation;
   final String preventionTip;
+  final List<OfficialSource> officialSources;
+  final String officialAttribution;
 
   PlagaRecommendation({
     required this.plague,
@@ -151,9 +155,14 @@ class PlagaRecommendation {
     required this.urgency,
     required this.recommendation,
     required this.preventionTip,
+    this.officialSources = const [],
+    this.officialAttribution = "",
   });
 
   factory PlagaRecommendation.fromJson(Map<String, dynamic> json) {
+    final sources = (json["official_sources"] as List? ?? [])
+        .map((item) => OfficialSource.fromJson(Map<String, dynamic>.from(item as Map)))
+        .toList();
     return PlagaRecommendation(
       plague: json["plague"] as String,
       crop: json["crop"] as String,
@@ -162,6 +171,20 @@ class PlagaRecommendation {
       urgency: json["urgency"] as String? ?? "media",
       recommendation: json["recommendation"] as String,
       preventionTip: json["prevention_tip"] as String,
+      officialSources: sources,
+      officialAttribution: json["official_attribution"] as String? ?? "",
     );
   }
+
+  String get displayAttribution {
+    if (officialAttribution.trim().isNotEmpty) return officialAttribution;
+    final official = officialSources.where((source) => source.isOfficial).toList();
+    if (official.isNotEmpty) {
+      return "Según información oficial de ${official.first.issuer}.";
+    }
+    return "Orientación AgroPlaga. Confirma la acción con tu técnico o cooperativa.";
+  }
+
+  List<OfficialSource> get documentBackedSources =>
+      officialSources.where((source) => source.isOfficial).toList();
 }

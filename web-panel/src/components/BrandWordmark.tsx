@@ -10,8 +10,8 @@ export default function BrandWordmark({ variant = "light", className = "" }: Bra
 
   return (
     <h1 className={classes}>
-      <span className="nexo-heavy">NEXO</span>
-      <span className="nexo-light">Agro</span>
+      <span className="nexo-heavy">Agro</span>
+      <span className="nexo-light">Plaga</span>
     </h1>
   );
 }

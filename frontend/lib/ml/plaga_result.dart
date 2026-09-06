@@ -12,10 +12,17 @@ class PlagueCandidate {
 
 class PlagaResult {
   final String plague;
+  /// Confianza mostrada al agricultor (puede estar capada si hay ambigüedad).
   final double confidence;
   final int suggestedSeverity;
   final String modelVersion;
   final List<PlagueCandidate> topCandidates;
+  /// Score softmax original del top-1 (sin capar).
+  final double rawConfidence;
+  /// Diferencia top1 − top2 del vector de salida.
+  final double topMargin;
+  /// Requiere que el agricultor confirme plaga antes de guardar.
+  final bool needsConfirmation;
 
   const PlagaResult({
     required this.plague,
@@ -23,14 +30,28 @@ class PlagaResult {
     required this.suggestedSeverity,
     this.modelVersion = "v1.0",
     this.topCandidates = const [],
+    this.rawConfidence = 0.0,
+    this.topMargin = 0.0,
+    this.needsConfirmation = false,
   });
 
   String get confidencePercent => "${(confidence * 100).toStringAsFixed(1)}%";
+
+  bool get isLowConfidence =>
+      needsConfirmation ||
+      confidence < ScanInferenceThresholds.lowConfidence;
 
   List<PlagueCandidate> get displayCandidates {
     if (topCandidates.isNotEmpty) return topCandidates;
     return [PlagueCandidate(plague: plague, confidence: confidence)];
   }
+}
+
+/// Umbrales compartidos entre ML y UI.
+class ScanInferenceThresholds {
+  ScanInferenceThresholds._();
+
+  static const lowConfidence = 0.40;
 }
 
 List<PlagueCandidate> topCandidatesFromScores(

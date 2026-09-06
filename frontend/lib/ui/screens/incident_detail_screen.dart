@@ -12,6 +12,7 @@ import "../../data/repositories/treatment_repository.dart";
 import "../../ml/plaga_classifier.dart";
 import "../../models/pest_incident.dart";
 import "../../models/scan.dart";
+import "../widgets/official_attribution_line.dart";
 import "../widgets/primary_button.dart";
 import "../widgets/sigpac_siex_banner.dart";
 
@@ -396,6 +397,7 @@ class _IncidentDetailScreenState extends State<IncidentDetailScreen> {
           "Las biológicas aparecen primero.",
           style: TextStyle(color: NexoColors.textSecondary, fontSize: 13),
         ),
+        const OfficialAttributionLine(text: OfficialAttributionLine.mapaRegistry),
         const SizedBox(height: 12),
         section("Tratamientos biológicos", biological),
         if (biological.isNotEmpty && chemical.isNotEmpty) const SizedBox(height: 12),

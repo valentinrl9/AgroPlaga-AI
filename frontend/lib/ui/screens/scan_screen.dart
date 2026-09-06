@@ -9,6 +9,7 @@ import "../../data/repositories/farm_repository.dart";
 import "../../data/repositories/scan_repository.dart";
 import "../../models/farm.dart";
 import "../../models/scan.dart";
+import "../../ml/image_quality_gate.dart";
 import "../../ml/plaga_classifier.dart";
 import "../layout/mobile_layout.dart";
 import "../widgets/app_logo.dart";
@@ -101,11 +102,22 @@ class _ScanScreenState extends State<ScanScreen> {
     });
 
     try {
+      final qualityError = ImageQualityGate.validate(bytes);
+      if (qualityError != null) {
+        if (!mounted) return;
+        setState(() {
+          _errorMessage = qualityError;
+          _diagnosis = null;
+          _selectedPlague = null;
+        });
+        return;
+      }
+
       final result = await classifyPlaga(bytes);
       if (!mounted) return;
       setState(() {
         _diagnosis = result;
-        _selectedPlague = result.plague;
+        _selectedPlague = result.needsConfirmation ? null : result.plague;
         _severityLevel = result.suggestedSeverity;
       });
     } catch (error) {
@@ -119,6 +131,11 @@ class _ScanScreenState extends State<ScanScreen> {
   Future<void> _saveScan() async {
     if (_diagnosis == null) {
       setState(() => _errorMessage = "Primero captura y analiza una hoja.");
+      return;
+    }
+
+    if (_selectedPlague == null || _selectedPlague!.trim().isEmpty) {
+      setState(() => _errorMessage = "Selecciona la plaga antes de guardar.");
       return;
     }
 
@@ -228,6 +245,13 @@ class _ScanScreenState extends State<ScanScreen> {
               imageBytes: _imageBytes,
               isAnalyzing: _isAnalyzing,
             ),
+            if (_imageBytes == null) ...[
+              const SizedBox(height: 10),
+              const Text(
+                "Consejo: macro de hoja o fruto afectado, buena luz, una plaga dominante por foto.",
+                style: TextStyle(fontSize: 12, color: NexoColors.textSecondary, height: 1.35),
+              ),
+            ],
             const SizedBox(height: 16),
             if (!kIsWeb)
               PrimaryButton(
@@ -310,7 +334,11 @@ class _ScanScreenState extends State<ScanScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-              LowConfidenceBanner(confidence: _diagnosis!.confidence),
+              LowConfidenceBanner(
+                confidence: _diagnosis!.confidence,
+                needsConfirmation: _diagnosis!.needsConfirmation,
+                topMargin: _diagnosis!.topMargin,
+              ),
               const SizedBox(height: 12),
               if (_farms.isNotEmpty)
                 InputDecorator(
@@ -347,6 +375,7 @@ class _ScanScreenState extends State<ScanScreen> {
                 ),
               PlagueSelectionHighlight(
                 confidence: _diagnosis!.confidence,
+                needsConfirmation: _diagnosis!.needsConfirmation,
                 child: FarmerPlagueSelector(
                   aiPlague: _diagnosis!.plague,
                   selectedPlague: _selectedPlague,

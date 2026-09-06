@@ -2,7 +2,7 @@ import "package:flutter/material.dart";
 
 import "../../core/nexo_colors.dart";
 
-/// Logo de marca NEXO Agro (assets/branding/app_logo.png).
+/// Logo de marca AgroPlaga (assets/branding/app_logo.png).
 class AppLogo extends StatelessWidget {
   final double size;
   final double borderRadius;

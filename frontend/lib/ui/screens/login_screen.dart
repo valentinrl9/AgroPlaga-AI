@@ -95,7 +95,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 const Center(child: NexoWordmark(fontSize: 28, onDark: true)),
                 const SizedBox(height: 8),
                 const Text(
-                  "Bienvenido al ecosistema agrícola unificado",
+                  "Bienvenido a AgroPlaga",
                   textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 14, color: NexoColors.textSecondary),
                 ),

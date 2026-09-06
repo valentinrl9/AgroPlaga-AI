@@ -15,7 +15,7 @@ def _require_climate(user: User = Depends(get_current_active_user)) -> User:
     if not climate_service.user_has_climate_access(user):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
-            detail="Módulo NEXO Climate requiere paquete premium (climate o field premium).",
+            detail="Módulo AgroPlaga Clima requiere paquete premium (climate o field premium).",
         )
     return user
 

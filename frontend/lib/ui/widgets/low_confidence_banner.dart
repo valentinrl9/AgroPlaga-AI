@@ -5,14 +5,26 @@ import "../../core/nexo_colors.dart";
 
 class LowConfidenceBanner extends StatelessWidget {
   final double confidence;
+  final bool needsConfirmation;
+  final double? topMargin;
 
-  const LowConfidenceBanner({super.key, required this.confidence});
+  const LowConfidenceBanner({
+    super.key,
+    required this.confidence,
+    this.needsConfirmation = false,
+    this.topMargin,
+  });
 
-  bool get isLow => confidence < ScanUiConstants.lowConfidenceThreshold;
+  bool get isLow =>
+      needsConfirmation || confidence < ScanUiConstants.lowConfidenceThreshold;
 
   @override
   Widget build(BuildContext context) {
     if (!isLow) return const SizedBox.shrink();
+
+    final marginNote = topMargin != null && topMargin! < 0.12
+        ? " Hay varias plagas parecidas en la foto."
+        : "";
 
     return Container(
       padding: const EdgeInsets.all(14),
@@ -31,13 +43,13 @@ class LowConfidenceBanner extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  "Confianza baja",
+                  "Confirma la plaga",
                   style: TextStyle(fontWeight: FontWeight.w700, color: NexoColors.warningAmber),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  "La IA no está segura (${(confidence * 100).toStringAsFixed(0)}%). "
-                  "Confirma tú la plaga antes de guardar o tratar.",
+                  "La IA no está segura (${(confidence * 100).toStringAsFixed(0)}%).$marginNote "
+                  "Elige la plaga correcta abajo antes de guardar.",
                   style: const TextStyle(fontSize: 13, height: 1.35, color: NexoColors.textPrimary),
                 ),
               ],
@@ -52,17 +64,20 @@ class LowConfidenceBanner extends StatelessWidget {
 /// Resalta el bloque de selección de plaga cuando la confianza es baja.
 class PlagueSelectionHighlight extends StatelessWidget {
   final double confidence;
+  final bool needsConfirmation;
   final Widget child;
 
   const PlagueSelectionHighlight({
     super.key,
     required this.confidence,
+    this.needsConfirmation = false,
     required this.child,
   });
 
   @override
   Widget build(BuildContext context) {
-    final highlight = confidence < ScanUiConstants.lowConfidenceThreshold;
+    final highlight =
+        needsConfirmation || confidence < ScanUiConstants.lowConfidenceThreshold;
     if (!highlight) return child;
 
     return Container(

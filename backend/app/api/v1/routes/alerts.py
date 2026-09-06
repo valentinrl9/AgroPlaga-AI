@@ -18,6 +18,11 @@ from app.schemas.alert import (
 from app.services.alert_engine import run_alert_scan
 from app.services.heatmap_access import enforce_map_hours
 from app.services.heatmap_service import get_heatmap_grid
+from app.services.official_sources_service import (
+    format_alert_attribution,
+    format_official_attribution,
+    resolve_official_sources,
+)
 
 router = APIRouter()
 
@@ -37,6 +42,12 @@ def _user_enabled_plagues(db: Session, user_id: int) -> set[str] | None:
 
 
 def _alert_to_read(alert: Alert, zone_name: str | None) -> AlertRead:
+    sources = resolve_official_sources(
+        plague=alert.plague,
+        context="alert",
+        include_orientation=False,
+        include_community=True,
+    )
     return AlertRead(
         id=alert.id,
         zone_id=alert.zone_id,
@@ -47,6 +58,8 @@ def _alert_to_read(alert: Alert, zone_name: str | None) -> AlertRead:
         priority_score=alert.priority_score,
         created_at=alert.created_at,
         active=alert.active,
+        official_sources=sources,
+        official_attribution=format_alert_attribution(sources),
     )
 
 

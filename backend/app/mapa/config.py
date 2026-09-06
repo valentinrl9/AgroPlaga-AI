@@ -22,5 +22,5 @@ DEFAULT_CALDO_L_HA = float(os.getenv("MAPA_DEFAULT_CALDO_L_HA", "1000"))
 HTTP_TIMEOUT_SECONDS = int(os.getenv("MAPA_HTTP_TIMEOUT_SECONDS", "300"))
 USER_AGENT = os.getenv(
     "MAPA_ETL_USER_AGENT",
-    "NEXO-Agro-ETL/1.0 (cuaderno digital; contacto@agroplaga-ai.farm)",
+    "AgroPlaga-ETL/1.0 (cuaderno digital; contacto@agroplaga.es)",
 )

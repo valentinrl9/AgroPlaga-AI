@@ -2,6 +2,8 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field
 
+from app.schemas.official_source import OfficialSourceRef
+
 
 class AlertRead(BaseModel):
     id: int
@@ -13,6 +15,8 @@ class AlertRead(BaseModel):
     priority_score: float | None
     created_at: datetime
     active: bool
+    official_sources: list[OfficialSourceRef] = Field(default_factory=list)
+    official_attribution: str = ""
 
     model_config = ConfigDict(from_attributes=True)
 

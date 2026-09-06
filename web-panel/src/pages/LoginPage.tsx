@@ -33,9 +33,9 @@ export default function LoginPage() {
   return (
     <div className="login-page">
       <form className="login-card" onSubmit={onSubmit}>
-        <img src={`${import.meta.env.BASE_URL}app_logo.png`} alt="NEXO Agro" className="login-logo" />
+        <img src={`${import.meta.env.BASE_URL}app_logo.png`} alt="AgroPlaga" className="login-logo" />
         <BrandWordmark />
-        <p className="muted">Panel Enterprise — acceso para técnicos y administradores</p>
+        <p className="muted">Panel cooperativas — acceso para técnicos y administradores</p>
         <label>
           Email
           <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />

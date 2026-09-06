@@ -42,9 +42,9 @@ export default function Layout() {
           typeof Notification !== "undefined" &&
           Notification.permission === "granted"
         ) {
-          new Notification("NEXO Agro — validación pendiente", {
+          new Notification("AgroPlaga — validación pendiente", {
             body: `${summary.pending_scans} escaneo(s) esperan revisión del perito.`,
-            tag: "nexo-pending-scans",
+            tag: "agroplaga-pending-scans",
           });
         }
         lastPendingRef.current = summary.pending_scans;
@@ -68,10 +68,10 @@ export default function Layout() {
     <div className="app-shell">
       <header className="topbar">
         <div className="topbar-brand">
-          <img src={`${import.meta.env.BASE_URL}app_logo.png`} alt="NEXO Agro" className="brand-logo" />
+          <img src={`${import.meta.env.BASE_URL}app_logo.png`} alt="AgroPlaga" className="brand-logo" />
           <div>
             <BrandWordmark />
-            <p className="muted">Panel Enterprise — cooperativas y SAT</p>
+            <p className="muted">Panel cooperativas y SAT</p>
           </div>
         </div>
         <div className="topbar-right">

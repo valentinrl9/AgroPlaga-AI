@@ -11,6 +11,7 @@ import "../../models/farm.dart";
 import "../../models/scan.dart";
 import "../layout/mobile_layout.dart";
 import "../widgets/farmer_plague_selector.dart";
+import "../widgets/official_attribution_line.dart";
 import "../widgets/primary_button.dart";
 import "../widgets/scan_validation_banner.dart";
 import "../widgets/sigpac_siex_banner.dart";
@@ -305,6 +306,7 @@ class _RegisterTreatmentScreenState extends State<RegisterTreatmentScreen> {
                     "Vademécum MAPA (Registro Fitosanitarios). Orientación técnica — consulte ficha oficial.",
                     style: TextStyle(fontSize: 12, color: NexoColors.textSecondary),
                   ),
+                  const OfficialAttributionLine(text: OfficialAttributionLine.mapaRegistry),
                   if (scan != null && scan.isUnverified) ...[
                     const SizedBox(height: 12),
                     CheckboxListTile(

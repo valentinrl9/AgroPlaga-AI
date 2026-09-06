@@ -2,6 +2,8 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict
 
+from app.schemas.official_source import OfficialSourceRef
+
 
 class CountItem(BaseModel):
     name: str
@@ -46,6 +48,8 @@ class RecommendationResponse(BaseModel):
     urgency: str
     recommendation: str
     prevention_tip: str
+    official_sources: list[OfficialSourceRef] = []
+    official_attribution: str = ""
 
 
 class ScanHistoryItem(BaseModel):

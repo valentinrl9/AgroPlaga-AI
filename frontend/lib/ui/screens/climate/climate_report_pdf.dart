@@ -16,7 +16,7 @@ Future<void> exportClimateMonthlyPdf({
       build: (context) => [
         pw.Header(
           level: 0,
-          child: pw.Text("NEXO Climate — Informe mensual", style: pw.TextStyle(fontSize: 22, fontWeight: pw.FontWeight.bold)),
+          child: pw.Text("AgroPlaga Clima — Informe mensual", style: pw.TextStyle(fontSize: 22, fontWeight: pw.FontWeight.bold)),
         ),
         pw.Text("Generado: ${DateTime.now().toIso8601String().substring(0, 16)}"),
         pw.SizedBox(height: 16),
@@ -37,7 +37,7 @@ Future<void> exportClimateMonthlyPdf({
           pw.Text("Riesgo: ${resumenSemanal["nivel_riesgo"]}"),
         pw.SizedBox(height: 20),
         pw.Text(
-          "NEXO Agro · Datos Open-Meteo · Uso agronómico orientativo",
+          "AgroPlaga · Datos Open-Meteo · Uso agronómico orientativo",
           style: const pw.TextStyle(fontSize: 10, color: PdfColors.grey700),
         ),
       ],

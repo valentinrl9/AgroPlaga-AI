@@ -1,0 +1,51 @@
+{
+  "stats": [
+    {
+      "project_id": "tomato-pest",
+      "images_seen": 1351,
+      "class_names": [
+        "Beet armyworm",
+        "Cotton bollworm",
+        "Green peach aphid",
+        "Silverleaf whitefly",
+        "Tobacco cutworm",
+        "melon fly",
+        "melon thrips",
+        "spider mite"
+      ],
+      "imported": 400,
+      "per_class": {
+        "pulgón": 80,
+        "trips": 80,
+        "arañuela roja": 80,
+        "oruga": 80,
+        "mosca blanca": 80
+      },
+      "skipped_unmapped": {
+        "melon fly": 127
+      }
+    },
+    {
+      "project_id": "pestnu-aphids-whiteflies",
+      "images_seen": 225,
+      "class_names": [
+        "ap",
+        "wh"
+      ],
+      "imported": 160,
+      "per_class": {
+        "pulgón": 80,
+        "mosca blanca": 80
+      },
+      "skipped_unmapped": {}
+    }
+  ],
+  "total": 560,
+  "per_class": {
+    "pulgón": 160,
+    "trips": 80,
+    "arañuela roja": 80,
+    "oruga": 80,
+    "mosca blanca": 160
+  }
+}
