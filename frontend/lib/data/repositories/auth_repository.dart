@@ -1,8 +1,5 @@
-import "dart:async";
-
 import "../api_client.dart";
 import "../../core/onboarding_gate.dart";
-import "../../core/push_notification_service.dart";
 import "../../core/session.dart";
 import "../../models/user_profile.dart";
 import "user_repository.dart";
@@ -45,7 +42,6 @@ class AuthRepository {
 
     await Session.saveTokens(accessToken: token, refreshToken: refresh);
     await _storeProfile();
-    unawaited(PushNotificationService.instance.ensurePermissionsAndToken());
     return true;
   }
 
@@ -83,7 +79,6 @@ class AuthRepository {
 
     await Session.saveTokens(accessToken: token, refreshToken: refresh);
     await _storeProfile();
-    unawaited(PushNotificationService.instance.ensurePermissionsAndToken());
     return true;
   }
 

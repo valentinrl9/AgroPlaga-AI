@@ -58,6 +58,8 @@ class _LoginScreenState extends State<LoginScreen> {
             _errorMessage =
                 "No se puede conectar al servidor (${ApiConfig.baseUrl}). "
                 "En móvil físico configura la IP de tu PC en Ajustes antes de entrar.";
+          } else if (detail.contains("[core/no-app]") || detail.contains("Firebase")) {
+            _errorMessage = "Error interno de notificaciones. Prueba de nuevo o reinicia la app.";
           } else {
             _errorMessage = detail;
           }

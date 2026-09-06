@@ -3,6 +3,7 @@ import "dart:async";
 import "package:flutter/material.dart";
 
 import "../../core/nexo_colors.dart";
+import "../../core/push_notification_service.dart";
 import "../../core/routes.dart";
 import "../../data/repositories/crop_repository.dart";
 import "../../data/repositories/farm_repository.dart";
@@ -48,6 +49,9 @@ class _OnboardingWizardScreenState extends State<OnboardingWizardScreen> {
   void initState() {
     super.initState();
     _loadCatalogs();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      unawaited(PushNotificationService.instance.ensurePermissionsAndToken());
+    });
   }
 
   @override

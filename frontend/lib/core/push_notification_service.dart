@@ -14,7 +14,9 @@ import "../ui/screens/result_screen_args.dart";
 
 @pragma("vm:entry-point")
 Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
-  await Firebase.initializeApp();
+  if (Firebase.apps.isEmpty) {
+    await Firebase.initializeApp();
+  }
 }
 
 class PushNotificationService {
@@ -22,10 +24,10 @@ class PushNotificationService {
 
   static final PushNotificationService instance = PushNotificationService._();
 
-  final FirebaseMessaging _messaging = FirebaseMessaging.instance;
   final FlutterLocalNotificationsPlugin _localNotifications = FlutterLocalNotificationsPlugin();
   final ActivityRepository _activityRepo = ActivityRepository();
   bool _initialized = false;
+  Future<void>? _initFuture;
 
   static const _androidChannel = AndroidNotificationChannel(
     "agroplaga_alerts",
@@ -34,15 +36,33 @@ class PushNotificationService {
     importance: Importance.high,
   );
 
+  bool get _firebaseReady => Firebase.apps.isNotEmpty;
+
+  FirebaseMessaging get _messaging {
+    if (!_firebaseReady) {
+      throw StateError("Firebase no inicializado");
+    }
+    return FirebaseMessaging.instance;
+  }
+
   Future<void> initialize() async {
+    _initFuture ??= _initializeImpl();
+    await _initFuture;
+  }
+
+  Future<void> _initializeImpl() async {
     if (_initialized) return;
 
     try {
-      await Firebase.initializeApp();
+      if (Firebase.apps.isEmpty) {
+        await Firebase.initializeApp();
+      }
     } catch (error) {
       debugPrint("FCM: Firebase no configurado ($error)");
       return;
     }
+
+    if (!_firebaseReady) return;
 
     try {
       FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
@@ -83,12 +103,10 @@ class PushNotificationService {
   }
 
   Future<void> ensurePermissionsAndToken() async {
-    if (!_initialized) {
-      await initialize();
-    }
-    if (!_initialized) return;
-
     try {
+      await initialize();
+      if (!_initialized || !_firebaseReady) return;
+
       final androidPlugin = _localNotifications
           .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
       await androidPlugin?.requestNotificationsPermission();
@@ -100,10 +118,10 @@ class PushNotificationService {
   }
 
   Future<void> syncTokenWithBackend() async {
-    if (!_initialized) return;
-    if (!await Session.hasToken()) return;
-
     try {
+      if (!_initialized || !_firebaseReady) return;
+      if (!await Session.hasToken()) return;
+
       final token = await _messaging.getToken();
       if (token == null || token.isEmpty) return;
       await _registerToken(token);

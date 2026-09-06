@@ -2,6 +2,7 @@ import "dart:async";
 
 import "package:flutter/material.dart";
 
+import "../../core/push_notification_service.dart";
 import "../../data/repositories/activity_repository.dart";
 import "climate_module_screen.dart";
 import "field_home_screen.dart";
@@ -25,6 +26,9 @@ class _NexoShellScreenState extends State<NexoShellScreen> {
     super.initState();
     _loadSiexBadge();
     _badgeTimer = Timer.periodic(const Duration(seconds: 30), (_) => _loadSiexBadge());
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      unawaited(PushNotificationService.instance.ensurePermissionsAndToken());
+    });
   }
 
   @override
