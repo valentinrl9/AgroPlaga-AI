@@ -3,9 +3,11 @@ import "package:flutter/material.dart";
 import "../../core/auth_redirect.dart";
 import "../../core/nexo_colors.dart";
 import "../../core/routes.dart";
+import "../../data/repositories/activity_repository.dart";
 import "../../data/repositories/alert_repository.dart";
 import "../../models/alert.dart";
 import "map_screen_args.dart";
+import "../widgets/official_attribution_line.dart";
 import "../widgets/primary_button.dart";
 
 class AlertsScreen extends StatefulWidget {
@@ -23,6 +25,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
   void initState() {
     super.initState();
     _alertsFuture = _repository.fetchAlerts();
+    ActivityRepository().markSectionRead("alerts").catchError((_) {});
   }
 
   Future<void> _reload() async {
@@ -221,6 +224,7 @@ class _AlertsScreenState extends State<AlertsScreen> {
                                 children: [
                                   const SizedBox(height: 4),
                                   Text(alert.description),
+                                  OfficialAttributionLine(text: alert.displayAttribution),
                                   const SizedBox(height: 6),
                                   Wrap(
                                     spacing: 6,

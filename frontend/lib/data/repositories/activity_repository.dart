@@ -1,5 +1,6 @@
 import "../api_client.dart";
 import "../../models/activity_summary.dart";
+import "../../models/notification_preferences.dart";
 
 class ActivityRepository {
   final ApiClient _client = ApiClient.instance;
@@ -30,5 +31,20 @@ class ActivityRepository {
       "token": token,
       "platform": platform,
     });
+  }
+
+  Future<NotificationPreferences> fetchNotificationPreferences() async {
+    final json = await _client.get("/api/v1/me/notification-preferences");
+    return NotificationPreferences.fromJson(json);
+  }
+
+  Future<NotificationPreferences> updateNotificationPreferences(
+    NotificationPreferences prefs,
+  ) async {
+    final json = await _client.patchAuth(
+      "/api/v1/me/notification-preferences",
+      prefs.toJson(),
+    );
+    return NotificationPreferences.fromJson(json);
   }
 }

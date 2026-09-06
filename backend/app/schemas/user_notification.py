@@ -30,3 +30,5 @@ class ActivitySummaryRead(BaseModel):
     streak_weeks: int
     open_incidents_action_count: int
     pilot_collective: PilotCollectiveRead
+    siex_pending_sigpac: int = 0
+    farms_missing_sigpac: int = 0

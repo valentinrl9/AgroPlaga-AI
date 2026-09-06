@@ -143,7 +143,7 @@ def _persist_alert(
     db.add(alert)
     db.commit()
     db.refresh(alert)
-    notify_alert_created(alert)
+    notify_alert_created(db, alert)
     return alert
 
 

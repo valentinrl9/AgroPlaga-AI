@@ -136,6 +136,11 @@ class PushNotificationService {
       return;
     }
 
+    if (data["type"] == "grouped") {
+      nav.pushNamed(Routes.home);
+      return;
+    }
+
     final section = data["section"] ?? "";
     final referenceType = data["reference_type"];
     final referenceIdRaw = data["reference_id"];

@@ -6,7 +6,7 @@ from sqlalchemy.orm import Session
 
 from app.core.config import settings
 from app.models.user_notification import NotificationReminderLog, UserNotification
-from app.services.notification_service import send_push_to_user
+from app.services.notification_dispatch_service import dispatch_push
 
 SECTION_BY_TYPE: dict[str, str] = {
     "scan_confirmed": "history",
@@ -52,6 +52,7 @@ def create_user_notification(
     reference_id: int | None = None,
     dedupe_key: str | None = None,
     skip_dedupe: bool = False,
+    send_push: bool = True,
 ) -> UserNotification | None:
     if not _notifications_enabled():
         return None
@@ -91,7 +92,8 @@ def create_user_notification(
         push_data["reference_type"] = reference_type
     if reference_id is not None:
         push_data["reference_id"] = str(reference_id)
-    send_push_to_user(db, user_id, title, body, data=push_data)
+    if send_push:
+        dispatch_push(db, user_id, notification_type, title, body, data=push_data)
     return row
 
 

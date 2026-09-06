@@ -39,12 +39,17 @@ def _init_firebase() -> bool:
         return False
 
 
-def notify_alert_created(alert: Alert) -> None:
-    message = (
-        f"[alert:{alert.alert_type}] zona={alert.zone_id} "
-        f"plaga={alert.plague} prioridad={alert.priority_score} — {alert.description}"
+def notify_alert_created(db: Session, alert: Alert) -> None:
+    from app.services.alert_notification_service import notify_users_for_comarcal_alert
+
+    count = notify_users_for_comarcal_alert(db, alert)
+    logger.info(
+        "[notification] alert:%s zone=%s plague=%s notified_users=%s",
+        alert.alert_type,
+        alert.zone_id,
+        alert.plague,
+        count,
     )
-    logger.info("[notification] %s", message)
 
 
 def send_push_to_user(

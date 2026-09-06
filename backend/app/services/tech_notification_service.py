@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from app.models.scan import Scan
 from app.models.tech_notification import TechNotification
 from app.models.user import User
-from app.services.notification_service import send_push_to_user
+from app.services.notification_dispatch_service import dispatch_push
 
 
 def _tech_recipients(db: Session) -> list[User]:
@@ -36,9 +36,10 @@ def notify_scan_pending_validation(db: Session, scan: Scan, farmer: User) -> int
                 is_read=False,
             )
         )
-        send_push_to_user(
+        dispatch_push(
             db,
             recipient.id,
+            "scan_pending",
             title,
             body,
             data={

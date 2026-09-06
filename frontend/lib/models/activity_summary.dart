@@ -56,6 +56,8 @@ class ActivitySummary {
   final int streakWeeks;
   final int openIncidentsActionCount;
   final PilotCollective pilotCollective;
+  final int siexPendingSigpac;
+  final int farmsMissingSigpac;
 
   ActivitySummary({
     required this.unreadCount,
@@ -64,6 +66,8 @@ class ActivitySummary {
     required this.streakWeeks,
     required this.openIncidentsActionCount,
     required this.pilotCollective,
+    this.siexPendingSigpac = 0,
+    this.farmsMissingSigpac = 0,
   });
 
   factory ActivitySummary.fromJson(Map<String, dynamic> json) {
@@ -79,6 +83,8 @@ class ActivitySummary {
       pilotCollective: PilotCollective.fromJson(
         Map<String, dynamic>.from(json["pilot_collective"] as Map),
       ),
+      siexPendingSigpac: json["siex_pending_sigpac"] as int? ?? 0,
+      farmsMissingSigpac: json["farms_missing_sigpac"] as int? ?? 0,
     );
   }
 

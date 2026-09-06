@@ -6,12 +6,15 @@ from app.core.security import get_current_active_user
 from app.models.user import User
 from app.schemas.community import PilotCollectiveRead
 from app.schemas.device_token import DeviceTokenRead, DeviceTokenRegister
+from app.schemas.notification_preference import NotificationPreferencesRead, NotificationPreferencesUpdate
 from app.schemas.user_notification import (
     ActivitySummaryRead,
     UserNotificationRead,
     UserNotificationUnreadCount,
 )
 from app.services.device_token_service import upsert_device_token
+from app.services.notification_preference_service import get_or_create_preferences, update_preferences
+from app.services.siex_badge_service import get_siex_badge_counts
 from app.services.gamification_service import (
     get_pilot_collective_stats,
     get_weekly_streak,
@@ -55,6 +58,7 @@ def activity_summary(
 ):
     collective = get_pilot_collective_stats(db)
     vigilance = get_weekly_vigilance(db, current_user)
+    siex_counts = get_siex_badge_counts(db, current_user)
     return ActivitySummaryRead(
         unread_count=unread_count(db, current_user.id),
         sections=section_counts(db, current_user.id),
@@ -62,6 +66,8 @@ def activity_summary(
         streak_weeks=get_weekly_streak(db, current_user.id),
         open_incidents_action_count=count_open_incidents_needing_action(db, current_user.id),
         pilot_collective=PilotCollectiveRead(**collective),
+        siex_pending_sigpac=siex_counts["siex_pending_sigpac"],
+        farms_missing_sigpac=siex_counts["farms_missing_sigpac"],
     )
 
 
@@ -118,3 +124,23 @@ def mark_my_section_read(
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="Sección no válida")
     count = mark_section_read(db, current_user.id, section)
     return {"marked_read": count, "section": section}
+
+
+@router.get("/notification-preferences", response_model=NotificationPreferencesRead)
+def get_my_notification_preferences(
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    prefs = get_or_create_preferences(db, current_user.id)
+    return NotificationPreferencesRead.model_validate(prefs)
+
+
+@router.patch("/notification-preferences", response_model=NotificationPreferencesRead)
+def update_my_notification_preferences(
+    body: NotificationPreferencesUpdate,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    fields = body.model_dump(exclude_unset=True)
+    prefs = update_preferences(db, current_user.id, **fields)
+    return NotificationPreferencesRead.model_validate(prefs)

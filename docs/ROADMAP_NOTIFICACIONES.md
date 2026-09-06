@@ -1,10 +1,10 @@
 # NEXO Agro — Roadmap notificaciones y badges
 
 **Autor:** Valentín Ruiz León  
-**Actualizado:** 25 ago 2026  
+**Actualizado:** 4 sep 2026  
 **Rama:** `nexoagro`  
-**Estado:** 📋 Planificado — próximo hito post-PlagaScan UI (top-3 + confianza baja)  
-**Producción:** `https://agroplaga-ai.farm`
+**Estado:** ✅ **Fases 1–5 completadas** (in-app + FCM + pulido) — sep 2026  
+**Producción:** `https://agroplaga.es` · migración Alembic **`0028_notification_preferences`**
 
 Documento de referencia para **puntos rojos (badges)**, **notificaciones in-app** y **push real (FCM)** en app móvil agricultor y perito + panel web.
 
@@ -14,26 +14,40 @@ Documento de referencia para **puntos rojos (badges)**, **notificaciones in-app*
 
 | Capa | Qué es | Estado actual |
 |------|--------|---------------|
-| **Notificación in-app** | Registro en BD («tienes 2 sin leer») | Perito: `tech_notifications` ✅ · Agricultor: ❌ |
-| **Punto rojo (badge)** | Indica sección con pendientes no vistos | Panel web perito (Validar escaneos) ✅ · App móvil: ❌ |
-| **Polling + SnackBar** | App pregunta al servidor cada ~30 s | Perito app ✅ · Agricultor ❌ |
-| **Push FCM** | Notificación del sistema con app cerrada | Stub (`print`) ❌ — no llega al móvil |
+| **Notificación in-app** | Registro en BD («tienes 2 sin leer») | Perito: `tech_notifications` ✅ · Agricultor: `user_notifications` ✅ |
+| **Punto rojo (badge)** | Indica sección con pendientes no vistos | Panel web perito ✅ · App agricultor (Historial, Incidencias, Comunidad, Alertas) ✅ |
+| **Polling + SnackBar** | App pregunta al servidor cada ~30 s | Perito app ✅ · Agricultor ✅ |
+| **Gamificación** | Reto semanal, racha, insignias recurrentes, objetivo piloto | ✅ Comunidad + Inicio |
+| **Recordatorios incidencias** | Tratar, carencia, foto seguimiento (cron 1 h) | ✅ Scheduler + banner Inicio |
+| **Push FCM** | Notificación del sistema con app cerrada | ✅ Fase 4 |
 
 **Principio de diseño:** badge = «hay algo sin mirar»; push = solo si es **accionable**, **urgente** o **esperado** (p. ej. el agricultor pidió validación al perito).
 
 ---
 
-## Estimación de esfuerzo
+## Mapa de fases (ejecución sep 2026)
+
+| Fase | Alcance | Estado |
+|------|---------|--------|
+| **1** | MVP in-app agricultor (BD, hooks validación perito, badges, polling) | ✅ sep 2026 |
+| **2** | Gamificación (reto/racha, toasts, objetivo piloto Comunidad) | ✅ sep 2026 |
+| **3** | Recordatorios incidencias CRM (tratar, carencia, evaluación) | ✅ sep 2026 |
+| **4** | Push FCM Android (`device_tokens`, Firebase Admin SDK, app cerrada) | ✅ sep 2026 |
+| **5** | Pulido: preferencias, alertas comarcal push, anti-spam, horario quieto | ✅ sep 2026 |
+
+*(Las fases 1–3 del plan original de 25 ago se entregaron juntas en commit `ec889f5`.)*
+
+---
+
+## Estimación de esfuerzo (restante)
 
 | Fase | Alcance | Tiempo (1 dev) |
 |------|---------|----------------|
-| **1 — MVP in-app** | BD agricultor + badges + polling + hook `validate_scan` | **3–4 días** |
-| **1 + FCM Android** | Lo anterior + Firebase + `device_tokens` + Admin SDK VPS | **6–8 días** total |
-| **2 — Prevención** | Carencia cumplida, alertas comarcal, SIEX/SIGPAC pendiente | **+2–3 días** |
-| **3 — Pulido** | Incidencias CRM, anti-spam/agrupación, preferencias, horario quieto | **+2–3 días** |
-| **Completo (1–3 + FCM)** | | **10–14 días laborables** |
+| **1–3** | In-app + gamificación + incidencias | ✅ Hecho |
+| **4 — FCM Android** | Firebase + `device_tokens` + Admin SDK + Flutter messaging | **3–4 días** |
+| **5 — Pulido** | Preferencias, alertas comarcal push, anti-spam, horario quieto | **2–3 días** |
 
-**Recomendación piloto:** Semana 1 → Fase 1 sin FCM. Semana 2 → FCM Android en 3 eventos críticos (confirm / correct / reject).
+**Recomendación piloto:** Fase 4 en 3 eventos críticos (confirm / correct / reject perito + carencia). Fase 5 tras validar que FCM no spamea.
 
 ---
 
@@ -204,76 +218,92 @@ Respetar `user_alert_preferences` (por plaga).
 
 ## Fases de implementación (checklist)
 
-### Fase 1 — MVP in-app (sin FCM)
+### Fase 1 — MVP in-app (sin FCM) ✅ COMPLETADA (4 sep 2026)
 
 **Backend**
 
-- [ ] Migración: tabla `user_notifications` (genérica: `user_id`, `type`, `scan_id?`, `title`, `body`, `is_read`, `created_at`)
-- [ ] Migración o tabla `user_activity_seen` (`user_id`, `section`, `seen_at`)
-- [ ] Servicio `farmer_notification_service` (crear, listar, unread, mark read)
-- [ ] Hook en `tech_scan_service.validate_scan()` → notificar `scan.user_id`
-- [ ] `GET /api/v1/me/notifications` + `GET /api/v1/me/activity-summary` + `PATCH /api/v1/me/activity-seen`
-- [ ] Tests: validación perito crea notificación agricultor
+- [x] Migración `0026`: `user_notifications` + `notification_reminder_log`
+- [x] Servicio `user_notification_service` (crear, listar, unread, mark read, sections)
+- [x] Hook en `tech_scan_service.validate_scan()` → notificar `scan.user_id`
+- [x] `GET /api/v1/me/notifications` + `GET /api/v1/me/activity-summary` + `PATCH .../sections/{section}/read`
+- [x] Tests: `tests/test_user_notifications.py`
 
 **Flutter agricultor**
 
-- [ ] `NexoActionTile`: prop `showBadge` (punto rojo 8 px)
-- [ ] Repositorio + polling en `FieldHomeScreen` (30–60 s, tab activa)
-- [ ] Badge en **Historial**; limpiar al abrir pantalla
-- [ ] SnackBar cuando `unread_count` sube (patrón perito existente)
-- [ ] Deep link desde SnackBar → `Routes.result`
+- [x] `NexoActionTile`: prop `showBadge`
+- [x] `ActivityRepository` + polling en `FieldHomeScreen` (30 s)
+- [x] Badge en Historial, Incidencias, Comunidad, Alertas; limpiar al abrir pantalla
+- [x] SnackBar cuando sube `unread_count`
+- [x] Deep link desde SnackBar → incidencia / historial
 
-**Flutter / panel perito**
-
-- [ ] Unificar criterio badge Validar escaneos (app + panel)
-- [ ] Refinar textos notificación escaneo compartido
-
-**Criterio de done Fase 1:** agricultor ve badge + SnackBar al validar perito con app abierta; historial marca leído.
+**Criterio de done Fase 1:** ✅ agricultor ve badge + SnackBar al validar perito con app abierta.
 
 ---
 
-### Fase 1b — Push FCM Android
+### Fase 2 — Gamificación ✅ COMPLETADA (4 sep 2026)
+
+- [x] Reto semanal + racha en Inicio (`WeeklyVigilanceCard`)
+- [x] Insignias semanales recurrentes (`weekly_vigilance_YYYY_Wnn`)
+- [x] Toast reto en `ResultScreen` tras escaneo
+- [x] Objetivo colectivo piloto en Comunidad (`pilot_collective`)
+- [x] Notificación in-app al ganar insignia
+
+---
+
+### Fase 3 — Recordatorios incidencias ✅ COMPLETADA (4 sep 2026)
+
+- [x] Scheduler `notification_reminders` (cada 1 h)
+- [x] Avisos por etapa CRM: prescripción, tratamiento, carencia, evaluación foto
+- [x] Banner incidencias pendientes en Inicio
+- [x] Hook al registrar tratamiento en incidencia
+- [x] Deduplicación 24 h (`notification_reminder_log`)
+
+**Criterio de done Fase 3:** ✅ incidencia abierta genera recordatorio in-app deduplicado.
+
+---
+
+### Fase 4 — Push FCM Android ✅ COMPLETADA (6 sep 2026)
 
 **Infra (usuario)**
 
-- [ ] Proyecto Firebase + `google-services.json`
-- [ ] JSON cuenta de servicio en VPS (`FIREBASE_CREDENTIALS`)
+- [x] Proyecto Firebase + `google-services.json`
+- [x] JSON cuenta de servicio en VPS (`FIREBASE_CREDENTIALS`)
 
 **Backend**
 
-- [ ] Migración `device_tokens` (`user_id`, `token`, `platform`, `updated_at`)
-- [ ] `POST /api/v1/me/device-token`
-- [ ] Sustituir `notification_service.send_push_to_user` por Firebase Admin SDK
-- [ ] Payload `data`: `type`, `scan_id` para deep link
+- [x] Migración `device_tokens` (`user_id`, `token`, `platform`, `updated_at`)
+- [x] `POST /api/v1/me/device-token`
+- [x] Sustituir `notification_service.send_push_to_user` por Firebase Admin SDK
+- [x] Payload `data`: `type`, `scan_id` para deep link
 
 **Flutter**
 
-- [ ] Dependencias Firebase + permiso Android 13+
-- [ ] Registrar token tras login / refresh token
-- [ ] Handler foreground (`flutter_local_notifications`)
-- [ ] Tap notificación → navegar a escaneo
+- [x] Dependencias Firebase + permiso Android 13+
+- [x] Registrar token tras login / refresh token
+- [x] Handler foreground (`flutter_local_notifications`)
+- [x] Tap notificación → navegar a escaneo
 
-**Criterio de done Fase 1b:** push llega con app cerrada en Android piloto (confirm / correct / reject).
-
----
-
-### Fase 2 — Prevención y cumplimiento
-
-- [ ] Push + badge carencia cumplida (`harvest_allowed`)
-- [ ] Alert engine → notificar usuarios en zona (filtrar por finca/municipio + `user_alert_preferences`)
-- [ ] Badge SIEX `pendiente_sigpac` + finca sin SIGPAC
-- [ ] Badge alertas comarcal
+**Criterio de done Fase 4:** ✅ push con app cerrada (pendiente smoke test en móvil piloto).
 
 ---
 
-### Fase 3 — Pulido
+### Fase 5 — Pulido y prevención push ✅ COMPLETADA (6 sep 2026)
 
-- [ ] Incidencias CRM: notificar cambio de etapa
-- [ ] Agrupación anti-spam («3 escaneos pendientes» en ventana 10 min)
-- [ ] No re-notificar mismo evento sin cambio de estado
-- [ ] Preferencias en Ajustes (tipo de notificación on/off)
-- [ ] Horario quieto opcional (22:00–07:00: solo badge, push critical)
-- [ ] Digest diario opcional perito
+**Prevención**
+
+- [x] Push alertas comarcal (filtrar por `user_alert_preferences` + zona finca)
+- [x] Push carencia cumplida si app cerrada (refuerzo del banner existente)
+- [x] Badge SIEX `pendiente_sigpac` + finca sin SIGPAC
+
+**Pulido**
+
+- [x] Pantalla preferencias en Ajustes (tipo de notificación on/off)
+- [x] Agrupación anti-spam («N avisos pendientes» en ventana 10 min)
+- [x] Horario quieto 22:00–07:00 (solo push críticos)
+- [x] No re-notificar mismo evento sin cambio de estado (dedupe_key)
+- [x] Refinar textos perito app (banner validaciones)
+
+**Criterio de done Fase 5:** ✅ agricultor controla spam; alertas comarcal solo si opt-in.
 
 ---
 
@@ -310,12 +340,16 @@ Respetar `user_alert_preferences` (por plaga).
 
 | Pieza | Ubicación |
 |-------|-----------|
-| Stub push | `backend/app/services/notification_service.py` |
+| Stub push (→ Fase 4) | `backend/app/services/notification_service.py` |
+| Notificaciones agricultor | `backend/app/services/user_notification_service.py` |
+| Recordatorios incidencias | `backend/app/services/notification_reminder_service.py` |
+| API agricultor | `backend/app/api/v1/routes/me_notifications.py` |
 | Notificaciones perito | `backend/app/services/tech_notification_service.py` |
 | Hook escaneo compartido | `backend/app/api/v1/routes/scans.py` |
 | Validación perito | `backend/app/services/tech_scan_service.py` |
+| Gamificación | `backend/app/services/gamification_service.py` |
 | Badge panel web | `web-panel/src/components/Layout.tsx` |
-| Polling perito app | `frontend/lib/ui/screens/field_home_screen.dart` |
+| Polling + badges app | `frontend/lib/ui/screens/field_home_screen.dart` |
 | Preferencias alerta plaga | `backend/app/models/alert_preference.py` |
 | Motor alertas comarcal | `backend/app/services/alert_engine.py` |
 
@@ -327,6 +361,8 @@ Respetar `user_alert_preferences` (por plaga).
 |-------|------|
 | 25 ago 2026 | Plan notificaciones + badges + FCM documentado (este archivo) |
 | 25 ago 2026 | UI PlagaScan: top-3 plagas + banner confianza baja (pre-requisito UX) |
+| 4 sep 2026 | **Fases 1–3 desplegadas:** `0026`, gamificación, recordatorios incidencias, APK piloto `.es` (`ec889f5`) |
+| 5 sep 2026 | **Planificado:** Fase 4 FCM + Fase 5 pulido |
 
 ---
 
