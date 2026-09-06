@@ -44,41 +44,59 @@ class PushNotificationService {
       return;
     }
 
-    FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+    try {
+      FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
-    const androidInit = AndroidInitializationSettings("@mipmap/ic_launcher");
-    await _localNotifications.initialize(
-      const InitializationSettings(android: androidInit),
-      onDidReceiveNotificationResponse: (response) {
-        final payload = response.payload;
-        if (payload != null && payload.isNotEmpty) {
-          unawaited(_handlePayload(_payloadToMap(payload)));
-        }
-      },
-    );
+      const androidInit = AndroidInitializationSettings("@mipmap/ic_launcher");
+      await _localNotifications.initialize(
+        const InitializationSettings(android: androidInit),
+        onDidReceiveNotificationResponse: (response) {
+          final payload = response.payload;
+          if (payload != null && payload.isNotEmpty) {
+            unawaited(_handlePayload(_payloadToMap(payload)));
+          }
+        },
+      );
 
-    final androidPlugin = _localNotifications
-        .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
-    await androidPlugin?.createNotificationChannel(_androidChannel);
-    await androidPlugin?.requestNotificationsPermission();
+      final androidPlugin = _localNotifications
+          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+      await androidPlugin?.createNotificationChannel(_androidChannel);
 
-    await _messaging.requestPermission(alert: true, badge: true, sound: true);
+      FirebaseMessaging.onMessage.listen(_onForegroundMessage);
+      FirebaseMessaging.onMessageOpenedApp.listen((message) {
+        unawaited(_handlePayload(_stringifyData(message.data)));
+      });
 
-    FirebaseMessaging.onMessage.listen(_onForegroundMessage);
-    FirebaseMessaging.onMessageOpenedApp.listen((message) {
-      unawaited(_handlePayload(_stringifyData(message.data)));
-    });
+      final initial = await _messaging.getInitialMessage();
+      if (initial != null) {
+        unawaited(_handlePayload(_stringifyData(initial.data)));
+      }
 
-    final initial = await _messaging.getInitialMessage();
-    if (initial != null) {
-      unawaited(_handlePayload(_stringifyData(initial.data)));
+      _messaging.onTokenRefresh.listen((token) {
+        unawaited(_registerToken(token));
+      });
+
+      _initialized = true;
+    } catch (error, stack) {
+      debugPrint("FCM: init parcial fallida ($error)\n$stack");
     }
+  }
 
-    _messaging.onTokenRefresh.listen((token) {
-      unawaited(_registerToken(token));
-    });
+  Future<void> ensurePermissionsAndToken() async {
+    if (!_initialized) {
+      await initialize();
+    }
+    if (!_initialized) return;
 
-    _initialized = true;
+    try {
+      final androidPlugin = _localNotifications
+          .resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
+      await androidPlugin?.requestNotificationsPermission();
+      await _messaging.requestPermission(alert: true, badge: true, sound: true);
+      await syncTokenWithBackend();
+    } catch (error) {
+      debugPrint("FCM: permisos/token ($error)");
+    }
   }
 
   Future<void> syncTokenWithBackend() async {

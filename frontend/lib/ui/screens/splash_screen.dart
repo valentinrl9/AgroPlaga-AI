@@ -41,7 +41,7 @@ class _SplashScreenState extends State<SplashScreen> {
         );
         if (await Session.hasToken()) {
           nextRoute = await OnboardingGate.postAuthRoute();
-          unawaited(PushNotificationService.instance.syncTokenWithBackend());
+          unawaited(PushNotificationService.instance.ensurePermissionsAndToken());
         }
       } catch (_) {
         await Session.clear();

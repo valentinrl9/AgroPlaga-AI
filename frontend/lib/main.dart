@@ -1,3 +1,5 @@
+import "dart:async";
+
 import "package:flutter/material.dart";
 
 import "core/api_config.dart";
@@ -33,8 +35,8 @@ import "ui/screens/splash_screen.dart";
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await ApiConfig.load();
-  await PushNotificationService.instance.initialize();
   runApp(const NexoAgroApp());
+  unawaited(PushNotificationService.instance.initialize());
 }
 
 class NexoAgroApp extends StatelessWidget {
