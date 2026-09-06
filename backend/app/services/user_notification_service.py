@@ -132,6 +132,7 @@ def notify_scan_validated(
     action: str,
     plague: str,
     corrected_plague: str | None = None,
+    ai_plague: str | None = None,
 ) -> UserNotification | None:
     if action == "confirm":
         title = "Escaneo confirmado"
@@ -139,7 +140,8 @@ def notify_scan_validated(
         ntype = "scan_confirmed"
     elif action == "correct":
         title = "Plaga corregida por técnico"
-        body = f"Tu técnico indica: {corrected_plague or plague} (no {plague})"
+        reference = ai_plague or plague
+        body = f"Tu técnico indica: {corrected_plague or plague} (no {reference})"
         ntype = "scan_corrected"
     else:
         title = "Escaneo no válido"

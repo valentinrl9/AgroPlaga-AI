@@ -126,8 +126,9 @@ def validate_scan(
         farmer_id=scan.user_id,
         scan_id=scan.id,
         action=payload.action,
-        plague=scan.plague or "plaga",
+        plague=effective_plague(scan),
         corrected_plague=payload.corrected_plague or scan.corrected_plague,
+        ai_plague=scan.plague or "plaga",
     )
     return scan
 

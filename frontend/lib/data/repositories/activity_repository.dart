@@ -18,6 +18,10 @@ class ActivityRepository {
         .toList();
   }
 
+  Future<void> markNotificationRead(int id) async {
+    await _client.patchAuth("/api/v1/me/notifications/$id/read", {});
+  }
+
   Future<void> markSectionRead(String section) async {
     await _client.patchAuth("/api/v1/me/notifications/sections/$section/read", {});
   }

@@ -7,6 +7,7 @@ import "../../core/routes.dart";
 import "../../core/session.dart";
 import "../../data/repositories/activity_repository.dart";
 import "../../data/repositories/auth_repository.dart";
+import "../../data/repositories/scan_repository.dart";
 import "../../data/repositories/tech_repository.dart";
 import "../../models/activity_summary.dart";
 import "../layout/mobile_layout.dart";
@@ -104,7 +105,7 @@ class _FieldHomeScreenState extends State<FieldHomeScreen> {
               content: Text("${latest.title}: ${latest.body}"),
               action: SnackBarAction(
                 label: "Ver",
-                onPressed: () => _openNotification(context, latest),
+                onPressed: () => unawaited(_openNotification(context, latest)),
               ),
             ),
           );
@@ -118,24 +119,62 @@ class _FieldHomeScreenState extends State<FieldHomeScreen> {
     } catch (_) {}
   }
 
-  void _openNotification(BuildContext context, UserNotificationItem item) {
+  Future<void> _openNotification(BuildContext context, UserNotificationItem item) async {
+    try {
+      await _activityRepo.markNotificationRead(item.id);
+    } catch (_) {}
+
+    if (!context.mounted) return;
+
+    if (item.referenceType == "scan" && item.referenceId != null) {
+      try {
+        final scan = await ScanRepository().fetchScan(item.referenceId!);
+        if (!context.mounted) return;
+        Navigator.pushNamed(context, Routes.result, arguments: scan);
+        _loadFarmerActivity();
+        return;
+      } catch (_) {
+        if (!context.mounted) return;
+        Navigator.pushNamed(context, Routes.history);
+        return;
+      }
+    }
     if (item.referenceType == "incident" && item.referenceId != null) {
       Navigator.pushNamed(context, Routes.incidentDetail, arguments: item.referenceId);
+      _loadFarmerActivity();
       return;
     }
     if (item.section == "history") {
       Navigator.pushNamed(context, Routes.history);
+      _loadFarmerActivity();
       return;
     }
     if (item.section == "incidents") {
       Navigator.pushNamed(context, Routes.incidents);
+      _loadFarmerActivity();
       return;
     }
     if (item.section == "community") {
       Navigator.pushNamed(context, Routes.community);
+      _loadFarmerActivity();
       return;
     }
     Navigator.pushNamed(context, Routes.alerts);
+    _loadFarmerActivity();
+  }
+
+  Future<void> _openLatestUnreadNotification() async {
+    try {
+      final notifs = await _activityRepo.fetchNotifications(unreadOnly: true);
+      if (!mounted) return;
+      if (notifs.isEmpty) {
+        Navigator.pushNamed(context, Routes.history);
+        return;
+      }
+      await _openNotification(context, notifs.first);
+    } catch (_) {
+      if (mounted) Navigator.pushNamed(context, Routes.history);
+    }
   }
 
   Future<void> _loadTechDashboard({bool notifyOnNew = false}) async {
@@ -363,25 +402,42 @@ class _FieldHomeScreenState extends State<FieldHomeScreen> {
               ),
             ),
           if ((activity?.unreadCount ?? 0) > 0)
-            Container(
-              margin: const EdgeInsets.only(bottom: 16),
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: NexoColors.techCyan.withValues(alpha: 0.1),
+            Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: _openLatestUnreadNotification,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: NexoColors.techCyan.withValues(alpha: 0.35)),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.mark_email_unread_outlined, color: NexoColors.techCyan),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      "${activity!.unreadCount} aviso(s) sin leer",
-                      style: const TextStyle(fontSize: 13),
-                    ),
+                child: Container(
+                  margin: const EdgeInsets.only(bottom: 16),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: NexoColors.techCyan.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(color: NexoColors.techCyan.withValues(alpha: 0.35)),
                   ),
-                ],
+                  child: Row(
+                    children: [
+                      const Icon(Icons.mark_email_unread_outlined, color: NexoColors.techCyan),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Text(
+                          "${activity!.unreadCount} aviso(s) sin leer",
+                          style: const TextStyle(fontSize: 13, color: NexoColors.textPrimary),
+                        ),
+                      ),
+                      const Text(
+                        "Ver",
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: NexoColors.techCyan,
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      const Icon(Icons.chevron_right, color: NexoColors.techCyan, size: 20),
+                    ],
+                  ),
+                ),
               ),
             ),
           NexoSectionCard(

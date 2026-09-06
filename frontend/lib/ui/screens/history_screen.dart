@@ -46,6 +46,23 @@ class _HistoryScreenState extends State<HistoryScreen> {
     return "${date.day.toString().padLeft(2, "0")}/${date.month.toString().padLeft(2, "0")}/${date.year}";
   }
 
+  String _historySubtitle(Scan scan) {
+    final parts = <String>[
+      scan.crop,
+      "${(scan.confidence * 100).toStringAsFixed(0)}% conf.",
+    ];
+    if (scan.effectivePlague.trim().toLowerCase() != scan.plague.trim().toLowerCase()) {
+      parts.add("IA: ${scan.plague}");
+    }
+    if (scan.isVerifiedByTech) {
+      parts.add("Validado por perito");
+    }
+    if (scan.createdAt != null) {
+      parts.add(_formatDate(scan.createdAt));
+    }
+    return parts.join(" · ");
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -111,11 +128,11 @@ class _HistoryScreenState extends State<HistoryScreen> {
                       final scan = scans[index];
                       return Card(
                         child: ListTile(
-                          title: Text(scan.plague, style: const TextStyle(fontWeight: FontWeight.bold)),
-                          subtitle: Text(
-                            "${scan.crop} · ${(scan.confidence * 100).toStringAsFixed(0)}% conf."
-                            "${scan.createdAt != null ? " · ${_formatDate(scan.createdAt)}" : ""}",
+                          title: Text(
+                            scan.effectivePlague,
+                            style: const TextStyle(fontWeight: FontWeight.bold),
                           ),
+                          subtitle: Text(_historySubtitle(scan)),
                           trailing: Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [

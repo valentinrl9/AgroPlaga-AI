@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 
+import "../../core/nexo_colors.dart";
 import "../../core/plague_catalog.dart";
 import "../../ml/plaga_result.dart";
 import "../../models/scan.dart";
@@ -65,12 +66,16 @@ class FarmerPlagueSelector extends StatelessWidget {
         if (showTopSuggestions) ...[
           const Text(
             "Plagas más probables según la IA",
-            style: TextStyle(fontSize: 14, fontWeight: FontWeight.w700),
+            style: TextStyle(
+              fontSize: 14,
+              fontWeight: FontWeight.w700,
+              color: NexoColors.textPrimary,
+            ),
           ),
           const SizedBox(height: 4),
           const Text(
             "Elige una opción o indica otra plaga abajo si ninguna encaja.",
-            style: TextStyle(fontSize: 12, color: Colors.black54),
+            style: TextStyle(fontSize: 12, color: NexoColors.textSecondary, height: 1.35),
           ),
           const SizedBox(height: 10),
           Wrap(
@@ -90,13 +95,17 @@ class FarmerPlagueSelector extends StatelessWidget {
           const SizedBox(height: 14),
           const Text(
             "Otra plaga (catálogo completo)",
-            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+            style: TextStyle(
+              fontSize: 13,
+              fontWeight: FontWeight.w600,
+              color: NexoColors.textPrimary,
+            ),
           ),
           const SizedBox(height: 8),
         ] else if (suggestedPlague != null) ...[
           Text(
             "IA sugiere: $suggestedPlague",
-            style: const TextStyle(fontSize: 13, color: Colors.black54),
+            style: const TextStyle(fontSize: 13, color: NexoColors.textSecondary, height: 1.35),
           ),
           const SizedBox(height: 8),
         ],
