@@ -283,7 +283,20 @@ Respetar `user_alert_preferences` (por plaga).
 - [x] Handler foreground (`flutter_local_notifications`)
 - [x] Tap notificación → navegar a escaneo
 
-**Criterio de done Fase 4:** ✅ push con app cerrada (pendiente smoke test en móvil piloto).
+**Criterio de done Fase 4:** ✅ push con app cerrada — **smoke test móvil piloto pendiente** (ver QA pre-producción en [ROADMAP_NEXO.md](ROADMAP_NEXO.md#-qa-obligatorio-antes-de-subir-a-producción-sep-2026)).
+
+---
+
+## ⛔ QA pre-producción — cambios sep 2026 (bloqueante deploy)
+
+> No subir a producción ni repartir APK hasta validar en móvil físico. Checklist completo: [ROADMAP_NEXO.md § QA obligatorio](ROADMAP_NEXO.md#-qa-obligatorio-antes-de-subir-a-producción-sep-2026).
+
+- [ ] Login demo sin error Firebase (`4c7dd7e`)
+- [ ] Contraste textos sugerencia plaga en escaneo (`46c92a9`)
+- [ ] Banner avisos sin leer abre escaneo / notificación (`46c92a9`)
+- [ ] Historial muestra plaga confirmada (agricultor + perito), no solo IA (`46c92a9` + backend)
+- [ ] Push/in-app «confirmado» usa plaga efectiva, no IA original (backend `46c92a9`)
+- [ ] Regresión: incidencias, mapa, validación perito, preferencias push
 
 ---
 
@@ -363,6 +376,8 @@ Respetar `user_alert_preferences` (por plaga).
 | 25 ago 2026 | UI PlagaScan: top-3 plagas + banner confianza baja (pre-requisito UX) |
 | 4 sep 2026 | **Fases 1–3 desplegadas:** `0026`, gamificación, recordatorios incidencias, APK piloto `.es` (`ec889f5`) |
 | 5 sep 2026 | **Planificado:** Fase 4 FCM + Fase 5 pulido |
+| 6 sep 2026 | **Fases 4–5 completadas** en código (`1b92afc`, `053f546`, fixes `49b2b63`, `4c7dd7e`) |
+| 7 sep 2026 | **UX escaneo/avisos/historial** (`46c92a9`) — **QA obligatorio antes de producción** (checklist ROADMAP_NEXO) |
 
 ---
 

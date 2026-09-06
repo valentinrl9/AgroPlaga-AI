@@ -162,9 +162,10 @@
 - [x] APK Field con `v1.6-tflite-b2` (ago 2026)
 
 ### Infra
-- [ ] **FCM push** — Fase 4 (plan en **`docs/ROADMAP_NOTIFICACIONES.md`**)
+- [x] **FCM push** — Fase 4 completada (plan en **`docs/ROADMAP_NOTIFICACIONES.md`**); ver QA pre-producción abajo
 - [x] APK release Nexo 2.0 (`.farm`, histórico)
 - [x] APK piloto notificaciones con `API_BASE_URL=https://agroplaga.es` (sep 2026; reparto pilotos en curso)
+- [ ] **QA + redeploy producción** — pendiente checklist en [QA obligatorio antes de subir a producción](#-qa-obligatorio-antes-de-subir-a-producción-sep-2026)
 
 ---
 
@@ -349,6 +350,52 @@
 - [ ] APK release: `flutter build apk --release --dart-define=API_BASE_URL=https://agroplaga.es` (en PC local)
 - [x] Landing y `GUIA_ROLES` con dominio `.es`
 - [ ] Avisar a pilotos / repartir nueva APK
+
+### ⛔ QA obligatorio antes de subir a producción (sep 2026)
+
+> **Bloqueante:** no hacer `git push` + redeploy VPS ni repartir APK a pilotos hasta cerrar **todas** las pruebas de los commits recientes (`4c7dd7e` login FCM, `46c92a9` UX escaneo/avisos/historial).
+
+**APK de prueba (local):** `frontend/build/app/outputs/flutter-apk/app-release.apk` — desinstalar versión anterior antes de instalar.
+
+#### 1. Login y FCM (`4c7dd7e`)
+
+- [ ] Login agricultor demo: `local.agricultor@nexo.test` / `nexo1234` — sin error `[core/no-app]`
+- [ ] Tras login, permiso de notificaciones Android (si aplica) no bloquea la app
+- [ ] Token FCM registrado en BD (`device_tokens`) tras entrar al home
+
+#### 2. Contraste sugerencia de plaga (`46c92a9`)
+
+- [ ] Escanear o abrir resultado con baja confianza / top-3 IA
+- [ ] Textos «Plagas más probables según la IA», «IA sugiere…» y chips legibles sobre fondo oscuro/ámbar
+
+#### 3. Avisos sin leer en Inicio (`46c92a9`)
+
+- [ ] Con avisos pendientes, banner «X aviso(s) sin leer» es pulsable (tap o «Ver»)
+- [ ] Abre el escaneo concreto si la notificación es `reference_type=scan`
+- [ ] Marca notificación como leída y actualiza contador al volver a Inicio
+- [ ] SnackBar de aviso nuevo → «Ver» también abre el escaneo (no solo Historial genérico)
+
+#### 4. Plaga correcta en historial (`46c92a9` + backend)
+
+- [ ] Flujo: IA sugiere plaga A → agricultor corrige a B → envía a perito → perito **confirma** B
+- [ ] Historial muestra **B** (no A) en título; subtítulo puede indicar «IA: A · Validado por perito»
+- [ ] Detalle del escaneo coherente con historial
+- [ ] Notificación push/in-app al confirmar dice «Tu técnico confirmó: B» (requiere redeploy backend)
+
+#### 5. Regresión rápida
+
+- [ ] Onboarding / fincas / incidencias / mapa siguen abriendo
+- [ ] Perito: cola de validación y confirmar/rechazar escaneo
+- [ ] Ajustes → preferencias de notificaciones
+
+**Criterio de done:** checklist 100% `[x]` en dispositivo físico piloto + backend desplegado solo tras validar.
+
+**Commits incluidos:**
+
+| Commit | Cambio |
+|--------|--------|
+| `4c7dd7e` | Fix race Firebase: login no bloqueado por FCM |
+| `46c92a9` | Contraste selector plaga, avisos pulsables, `effectivePlague` en historial + notificación perito |
 
 ### Fase 3 dominio (futuro)
 
