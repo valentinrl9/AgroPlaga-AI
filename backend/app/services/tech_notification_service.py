@@ -36,7 +36,18 @@ def notify_scan_pending_validation(db: Session, scan: Scan, farmer: User) -> int
                 is_read=False,
             )
         )
-        send_push_to_user(recipient.id, title, body)
+        send_push_to_user(
+            db,
+            recipient.id,
+            title,
+            body,
+            data={
+                "type": "scan_pending",
+                "section": "tech",
+                "reference_type": "scan",
+                "reference_id": str(scan.id),
+            },
+        )
         created += 1
 
     if created:

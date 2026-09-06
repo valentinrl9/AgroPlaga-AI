@@ -2,6 +2,7 @@ import "package:flutter/material.dart";
 
 import "core/api_config.dart";
 import "core/auth_redirect.dart";
+import "core/push_notification_service.dart";
 import "core/route_guard.dart";
 import "core/routes.dart";
 import "models/scan.dart";
@@ -32,6 +33,7 @@ import "ui/screens/splash_screen.dart";
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await ApiConfig.load();
+  await PushNotificationService.instance.initialize();
   runApp(const NexoAgroApp());
 }
 
@@ -41,7 +43,7 @@ class NexoAgroApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: "NEXO Agro",
+      title: "AgroPlaga",
       theme: appTheme(),
       navigatorKey: AuthRedirect.navigatorKey,
       initialRoute: Routes.splash,

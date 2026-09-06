@@ -5,11 +5,13 @@ from app.api.deps import get_db
 from app.core.security import get_current_active_user
 from app.models.user import User
 from app.schemas.community import PilotCollectiveRead
+from app.schemas.device_token import DeviceTokenRead, DeviceTokenRegister
 from app.schemas.user_notification import (
     ActivitySummaryRead,
     UserNotificationRead,
     UserNotificationUnreadCount,
 )
+from app.services.device_token_service import upsert_device_token
 from app.services.gamification_service import (
     get_pilot_collective_stats,
     get_weekly_streak,
@@ -26,6 +28,24 @@ from app.services.user_notification_service import (
 )
 
 router = APIRouter()
+
+
+@router.post("/device-token", response_model=DeviceTokenRead, status_code=status.HTTP_201_CREATED)
+def register_device_token(
+    payload: DeviceTokenRegister,
+    current_user: User = Depends(get_current_active_user),
+    db: Session = Depends(get_db),
+):
+    try:
+        row = upsert_device_token(
+            db,
+            user_id=current_user.id,
+            token=payload.token,
+            platform=payload.platform.strip().lower() or "android",
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)) from exc
+    return row
 
 
 @router.get("/activity-summary", response_model=ActivitySummaryRead)

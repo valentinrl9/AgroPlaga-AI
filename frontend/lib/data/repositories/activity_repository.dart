@@ -24,4 +24,11 @@ class ActivityRepository {
   Future<void> markAllRead() async {
     await _client.patchAuth("/api/v1/me/notifications/read-all", {});
   }
+
+  Future<void> registerDeviceToken(String token, {String platform = "android"}) async {
+    await _client.postAuth("/api/v1/me/device-token", {
+      "token": token,
+      "platform": platform,
+    });
+  }
 }

@@ -49,6 +49,12 @@ class Settings:
         "yes",
     }
     pilot_scan_goal: int = int(os.getenv("PILOT_SCAN_GOAL", "1000"))
+    fcm_enabled: bool = os.getenv("FCM_ENABLED", "false").strip().lower() in {
+        "1",
+        "true",
+        "yes",
+    }
+    firebase_credentials: str = os.getenv("FIREBASE_CREDENTIALS", "").strip()
 
     @property
     def is_production(self) -> bool:

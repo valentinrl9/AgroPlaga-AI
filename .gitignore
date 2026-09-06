@@ -59,7 +59,9 @@ docs/_guia_odt_text.txt
 # Piloto VPS (secretos)
 deploy/pilot.env
 
-# APK sueltas en raíz del repo
-/app-release.apk
+# Firebase (no subir credenciales reales)
+frontend/android/app/google-services.json
+deploy/firebase-service-account.json
+**/firebase-adminsdk*.json
 *.apk
 !frontend/build/**/*.apk

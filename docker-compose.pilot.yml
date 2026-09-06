@@ -22,6 +22,8 @@ services:
       - scan_images:/data/scans
       - climate_data:/data/climate
       - mapa_data:/data/mapa
+      # Descomentar tras subir la cuenta de servicio al VPS (ver docs/FIREBASE_SETUP.md):
+      - /opt/agroplaga/secrets/firebase-service-account.json:/secrets/firebase-service-account.json:ro
     environment:
       DATABASE_URL: postgresql+psycopg://${POSTGRES_USER}:${POSTGRES_PASSWORD}@db:5432/${POSTGRES_DB}
       SECRET_KEY: ${SECRET_KEY}
@@ -56,6 +58,10 @@ services:
       SMTP_PASSWORD: ${SMTP_PASSWORD:-}
       SMTP_FROM: ${SMTP_FROM:-}
       SMTP_USE_TLS: ${SMTP_USE_TLS:-true}
+      NOTIFICATIONS_ENABLED: ${NOTIFICATIONS_ENABLED:-true}
+      PILOT_SCAN_GOAL: ${PILOT_SCAN_GOAL:-1000}
+      FCM_ENABLED: ${FCM_ENABLED:-false}
+      FIREBASE_CREDENTIALS: ${FIREBASE_CREDENTIALS:-}
       PYTHONUNBUFFERED: "1"
     depends_on:
       db:

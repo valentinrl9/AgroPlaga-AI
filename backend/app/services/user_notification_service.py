@@ -83,7 +83,15 @@ def create_user_notification(
     db.add(row)
     db.commit()
     db.refresh(row)
-    send_push_to_user(user_id, title, body)
+    push_data: dict[str, str] = {
+        "type": notification_type,
+        "section": row.section,
+    }
+    if reference_type:
+        push_data["reference_type"] = reference_type
+    if reference_id is not None:
+        push_data["reference_id"] = str(reference_id)
+    send_push_to_user(db, user_id, title, body, data=push_data)
     return row
 
 

@@ -1,7 +1,10 @@
+import "dart:async";
+
 import "package:flutter/material.dart";
 
 import "../../core/onboarding_gate.dart";
 import "../../core/nexo_colors.dart";
+import "../../core/push_notification_service.dart";
 import "../../core/routes.dart";
 import "../../core/session.dart";
 import "../../data/repositories/user_repository.dart";
@@ -38,6 +41,7 @@ class _SplashScreenState extends State<SplashScreen> {
         );
         if (await Session.hasToken()) {
           nextRoute = await OnboardingGate.postAuthRoute();
+          unawaited(PushNotificationService.instance.syncTokenWithBackend());
         }
       } catch (_) {
         await Session.clear();
@@ -68,7 +72,7 @@ class _SplashScreenState extends State<SplashScreen> {
               NexoWordmark(fontSize: 32, onDark: true),
               SizedBox(height: 8),
               Text(
-                "Ecosistema de inteligencia agrícola",
+                "Detección de plagas en invernadero",
                 style: TextStyle(fontSize: 14, color: NexoColors.textSecondary),
               ),
               SizedBox(height: 32),

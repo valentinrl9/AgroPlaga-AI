@@ -52,3 +52,8 @@ kotlin {
 flutter {
     source = "../.."
 }
+
+// Solo aplica Google Services si existe google-services.json (Firebase Fase 4).
+if (file("google-services.json").exists()) {
+    apply(plugin = "com.google.gms.google-services")
+}
