@@ -2,6 +2,7 @@ import "dart:async";
 
 import "package:flutter/material.dart";
 
+import "../../core/home_inbox_prefs.dart";
 import "../../core/nexo_colors.dart";
 import "../../core/routes.dart";
 import "../../core/session.dart";
@@ -9,12 +10,12 @@ import "../../data/repositories/activity_repository.dart";
 import "../../data/repositories/auth_repository.dart";
 import "../../data/repositories/scan_repository.dart";
 import "../../data/repositories/tech_repository.dart";
+import "../../data/repositories/treatment_repository.dart";
 import "../../models/activity_summary.dart";
 import "../layout/mobile_layout.dart";
-import "../widgets/carencia_banner.dart";
+import "../widgets/farmer_inbox_sheet.dart";
 import "../widgets/nexo_section_card.dart";
 import "../widgets/primary_button.dart";
-import "../widgets/weekly_vigilance_card.dart";
 
 class FieldHomeScreen extends StatefulWidget {
   final bool isActive;
@@ -36,6 +37,9 @@ class _FieldHomeScreenState extends State<FieldHomeScreen> {
   int _lastFarmerUnread = 0;
 
   ActivitySummary? _activity;
+  Map<String, dynamic>? _carenciaActive;
+  List<UserNotificationItem> _unreadNotifs = [];
+  Set<String> _dismissedInboxIds = {};
   final _activityRepo = ActivityRepository();
 
   @override
@@ -96,10 +100,22 @@ class _FieldHomeScreenState extends State<FieldHomeScreen> {
   Future<void> _loadFarmerActivity({bool notifyOnNew = false}) async {
     try {
       final summary = await _activityRepo.fetchSummary();
+      final dismissed = await HomeInboxPrefs.dismissedIds();
+      List<UserNotificationItem> unreadNotifs = [];
+      Map<String, dynamic>? carencia;
+      try {
+        unreadNotifs = await _activityRepo.fetchNotifications(unreadOnly: true);
+      } catch (_) {}
+      try {
+        final treatments = await TreatmentRepository().fetchActive();
+        if (treatments.isNotEmpty) {
+          carencia = Map<String, dynamic>.from(treatments.first as Map);
+        }
+      } catch (_) {}
+
       if (notifyOnNew && summary.unreadCount > _lastFarmerUnread && _lastFarmerUnread > 0 && mounted) {
-        final notifs = await _activityRepo.fetchNotifications(unreadOnly: true);
-        if (notifs.isNotEmpty) {
-          final latest = notifs.first;
+        if (unreadNotifs.isNotEmpty) {
+          final latest = unreadNotifs.first;
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
               content: Text("${latest.title}: ${latest.body}"),
@@ -114,9 +130,112 @@ class _FieldHomeScreenState extends State<FieldHomeScreen> {
       if (!mounted) return;
       setState(() {
         _activity = summary;
+        _carenciaActive = carencia;
+        _unreadNotifs = unreadNotifs;
+        _dismissedInboxIds = dismissed;
         _lastFarmerUnread = summary.unreadCount;
       });
     } catch (_) {}
+  }
+
+  List<FarmerInboxItem> _buildInboxItems() {
+    final activity = _activity;
+    final items = <FarmerInboxItem>[];
+
+    if (_carenciaActive != null) {
+      final carencia = carenciaInboxItem(_carenciaActive!);
+      if (carencia != null && !_dismissedInboxIds.contains(carencia.id)) {
+        items.add(carencia);
+      }
+    }
+
+    final vigilance = activity?.weeklyVigilance;
+    if (vigilance != null) {
+      final vItem = vigilanceInboxItem(vigilance, activity?.streakWeeks ?? vigilance.streakWeeks);
+      if (!_dismissedInboxIds.contains(vItem.id)) {
+        items.add(vItem);
+      }
+    }
+
+    final sigpacPending = (activity?.siexPendingSigpac ?? 0) + (activity?.farmsMissingSigpac ?? 0);
+    if (activity != null && sigpacPending > 0) {
+      const sigpacId = "sigpac:pending";
+      if (!_dismissedInboxIds.contains(sigpacId)) {
+        items.add(
+          FarmerInboxItem(
+            id: sigpacId,
+            title: "SIGPAC pendiente",
+            body: activity.siexPendingSigpac > 0
+                ? "${activity.siexPendingSigpac} entrada(s) SIEX pendientes de SIGPAC"
+                : "${activity.farmsMissingSigpac} finca(s) sin SIGPAC — cuaderno incompleto",
+            icon: Icons.map_outlined,
+            accentColor: NexoColors.warningAmber,
+            onOpen: () async {
+              if (!mounted) return;
+              Navigator.pushNamed(context, Routes.farms);
+            },
+          ),
+        );
+      }
+    }
+
+    final incidentsPending = activity?.openIncidentsActionCount ?? 0;
+    if (incidentsPending > 0) {
+      const incidentsId = "incidents:pending";
+      if (!_dismissedInboxIds.contains(incidentsId)) {
+        items.add(
+          FarmerInboxItem(
+            id: incidentsId,
+            title: "Incidencias pendientes",
+            body: "$incidentsPending incidencia(s) requieren acción (tratar, foto o carencia)",
+            icon: Icons.bug_report_outlined,
+            accentColor: NexoColors.warningAmber,
+            onOpen: () async {
+              if (!mounted) return;
+              Navigator.pushNamed(context, Routes.incidents);
+            },
+          ),
+        );
+      }
+    }
+
+    for (final notif in _unreadNotifs) {
+      items.add(
+        FarmerInboxItem(
+          id: "notification:${notif.id}",
+          title: notif.title,
+          body: notif.body,
+          icon: Icons.mark_email_unread_outlined,
+          accentColor: NexoColors.techCyan,
+          onOpen: () => _openNotification(context, notif),
+        ),
+      );
+    }
+
+    return items;
+  }
+
+  int get _inboxBadgeCount => _buildInboxItems().length;
+
+  Future<void> _openInboxSheet() async {
+    final items = _buildInboxItems();
+    await showFarmerInboxSheet(
+      context: context,
+      items: items,
+      onDismiss: (item) async {
+        if (item.id.startsWith("notification:")) {
+          final notifId = int.tryParse(item.id.split(":").last);
+          if (notifId != null) {
+            try {
+              await _activityRepo.markNotificationRead(notifId);
+            } catch (_) {}
+          }
+        } else {
+          await HomeInboxPrefs.dismiss(item.id);
+        }
+        if (mounted) await _loadFarmerActivity();
+      },
+    );
   }
 
   Future<void> _openNotification(BuildContext context, UserNotificationItem item) async {
@@ -163,20 +282,6 @@ class _FieldHomeScreenState extends State<FieldHomeScreen> {
     _loadFarmerActivity();
   }
 
-  Future<void> _openLatestUnreadNotification() async {
-    try {
-      final notifs = await _activityRepo.fetchNotifications(unreadOnly: true);
-      if (!mounted) return;
-      if (notifs.isEmpty) {
-        Navigator.pushNamed(context, Routes.history);
-        return;
-      }
-      await _openNotification(context, notifs.first);
-    } catch (_) {
-      if (mounted) Navigator.pushNamed(context, Routes.history);
-    }
-  }
-
   Future<void> _loadTechDashboard({bool notifyOnNew = false}) async {
     try {
       final repo = TechDashboardRepository();
@@ -208,21 +313,6 @@ class _FieldHomeScreenState extends State<FieldHomeScreen> {
     await AuthRepository().logout();
     if (!context.mounted) return;
     Navigator.pushNamedAndRemoveUntil(context, Routes.login, (_) => false);
-  }
-
-  Widget _actionGrid(List<Widget> tiles) {
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final tileWidth = (constraints.maxWidth - 10) / 2;
-        return Wrap(
-          spacing: 10,
-          runSpacing: 10,
-          children: tiles
-              .map((tile) => SizedBox(width: tiles.length == 1 ? constraints.maxWidth : tileWidth, child: tile))
-              .toList(),
-        );
-      },
-    );
   }
 
   Widget _actionRow(List<Widget> tiles) {
@@ -332,122 +422,22 @@ class _FieldHomeScreenState extends State<FieldHomeScreen> {
 
   Widget _buildFarmerHome() {
     final activity = _activity;
-    final vigilance = activity?.weeklyVigilance;
     final incidentsPending = activity?.openIncidentsActionCount ?? 0;
-    final sigpacPending = (activity?.siexPendingSigpac ?? 0) + (activity?.farmsMissingSigpac ?? 0);
 
     return Padding(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          const CarenciaBanner(),
-          if (vigilance != null)
-            WeeklyVigilanceCard(
-              vigilance: vigilance,
-              streakWeeks: activity?.streakWeeks ?? vigilance.streakWeeks,
-            ),
-          if (sigpacPending > 0 && activity != null)
-            Container(
-              margin: const EdgeInsets.only(bottom: 16),
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: NexoColors.warningAmber.withValues(alpha: 0.1),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: NexoColors.warningAmber.withValues(alpha: 0.4)),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.map_outlined, color: NexoColors.warningAmber),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      activity.siexPendingSigpac > 0
-                          ? "${activity.siexPendingSigpac} entrada(s) SIEX pendientes de SIGPAC"
-                          : "${activity.farmsMissingSigpac} finca(s) sin SIGPAC — cuaderno incompleto",
-                      style: const TextStyle(fontSize: 13),
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () => Navigator.pushNamed(context, Routes.farms),
-                    child: const Text("Revisar"),
-                  ),
-                ],
-              ),
-            ),
-          if (incidentsPending > 0)
-            Container(
-              margin: const EdgeInsets.only(bottom: 16),
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: NexoColors.warningAmber.withValues(alpha: 0.12),
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: NexoColors.warningAmber.withValues(alpha: 0.45)),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.bug_report, color: NexoColors.warningAmber),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: Text(
-                      "$incidentsPending incidencia(s) requieren acción (tratar, foto o carencia)",
-                      style: const TextStyle(fontSize: 13),
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () => Navigator.pushNamed(context, Routes.incidents),
-                    child: const Text("Ver"),
-                  ),
-                ],
-              ),
-            ),
-          if ((activity?.unreadCount ?? 0) > 0)
-            Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: _openLatestUnreadNotification,
-                borderRadius: BorderRadius.circular(12),
-                child: Container(
-                  margin: const EdgeInsets.only(bottom: 16),
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: NexoColors.techCyan.withValues(alpha: 0.1),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: NexoColors.techCyan.withValues(alpha: 0.35)),
-                  ),
-                  child: Row(
-                    children: [
-                      const Icon(Icons.mark_email_unread_outlined, color: NexoColors.techCyan),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                          "${activity!.unreadCount} aviso(s) sin leer",
-                          style: const TextStyle(fontSize: 13, color: NexoColors.textPrimary),
-                        ),
-                      ),
-                      const Text(
-                        "Ver",
-                        style: TextStyle(
-                          fontSize: 13,
-                          fontWeight: FontWeight.w700,
-                          color: NexoColors.techCyan,
-                        ),
-                      ),
-                      const SizedBox(width: 4),
-                      const Icon(Icons.chevron_right, color: NexoColors.techCyan, size: 20),
-                    ],
-                  ),
-                ),
-              ),
-            ),
           NexoSectionCard(
             title: "ESCANEAR",
             children: [
               PrimaryButton(
                 label: "Nuevo escaneo",
+                compact: true,
                 onPressed: () => Navigator.pushNamed(context, Routes.scan),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 8),
               _actionRow([
                 NexoActionTile(
                   icon: Icons.history_rounded,
@@ -468,9 +458,10 @@ class _FieldHomeScreenState extends State<FieldHomeScreen> {
             children: [
               PrimaryButton(
                 label: "Mapa de focos",
+                compact: true,
                 onPressed: () => Navigator.pushNamed(context, Routes.map),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 8),
               _actionRow([
                 NexoActionTile(
                   icon: Icons.notifications_active_outlined,
@@ -490,7 +481,7 @@ class _FieldHomeScreenState extends State<FieldHomeScreen> {
           NexoSectionCard(
             title: "GESTIÓN",
             children: [
-              _actionGrid([
+              _actionRow([
                 NexoActionTile(
                   icon: Icons.settings_outlined,
                   label: "Ajustes",
@@ -524,6 +515,16 @@ class _FieldHomeScreenState extends State<FieldHomeScreen> {
       appBar: AppBar(
         title: Text(_isTech ? "AgroPlaga · Perito" : "AgroPlaga"),
         actions: [
+          if (!_isTech)
+            IconButton(
+              tooltip: "Avisos",
+              onPressed: _openInboxSheet,
+              icon: Badge(
+                isLabelVisible: _inboxBadgeCount > 0,
+                label: Text("$_inboxBadgeCount"),
+                child: const Icon(Icons.notifications_outlined),
+              ),
+            ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _isTech ? _loadTechDashboard : _loadFarmerActivity,
@@ -543,7 +544,7 @@ class _FieldHomeScreenState extends State<FieldHomeScreen> {
           children: [
             Container(
               width: double.infinity,
-              padding: const EdgeInsets.fromLTRB(20, 20, 20, 24),
+              padding: EdgeInsets.fromLTRB(16, _isTech ? 16 : 8, 16, _isTech ? 16 : 10),
               decoration: BoxDecoration(
                 gradient: const LinearGradient(
                   begin: Alignment.topLeft,
@@ -559,20 +560,20 @@ class _FieldHomeScreenState extends State<FieldHomeScreen> {
                 children: [
                   Text(
                     greeting,
-                    style: const TextStyle(
-                      fontSize: 26,
+                    style: TextStyle(
+                      fontSize: _isTech ? 24 : 20,
                       fontWeight: FontWeight.w800,
                       color: NexoColors.textPrimary,
                       letterSpacing: -0.5,
                     ),
                   ),
-                  const SizedBox(height: 6),
-                  Text(
-                    _isTech
-                        ? "Centro de mando móvil para validación y supervisión de campo."
-                        : "Diagnostica plagas y contribuye al mapa de tu comarca.",
-                    style: const TextStyle(fontSize: 14, color: NexoColors.textSecondary, height: 1.4),
-                  ),
+                  if (_isTech) ...[
+                    const SizedBox(height: 4),
+                    const Text(
+                      "Centro de mando móvil para validación y supervisión de campo.",
+                      style: TextStyle(fontSize: 13, color: NexoColors.textSecondary, height: 1.35),
+                    ),
+                  ],
                 ],
               ),
             ),

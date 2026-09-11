@@ -17,8 +17,8 @@ class NexoSectionCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: double.infinity,
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
         color: NexoColors.surfaceCard,
         borderRadius: BorderRadius.circular(16),
@@ -43,7 +43,7 @@ class NexoSectionCard extends StatelessWidget {
               letterSpacing: 1.2,
             ),
           ),
-          const SizedBox(height: 14),
+          const SizedBox(height: 10),
           ...children,
         ],
       ),
@@ -75,7 +75,7 @@ class NexoActionTile extends StatelessWidget {
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Container(
-          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: NexoColors.borderSubtle),
@@ -84,16 +84,20 @@ class NexoActionTile extends StatelessWidget {
             clipBehavior: Clip.none,
             children: [
               Column(
+                mainAxisSize: MainAxisSize.min,
                 children: [
-                  Icon(icon, color: NexoColors.techCyan, size: 22),
-                  const SizedBox(height: 6),
+                  Icon(icon, color: NexoColors.techCyan, size: 20),
+                  const SizedBox(height: 4),
                   Text(
                     label,
                     textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
-                      fontSize: 13,
+                      fontSize: 12,
                       fontWeight: FontWeight.w600,
                       color: NexoColors.textPrimary,
+                      height: 1.2,
                     ),
                   ),
                 ],

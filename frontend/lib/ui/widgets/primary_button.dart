@@ -5,8 +5,14 @@ import "../../core/nexo_colors.dart";
 class PrimaryButton extends StatelessWidget {
   final String label;
   final VoidCallback? onPressed;
+  final bool compact;
 
-  const PrimaryButton({super.key, required this.label, required this.onPressed});
+  const PrimaryButton({
+    super.key,
+    required this.label,
+    required this.onPressed,
+    this.compact = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -34,12 +40,15 @@ class PrimaryButton extends StatelessWidget {
                 : null,
           ),
           child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 20),
+            padding: EdgeInsets.symmetric(
+              vertical: compact ? 12 : 16,
+              horizontal: compact ? 16 : 20,
+            ),
             child: Center(
               child: Text(
                 label,
-                style: const TextStyle(
-                  fontSize: 16,
+                style: TextStyle(
+                  fontSize: compact ? 15 : 16,
                   fontWeight: FontWeight.w700,
                   color: NexoColors.pureWhite,
                   letterSpacing: 0.2,
