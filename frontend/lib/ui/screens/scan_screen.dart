@@ -281,7 +281,6 @@ class _ScanScreenState extends State<ScanScreen> {
             if (_diagnosis != null) ...[
               const SizedBox(height: 20),
               Card(
-                color: Colors.white,
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
@@ -289,7 +288,11 @@ class _ScanScreenState extends State<ScanScreen> {
                     children: [
                       const Text(
                         "Diagnóstico IA",
-                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: NexoColors.textPrimary,
+                        ),
                       ),
                       const SizedBox(height: 12),
                       Text(
@@ -301,11 +304,17 @@ class _ScanScreenState extends State<ScanScreen> {
                         ),
                       ),
                       const SizedBox(height: 8),
-                      Text("Confianza: ${_diagnosis!.confidencePercent}"),
+                      Text(
+                        "Confianza: ${_diagnosis!.confidencePercent}",
+                        style: const TextStyle(fontSize: 14, color: NexoColors.textPrimary),
+                      ),
                       const SizedBox(height: 8),
                       Row(
                         children: [
-                          const Text("Severidad sugerida: "),
+                          const Text(
+                            "Severidad sugerida: ",
+                            style: TextStyle(color: NexoColors.textSecondary),
+                          ),
                           SeverityBadge(severity: _severityLevel.toString()),
                         ],
                       ),
@@ -318,7 +327,11 @@ class _ScanScreenState extends State<ScanScreen> {
                         const SizedBox(height: 12),
                         const Text(
                           "Alternativas IA",
-                          style: TextStyle(fontSize: 13, fontWeight: FontWeight.w600),
+                          style: TextStyle(
+                            fontSize: 13,
+                            fontWeight: FontWeight.w600,
+                            color: NexoColors.textPrimary,
+                          ),
                         ),
                         const SizedBox(height: 6),
                         Text(
@@ -326,7 +339,7 @@ class _ScanScreenState extends State<ScanScreen> {
                               .take(3)
                               .map((c) => "${c.plague} (${c.confidencePercent})")
                               .join(" · "),
-                          style: const TextStyle(fontSize: 13, color: NexoColors.textSecondary),
+                          style: const TextStyle(fontSize: 13, color: NexoColors.textSecondary, height: 1.35),
                         ),
                       ],
                     ],

@@ -68,14 +68,17 @@ class CardScan extends StatelessWidget {
               const SizedBox(height: 8),
               Row(
                 children: [
-                  const Text("Severidad: "),
+                  const Text("Severidad: ", style: TextStyle(color: NexoColors.textSecondary)),
                   SeverityBadge(severity: severityLabel),
                 ],
               ),
             ],
             if (confidenceValue != null) ...[
               const SizedBox(height: 8),
-              Text("Confianza: ${(confidenceValue * 100).toStringAsFixed(confidenceValue <= 1 ? 1 : 0)}%"),
+              Text(
+                "Confianza: ${(confidenceValue * 100).toStringAsFixed(confidenceValue <= 1 ? 1 : 0)}%",
+                style: const TextStyle(color: NexoColors.textPrimary),
+              ),
             ],
             if (extra != null) ...[
               const SizedBox(height: 8),
