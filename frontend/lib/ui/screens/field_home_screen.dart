@@ -19,8 +19,9 @@ import "../widgets/primary_button.dart";
 
 class FieldHomeScreen extends StatefulWidget {
   final bool isActive;
+  final VoidCallback? onActivityRefreshed;
 
-  const FieldHomeScreen({super.key, this.isActive = true});
+  const FieldHomeScreen({super.key, this.isActive = true, this.onActivityRefreshed});
 
   @override
   State<FieldHomeScreen> createState() => _FieldHomeScreenState();
@@ -135,6 +136,7 @@ class _FieldHomeScreenState extends State<FieldHomeScreen> {
         _dismissedInboxIds = dismissed;
         _lastFarmerUnread = summary.unreadCount;
       });
+      widget.onActivityRefreshed?.call();
     } catch (_) {}
   }
 
@@ -149,8 +151,9 @@ class _FieldHomeScreenState extends State<FieldHomeScreen> {
       }
     }
 
+    final hasVigilanceNotif = _unreadNotifs.any((n) => n.notificationType == "weekly_vigilance");
     final vigilance = activity?.weeklyVigilance;
-    if (vigilance != null) {
+    if (vigilance != null && !hasVigilanceNotif) {
       final vItem = vigilanceInboxItem(vigilance, activity?.streakWeeks ?? vigilance.streakWeeks);
       if (!_dismissedInboxIds.contains(vItem.id)) {
         items.add(vItem);
@@ -216,6 +219,11 @@ class _FieldHomeScreenState extends State<FieldHomeScreen> {
   }
 
   int get _inboxBadgeCount => _buildInboxItems().length;
+
+  Future<void> _navigateAndRefresh(String route, {Object? arguments}) async {
+    await Navigator.pushNamed(context, route, arguments: arguments);
+    if (mounted) await _loadFarmerActivity();
+  }
 
   Future<void> _openInboxSheet() async {
     final items = _buildInboxItems();
@@ -443,7 +451,7 @@ class _FieldHomeScreenState extends State<FieldHomeScreen> {
                   icon: Icons.history_rounded,
                   label: "Historial",
                   showBadge: (activity?.sectionCount("history") ?? 0) > 0,
-                  onTap: () => Navigator.pushNamed(context, Routes.history),
+                  onTap: () => _navigateAndRefresh(Routes.history),
                 ),
                 NexoActionTile(
                   icon: Icons.insights_rounded,
@@ -467,13 +475,13 @@ class _FieldHomeScreenState extends State<FieldHomeScreen> {
                   icon: Icons.notifications_active_outlined,
                   label: "Alertas",
                   showBadge: (activity?.sectionCount("alerts") ?? 0) > 0,
-                  onTap: () => Navigator.pushNamed(context, Routes.alerts),
+                  onTap: () => _navigateAndRefresh(Routes.alerts),
                 ),
                 NexoActionTile(
                   icon: Icons.groups_outlined,
                   label: "Comunidad",
                   showBadge: (activity?.sectionCount("community") ?? 0) > 0,
-                  onTap: () => Navigator.pushNamed(context, Routes.community),
+                  onTap: () => _navigateAndRefresh(Routes.community),
                 ),
               ]),
             ],
@@ -491,13 +499,13 @@ class _FieldHomeScreenState extends State<FieldHomeScreen> {
                   icon: Icons.agriculture_outlined,
                   label: "Mis fincas",
                   showBadge: (activity?.farmsMissingSigpac ?? 0) > 0,
-                  onTap: () => Navigator.pushNamed(context, Routes.farms),
+                  onTap: () => _navigateAndRefresh(Routes.farms),
                 ),
                 NexoActionTile(
                   icon: Icons.bug_report_outlined,
                   label: "Incidencias",
                   showBadge: (activity?.sectionCount("incidents") ?? 0) > 0 || incidentsPending > 0,
-                  onTap: () => Navigator.pushNamed(context, Routes.incidents),
+                  onTap: () => _navigateAndRefresh(Routes.incidents),
                 ),
               ]),
             ],

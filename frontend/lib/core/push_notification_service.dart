@@ -161,6 +161,23 @@ class PushNotificationService {
     );
   }
 
+  Future<void> _markPayloadRead(Map<String, String> data) async {
+    final notifId = int.tryParse(data["notification_id"] ?? "");
+    if (notifId != null) {
+      try {
+        await _activityRepo.markNotificationRead(notifId);
+        return;
+      } catch (_) {}
+    }
+
+    final section = data["section"] ?? "";
+    if (section.isEmpty || section == "home" || section == "tech") return;
+
+    try {
+      await _activityRepo.markSectionRead(section);
+    } catch (_) {}
+  }
+
   Future<void> _handlePayload(Map<String, String> data) async {
     if (data.isEmpty) return;
 
@@ -176,6 +193,8 @@ class PushNotificationService {
       nav.pushNamed(Routes.home);
       return;
     }
+
+    await _markPayloadRead(data);
 
     final section = data["section"] ?? "";
     final referenceType = data["reference_type"];

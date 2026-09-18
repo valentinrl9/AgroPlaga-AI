@@ -62,7 +62,7 @@ class _NexoShellScreenState extends State<NexoShellScreen> {
       body: IndexedStack(
         index: _index,
         children: [
-          FieldHomeScreen(isActive: _index == 0),
+          FieldHomeScreen(isActive: _index == 0, onActivityRefreshed: _loadSiexBadge),
           ClimateModuleScreen(isActive: _index == 1),
           SiexModuleScreen(isActive: _index == 2),
         ],

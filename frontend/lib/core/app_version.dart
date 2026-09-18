@@ -1,2 +1,2 @@
 /// Versión visible en la app (mantener alineada con pubspec.yaml).
-const String appVersionLabel = "V2.1.0";
+const String appVersionLabel = "V2.1.1";

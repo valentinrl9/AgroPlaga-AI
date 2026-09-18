@@ -86,6 +86,7 @@ def create_user_notification(
     push_data: dict[str, str] = {
         "type": notification_type,
         "section": row.section,
+        "notification_id": str(row.id),
     }
     if reference_type:
         push_data["reference_type"] = reference_type
