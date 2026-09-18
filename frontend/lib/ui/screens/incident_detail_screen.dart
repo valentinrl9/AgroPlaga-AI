@@ -505,6 +505,44 @@ class _IncidentDetailScreenState extends State<IncidentDetailScreen> {
     } catch (_) {}
   }
 
+  Future<void> _confirmCloseWithoutTreatment(PestIncident incident) async {
+    final accepted = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text("Cerrar sin tratar"),
+        content: const Text(
+          "La incidencia se archivará sin registrar aplicación ni carencia. "
+          "Úsalo si no vas a tratar (por ejemplo, escaneo rechazado por el perito). "
+          "Puedes abrir una incidencia nueva desde otro escaneo.",
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.pop(ctx, false), child: const Text("Cancelar")),
+          TextButton(onPressed: () => Navigator.pop(ctx, true), child: const Text("Cerrar incidencia")),
+        ],
+      ),
+    );
+    if (accepted == true && mounted) {
+      await _run(() => _incidentRepo.close(incident.id, outcome: "abandoned"));
+    }
+  }
+
+  Widget _closeWithoutTreatmentButton(PestIncident incident) {
+    if (!_canAct(incident, incident.stage)) return const SizedBox.shrink();
+    if (incident.stage != "detection" && incident.stage != "diagnosis" && incident.stage != "prescription") {
+      return const SizedBox.shrink();
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const SizedBox(height: 12),
+        OutlinedButton(
+          onPressed: _busy ? null : () => _confirmCloseWithoutTreatment(incident),
+          child: const Text("Cerrar sin tratar"),
+        ),
+      ],
+    );
+  }
+
   Future<void> _run(Future<void> Function() action) async {
     setState(() {
       _busy = true;
@@ -735,6 +773,7 @@ class _IncidentDetailScreenState extends State<IncidentDetailScreen> {
             label: "Confirmar diagnóstico y continuar",
             onPressed: _busy ? null : () => _run(() => _incidentRepo.advance(incident.id)),
           ),
+          _closeWithoutTreatmentButton(incident),
         ],
       ],
     );
@@ -790,6 +829,7 @@ class _IncidentDetailScreenState extends State<IncidentDetailScreen> {
                       );
                     }),
           ),
+          _closeWithoutTreatmentButton(incident),
         ] else if (incident.prescriptionProductName != null) ...[
           const SizedBox(height: 16),
           _infoCard(
@@ -804,6 +844,7 @@ class _IncidentDetailScreenState extends State<IncidentDetailScreen> {
               _infoRow("Carencia", "${incident.prescriptionSafetyHours ?? "—"} h"),
             ],
           ),
+          _closeWithoutTreatmentButton(incident),
         ],
       ],
     );
@@ -917,6 +958,7 @@ class _IncidentDetailScreenState extends State<IncidentDetailScreen> {
                       }
                     }),
           ),
+          _closeWithoutTreatmentButton(incident),
         ],
       ],
     );
@@ -1107,7 +1149,6 @@ class _IncidentDetailScreenState extends State<IncidentDetailScreen> {
   }
 
   Widget _buildClosedView(PestIncident incident) {
-    final resolved = incident.closureOutcome == "resolved";
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
@@ -1116,10 +1157,7 @@ class _IncidentDetailScreenState extends State<IncidentDetailScreen> {
         _infoCard(
           title: "Resumen de cierre",
           children: [
-            _infoRow(
-              "Resultado",
-              resolved ? "Resuelto" : incident.closureOutcome == "crop_lost" ? "Cosecha perdida" : "—",
-            ),
+            _infoRow("Resultado", incident.closureOutcomeLabel),
             if (incident.closedAt != null) _infoRow("Cerrada", _fmtDate(incident.closedAt!)),
             if (incident.prescriptionProductName != null)
               _infoRow("Tratamiento", incident.prescriptionProductName!),

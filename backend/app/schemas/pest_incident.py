@@ -12,7 +12,7 @@ IncidentStage = Literal[
     "closed",
 ]
 
-ClosureOutcome = Literal["resolved", "crop_lost"]
+ClosureOutcome = Literal["resolved", "crop_lost", "abandoned"]
 
 
 class IncidentCreate(BaseModel):

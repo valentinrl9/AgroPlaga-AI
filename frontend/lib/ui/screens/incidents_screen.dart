@@ -120,7 +120,7 @@ class _IncidentsScreenState extends State<IncidentsScreen> {
 
   String _nextAction(PestIncident incident) {
     if (!incident.isActive) {
-      return incident.closureOutcome == "crop_lost" ? "Cosecha perdida" : "Resuelta";
+      return incident.closureOutcomeLabel;
     }
     return _stageHints[incident.stage] ?? incident.stageLabel;
   }

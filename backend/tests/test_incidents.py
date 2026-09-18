@@ -154,6 +154,28 @@ def test_open_incident_rejects_sana(client, unique_email):
     assert response.status_code == 400
 
 
+def test_close_incident_abandoned_from_prescription(client, unique_email):
+    _, headers, farm_id = _setup_farmer_with_farm(client, unique_email)
+    scan = _create_scan(client, headers, farm_id)
+    incident_id = _open_incident(client, headers, scan["id"])["id"]
+
+    _advance_to_diagnosis(client, headers, incident_id)
+    _prescribe(client, headers, incident_id)
+
+    closed = client.patch(
+        f"/api/v1/incidents/{incident_id}/close",
+        headers=headers,
+        json={"outcome": "abandoned"},
+    )
+    assert closed.status_code == 200
+    assert closed.json()["stage"] == "closed"
+    assert closed.json()["closure_outcome"] == "abandoned"
+
+    active = client.get("/api/v1/incidents?active_only=true", headers=headers)
+    assert active.status_code == 200
+    assert active.json() == []
+
+
 def test_close_incident(client, unique_email):
     _, headers, farm_id = _setup_farmer_with_farm(client, unique_email)
     scan = _create_scan(client, headers, farm_id)

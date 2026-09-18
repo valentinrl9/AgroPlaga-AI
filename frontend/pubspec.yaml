@@ -1,7 +1,7 @@
 name: agro_plaga_ai
 description: Aplicación móvil AgroPlaga — detección de plagas en invernadero
 publish_to: "none"
-version: 2.1.1+6
+version: 2.1.2+7
 
 environment:
   sdk: ">=2.18.0 <3.0.0"

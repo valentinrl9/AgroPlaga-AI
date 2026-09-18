@@ -135,4 +135,17 @@ class PestIncident {
     const order = ["detection", "diagnosis", "prescription", "treatment", "evaluation", "closed"];
     return order.indexOf(stage).clamp(0, order.length - 1);
   }
+
+  String get closureOutcomeLabel {
+    switch (closureOutcome) {
+      case "resolved":
+        return "Resuelta";
+      case "crop_lost":
+        return "Cosecha perdida";
+      case "abandoned":
+        return "Cerrada sin tratar";
+      default:
+        return "—";
+    }
+  }
 }

@@ -16,7 +16,7 @@ INCIDENT_STAGES = (
     "closed",
 )
 
-CLOSURE_OUTCOMES = ("resolved", "crop_lost")
+CLOSURE_OUTCOMES = ("resolved", "crop_lost", "abandoned")
 
 
 class PestIncident(Base):
