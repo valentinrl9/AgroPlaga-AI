@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ayuda — AgroPlaga</title>
+  <meta name="description" content="Vídeos cortos para usar AgroPlaga: alta del invernadero, escaneo, incidencias, tratamiento y mapa. La inteligencia orienta; no sustituye al técnico.">
+  <link rel="icon" type="image/png" href="/assets/app_logo.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --deep: #0B192C;
+      --green: #00A86B;
+      --cyan: #00D2C4;
+      --ink: #F4F7FB;
+      --muted: #94A3B8;
+      --card: #12233A;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Plus Jakarta Sans", system-ui, sans-serif;
+      background: var(--deep);
+      color: var(--ink);
+    }
+    a { color: inherit; }
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 16px 20px;
+      background: rgba(11, 25, 44, 0.94);
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      backdrop-filter: blur(12px);
+    }
+    .brand { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .brand img { width: 36px; height: 36px; border-radius: 10px; }
+    .brand strong { font-size: 1.15rem; letter-spacing: -0.03em; }
+    .brand span { font-weight: 300; color: var(--green); }
+    nav { display: flex; gap: 18px; }
+    nav a { color: var(--cyan); text-decoration: none; font-size: 0.92rem; font-weight: 600; }
+    main { max-width: 1080px; margin: 0 auto; padding: 36px 20px 72px; }
+    .kicker { color: var(--green); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; font-size: 0.78rem; }
+    h1 { margin: 8px 0 12px; font-size: clamp(1.8rem, 4vw, 2.6rem); letter-spacing: -0.03em; }
+    .lead { max-width: 38rem; color: var(--muted); font-size: 1.05rem; line-height: 1.55; margin: 0 0 8px; }
+    .note { color: #CBD5E1; font-size: 0.95rem; margin: 0 0 36px; }
+    h2 { margin: 8px 0 18px; font-size: 1.25rem; }
+    section { margin-bottom: 42px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 28px 22px;
+    }
+    article h3 { margin: 14px 0 6px; font-size: 1.05rem; }
+    article p { margin: 0; color: var(--muted); font-size: 0.92rem; line-height: 1.45; }
+    .stage {
+      position: relative;
+      aspect-ratio: 9 / 16;
+      border-radius: 22px;
+      overflow: hidden;
+      background: #071018;
+      box-shadow: 0 18px 40px rgba(0,0,0,0.35);
+    }
+    .stage img, .stage video { width: 100%; height: 100%; object-fit: cover; display: block; background: #071018; }
+    .play {
+      position: absolute;
+      inset: 0;
+      border: 0;
+      padding: 0;
+      background: transparent;
+      cursor: pointer;
+    }
+    .play::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 46%;
+      width: 64px;
+      height: 64px;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      background: var(--green);
+      box-shadow: 0 10px 24px rgba(0,168,107,0.45);
+    }
+    .play::before {
+      content: "";
+      position: absolute;
+      z-index: 1;
+      left: calc(50% + 2px);
+      top: 46%;
+      transform: translate(-50%, -50%);
+      border-style: solid;
+      border-width: 10px 0 10px 16px;
+      border-color: transparent transparent transparent white;
+    }
+    footer {
+      border-top: 1px solid rgba(255,255,255,0.06);
+      padding: 28px 20px 40px;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    footer a { color: var(--cyan); text-decoration: none; }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="brand" href="/">
+      <img src="/assets/app_logo.png" alt="">
+      <div><strong>AgroPlaga</strong> <span>AI</span></div>
+    </a>
+    <nav>
+      <a href="/">Inicio</a>
+      <a href="/panel/">Panel técnicos</a>
+    </nav>
+  </header>
+
+  <main>
+    <p class="kicker">Agricultor</p>
+    <h1>Ayuda</h1>
+    <p class="lead">Vídeos cortos para usar la app. La inteligencia orienta: no es un diagnóstico y no sustituye a tu técnico.</p>
+    <p class="note">Empieza por los tres primeros. El resto, cuando llegues a esa pantalla. Aquí irán también las guías que publiquemos después.</p>
+
+    <section>
+      <h2>Empieza por aquí</h2>
+      <div class="grid">
+        <article>
+          <div class="stage">
+            <img src="posters/01.jpg" alt="Pantalla de entrada de AgroPlaga">
+            <button class="play" type="button" data-src="videos/01-entrar-y-dar-de-alta-el-invernadero.mp4" aria-label="Ver: Entra y da de alta tu invernadero"></button>
+          </div>
+          <h3>Entra y da de alta tu invernadero</h3>
+          <p>Cuenta del piloto, mapa comunitario y el alta de la finca. El código SIGPAC puede esperar.</p>
+        </article>
+        <article>
+          <div class="stage">
+            <img src="posters/02.jpg" alt="Pantalla de escaneo de una hoja">
+            <button class="play" type="button" data-src="videos/02-escanear-una-hoja.mp4" aria-label="Ver: Escanea una hoja"></button>
+          </div>
+          <h3>Escanea una hoja</h3>
+          <p>Enfoca a unos 20 cm. En el móvil el botón es Tomar foto y la orientación se calcula sin internet.</p>
+        </article>
+        <article>
+          <div class="stage">
+            <img src="posters/04.jpg" alt="Botón para abrir una incidencia fitosanitaria">
+            <button class="play" type="button" data-src="videos/04-abrir-incidencia.mp4" aria-label="Ver: Abre una incidencia"></button>
+          </div>
+          <h3>Abre una incidencia</h3>
+          <p>El foco entra en el mapa del municipio. No se publica ni tu nombre ni la parcela.</p>
+        </article>
+      </div>
+    </section>
+
+    <section>
+      <h2>Cuando llegues a ese paso</h2>
+      <div class="grid">
+        <article>
+          <div class="stage">
+            <img src="posters/03.jpg" alt="Resultado de un escaneo con plaga y severidad">
+            <button class="play" type="button" data-src="videos/03-ajustar-resultado-y-compartir.mp4" aria-label="Ver: Ajusta el resultado"></button>
+          </div>
+          <h3>Ajusta el resultado</h3>
+          <p>Revisa la plaga y la severidad. Si quieres que el técnico vea la foto, márcalo antes de guardar.</p>
+        </article>
+        <article>
+          <div class="stage">
+            <img src="posters/05.jpg" alt="Lista de incidencias en prescripción">
+            <button class="play" type="button" data-src="videos/05-registrar-tratamiento.mp4" aria-label="Ver: Registra el tratamiento"></button>
+          </div>
+          <h3>Registra el tratamiento</h3>
+          <p>Elige un producto autorizado, confirma la dosis y activa la carencia.</p>
+        </article>
+        <article>
+          <div class="stage">
+            <img src="posters/06.jpg" alt="Incidencia en evaluación">
+            <button class="play" type="button" data-src="videos/06-cerrar-incidencia.mp4" aria-label="Ver: Cierra el caso"></button>
+          </div>
+          <h3>Cierra el caso</h3>
+          <p>Compara con una foto nueva. Si hay mejora, ciérralo: el foco sale del mapa.</p>
+        </article>
+        <article>
+          <div class="stage">
+            <img src="posters/07.jpg" alt="Mapa de focos del municipio">
+            <button class="play" type="button" data-src="videos/07-mapa-y-alertas.mp4" aria-label="Ver: Mapa de focos y alertas"></button>
+          </div>
+          <h3>Mapa de focos y alertas</h3>
+          <p>El mapa gratuito es el de ahora. El histórico de 7 y 30 días es Field Premium.</p>
+        </article>
+        <article>
+          <div class="stage">
+            <img src="posters/08.jpg" alt="Historial de escaneos de la finca">
+            <button class="play" type="button" data-src="videos/08-historial-y-analitica.mp4" aria-label="Ver: Historial y analítica"></button>
+          </div>
+          <h3>Historial y analítica</h3>
+          <p>Tus escaneos y el resumen de tu campaña. No salen de tu explotación.</p>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <a href="/">agroplaga.es</a> · Ayuda para el agricultor · Poniente Almeriense
+  </footer>
+
+  <script>
+    document.querySelectorAll(".play").forEach(function (button) {
+      button.addEventListener("click", function () {
+        document.querySelectorAll("video").forEach(function (other) { other.pause(); });
+        var stage = button.parentElement;
+        var video = document.createElement("video");
+        video.controls = true;
+        video.playsInline = true;
+        video.setAttribute("playsinline", "");
+        video.src = button.dataset.src;
+        stage.replaceChildren(video);
+        video.play();
+      });
+    });
+  </script>
+</body>
+</html>
