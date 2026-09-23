@@ -6,6 +6,7 @@ import "../../core/nexo_colors.dart";
 import "../../core/routes.dart";
 import "../../data/repositories/auth_repository.dart";
 import "../widgets/app_logo.dart";
+import "../widgets/app_update_banner.dart";
 import "../widgets/nexo_wordmark.dart";
 import "../widgets/primary_button.dart";
 
@@ -111,6 +112,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     fontWeight: FontWeight.w600,
                   ),
                 ),
+                const AppUpdateBanner(),
                 const SizedBox(height: 28),
                 Container(
                   padding: const EdgeInsets.all(20),

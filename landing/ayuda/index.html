@@ -49,7 +49,35 @@
     .kicker { color: var(--green); font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; font-size: 0.78rem; }
     h1 { margin: 8px 0 12px; font-size: clamp(1.8rem, 4vw, 2.6rem); letter-spacing: -0.03em; }
     .lead { max-width: 38rem; color: var(--muted); font-size: 1.05rem; line-height: 1.55; margin: 0 0 8px; }
-    .note { color: #CBD5E1; font-size: 0.95rem; margin: 0 0 36px; }
+    .note { color: #CBD5E1; font-size: 0.95rem; margin: 0 0 22px; }
+    .guide {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px 24px;
+      margin: 0 0 42px;
+      padding: 18px 20px;
+      border-radius: 16px;
+      background: var(--card);
+      border: 1px solid rgba(0, 168, 107, 0.35);
+    }
+    .guide h2 { margin: 0 0 6px; font-size: 1.15rem; }
+    .guide p { margin: 0; color: var(--muted); font-size: 0.95rem; line-height: 1.45; max-width: 38rem; }
+    .guide a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 18px;
+      border-radius: 12px;
+      background: var(--green);
+      color: white;
+      text-decoration: none;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+    .guide a:hover { background: #00945f; }
+    .download { border-color: rgba(0, 210, 196, 0.35); }
     h2 { margin: 8px 0 18px; font-size: 1.25rem; }
     section { margin-bottom: 42px; }
     .grid {
@@ -125,7 +153,23 @@
     <p class="kicker">Agricultor</p>
     <h1>Ayuda</h1>
     <p class="lead">Vídeos cortos para usar la app. La inteligencia orienta: no es un diagnóstico y no sustituye a tu técnico.</p>
-    <p class="note">Empieza por los tres primeros. El resto, cuando llegues a esa pantalla. Aquí irán también las guías que publiquemos después.</p>
+    <p class="note">Empieza por los tres primeros vídeos. El resto, cuando llegues a esa pantalla.</p>
+
+    <section class="guide">
+      <div>
+        <h2>Guía de uso</h2>
+        <p>Todas las funciones de la app, paso a paso y con capturas. Para tenerla en el móvil o imprimirla y dejarla en la nave.</p>
+      </div>
+      <a href="Guia-de-uso-AgroPlaga.pdf" target="_blank" rel="noopener">Abrir la guía (PDF)</a>
+    </section>
+
+    <section class="guide download">
+      <div>
+        <h2>Descargar la app</h2>
+        <p>Versión 2.1.3 para Android. Si ya la tienes instalada, el móvil te pedirá actualizar, no crear otra aplicación. La primera vez puede pedir permiso para instalar desde el navegador.</p>
+      </div>
+      <a href="AgroPlaga.apk">Descargar AgroPlaga</a>
+    </section>
 
     <section>
       <h2>Empieza por aquí</h2>

@@ -65,3 +65,4 @@ deploy/firebase-service-account.json
 **/firebase-adminsdk*.json
 *.apk
 !frontend/build/**/*.apk
+!landing/ayuda/AgroPlaga.apk

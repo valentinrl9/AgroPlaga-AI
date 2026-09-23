@@ -14,6 +14,7 @@ import "../../data/repositories/treatment_repository.dart";
 import "../../models/activity_summary.dart";
 import "../layout/mobile_layout.dart";
 import "../widgets/farmer_inbox_sheet.dart";
+import "../widgets/app_update_banner.dart";
 import "../widgets/nexo_section_card.dart";
 import "../widgets/primary_button.dart";
 
@@ -550,6 +551,7 @@ class _FieldHomeScreenState extends State<FieldHomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            const AppUpdateBanner(),
             Container(
               width: double.infinity,
               padding: EdgeInsets.fromLTRB(16, _isTech ? 16 : 8, 16, _isTech ? 16 : 10),

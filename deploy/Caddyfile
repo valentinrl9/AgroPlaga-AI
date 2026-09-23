@@ -24,6 +24,14 @@ agroplaga.es, www.agroplaga.es {
 		reverse_proxy backend:8000
 	}
 
+	@apk path /ayuda/*.apk
+	handle @apk {
+		root * /srv/landing
+		header Content-Type application/vnd.android.package-archive
+		header Content-Disposition "attachment; filename=AgroPlaga.apk"
+		file_server
+	}
+
 	handle {
 		root * /srv/landing
 		try_files {path} {path}/index.html /index.html
