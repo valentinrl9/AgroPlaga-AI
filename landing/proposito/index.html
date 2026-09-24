@@ -29,60 +29,75 @@
       },
     };
   </script>
+  <style>
+    html { scroll-padding-top: 3.75rem; }
+    body.menu-open { overflow: hidden; }
+  </style>
 </head>
-<body class="font-sans text-brand-dark-text bg-white antialiased">
+<body class="font-sans text-brand-dark-text bg-white antialiased overflow-x-hidden">
 
   <header class="fixed top-0 inset-x-0 z-50 bg-brand-deep/95 backdrop-blur-lg border-b border-white/5">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
-      <a href="/" class="flex items-center gap-2 group">
-        <img src="/assets/app_logo.png" alt="AgroPlaga" class="w-9 h-9 rounded-lg">
-        <span class="text-lg font-extrabold text-white">AgroPlaga</span>
-        <span class="text-lg font-light text-brand-green">AI</span>
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 h-14 flex items-center justify-between gap-3">
+      <a href="/" class="flex items-center gap-2.5 group shrink-0 min-w-0">
+        <img src="/assets/app_logo.png" alt="AgroPlaga" class="w-8 h-8 rounded-lg shrink-0">
+        <span class="text-sm sm:text-base font-extrabold text-white truncate">AgroPlaga<span class="font-light text-brand-green"> AI</span></span>
       </a>
-      <nav class="hidden sm:flex items-center gap-6 text-sm">
-        <a href="/" class="text-white/80 hover:text-brand-cyan transition-colors">Inicio</a>
-        <a href="/#proposito" class="text-brand-cyan font-semibold">Compromiso</a>
-        <a href="/#contacto" class="text-white/80 hover:text-brand-cyan transition-colors">Piloto</a>
-        <a href="/panel/" class="text-white/80 hover:text-brand-cyan transition-colors">Panel</a>
+      <nav class="hidden md:flex items-center gap-5 lg:gap-6 text-[13px] shrink-0">
+        <a href="/" class="text-white/75 hover:text-brand-cyan transition-colors whitespace-nowrap">Inicio</a>
+        <a href="/#proposito" class="text-brand-cyan font-semibold whitespace-nowrap">Compromiso</a>
+        <a href="/ayuda/" class="text-white/75 hover:text-brand-cyan transition-colors whitespace-nowrap">Ayuda</a>
+        <a href="/panel/" class="text-white/75 hover:text-brand-cyan transition-colors whitespace-nowrap">Panel</a>
       </nav>
-      <a href="/#contacto" class="sm:hidden text-sm text-brand-green font-semibold">Piloto</a>
+      <div class="flex items-center gap-2 shrink-0">
+        <a href="/#contacto" class="hidden sm:inline-flex text-xs font-semibold text-brand-green whitespace-nowrap px-3 py-1.5 rounded-lg border border-brand-green/40 hover:bg-brand-green/10 transition-colors">Piloto</a>
+        <button id="mobile-menu-btn" type="button" class="md:hidden p-2 rounded-lg text-white hover:bg-white/10 transition-colors" aria-label="Abrir menú" aria-expanded="false">
+          <i class="fa-solid fa-bars text-lg"></i>
+        </button>
+      </div>
+    </div>
+    <div id="mobile-menu" class="md:hidden hidden border-t border-white/10 bg-brand-deep/98 backdrop-blur-lg max-h-[calc(100dvh-3.5rem)] overflow-y-auto overscroll-contain">
+      <nav class="px-4 py-4 flex flex-col gap-1">
+        <a href="/#contacto" class="mobile-nav-link mb-2 py-3 rounded-xl bg-brand-green text-white text-center text-sm font-semibold">Solicitar piloto</a>
+        <a href="/" class="mobile-nav-link px-4 py-3 rounded-lg text-white/90 hover:bg-white/5 text-sm">Inicio</a>
+        <a href="/#proposito" class="mobile-nav-link px-4 py-3 rounded-lg text-brand-cyan font-semibold text-sm">Compromiso</a>
+        <a href="/ayuda/" class="mobile-nav-link px-4 py-3 rounded-lg text-white/90 hover:bg-white/5 text-sm">Ayuda</a>
+        <a href="/panel/" class="mobile-nav-link px-4 py-3 rounded-lg text-white/90 hover:bg-white/5 text-sm">Panel técnicos</a>
+        <a href="/#contacto" class="mobile-nav-link mt-2 py-3 rounded-xl border border-brand-cyan text-brand-cyan text-center text-sm font-semibold">Contacto piloto</a>
+      </nav>
     </div>
   </header>
 
-  <main class="pt-16">
+  <main class="pt-14">
 
-    <!-- Hero -->
-    <section class="bg-brand-deep text-white py-20 lg:py-28 relative overflow-hidden">
+    <section class="bg-brand-deep text-white py-14 sm:py-20 lg:py-28 relative overflow-hidden">
       <div class="absolute inset-0 opacity-25" style="background: radial-gradient(ellipse at 50% 0%, rgba(0,210,196,0.15), transparent 60%);"></div>
       <div class="relative max-w-3xl mx-auto px-4 sm:px-6 text-center">
-        <p class="text-xs uppercase tracking-widest text-brand-cyan font-semibold mb-4">Compromiso de marca · v1.0 · septiembre 2026</p>
-        <h1 class="text-3xl sm:text-4xl lg:text-5xl font-bold tracking-tight mb-6">Propósito, Misión y Visión</h1>
-        <p class="text-lg sm:text-xl text-brand-green font-medium leading-relaxed">
+        <p class="text-[11px] sm:text-xs uppercase tracking-widest text-brand-cyan font-semibold mb-4">Compromiso de marca · v1.0 · septiembre 2026</p>
+        <h1 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-5 sm:mb-6">Propósito, Misión y Visión</h1>
+        <p class="text-base sm:text-lg md:text-xl text-brand-green font-medium leading-relaxed px-1">
           Construir la inteligencia fitosanitaria del planeta: ver el riesgo antes de que el campo lo pague.
         </p>
       </div>
     </section>
 
-    <!-- Preámbulo -->
-    <section class="max-w-3xl mx-auto px-4 sm:px-6 py-12 lg:py-16">
-      <p class="text-brand-light-text leading-relaxed text-lg">
+    <section class="max-w-3xl mx-auto px-4 sm:px-6 py-10 sm:py-12 lg:py-16">
+      <p class="text-brand-light-text leading-relaxed text-base sm:text-lg">
         AgroPlaga nace en el Poniente Almeriense, en el lugar donde la sanidad fitosanitaria es más urgente y más difícil:
         bajo el plástico del invernadero, sin cobertura de red, con margen cero para el error y con la responsabilidad de alimentar a Europa.
       </p>
-      <p class="text-brand-light-text leading-relaxed mt-4">
+      <p class="text-brand-light-text leading-relaxed mt-4 text-base sm:text-lg">
         Este documento recoge el <strong class="text-brand-dark-text">compromiso permanente</strong> del proyecto: la dirección que guía el producto,
         las decisiones técnicas, las alianzas con peritos y cooperativas, y la expansión futura hacia otros cultivos y regiones.
         No es un eslogan de marketing. Es el marco con el que AgroPlaga construye, mide y escala.
       </p>
     </section>
 
-    <!-- Pilares -->
-    <section class="bg-brand-slate py-16 lg:py-20">
-      <div class="max-w-3xl mx-auto px-4 sm:px-6 space-y-10">
+    <section class="bg-brand-slate py-12 sm:py-16 lg:py-20">
+      <div class="max-w-3xl mx-auto px-4 sm:px-6 space-y-6 sm:space-y-10">
 
-        <article class="bg-white rounded-2xl p-8 border-l-4 border-brand-green shadow-sm">
-          <h2 class="text-xl font-bold text-brand-deep mb-3">Propósito</h2>
-          <p class="text-brand-dark-text font-medium mb-4 italic">
+        <article class="bg-white rounded-2xl p-5 sm:p-8 border-l-4 border-brand-green shadow-sm">
+          <h2 class="text-lg sm:text-xl font-bold text-brand-deep mb-3">Propósito</h2>
+          <p class="text-brand-dark-text font-medium mb-4 italic text-sm sm:text-base">
             Construir la inteligencia fitosanitaria del planeta: ver el riesgo antes de que el campo lo pague.
           </p>
           <p class="text-brand-light-text text-sm leading-relaxed">
@@ -91,9 +106,9 @@
           </p>
         </article>
 
-        <article class="bg-white rounded-2xl p-8 border-l-4 border-brand-cyan shadow-sm">
-          <h2 class="text-xl font-bold text-brand-deep mb-3">Dirección estratégica</h2>
-          <p class="text-brand-dark-text font-medium mb-4 italic">
+        <article class="bg-white rounded-2xl p-5 sm:p-8 border-l-4 border-brand-cyan shadow-sm">
+          <h2 class="text-lg sm:text-xl font-bold text-brand-deep mb-3">Dirección estratégica</h2>
+          <p class="text-brand-dark-text font-medium mb-4 italic text-sm sm:text-base">
             Pasar de tratar enfermedades a prevenir brotes — cultivo a cultivo, región a región, hasta cubrir el planeta.
           </p>
           <p class="text-brand-light-text text-sm leading-relaxed">
@@ -102,21 +117,21 @@
           </p>
         </article>
 
-        <article class="bg-white rounded-2xl p-8 border-l-4 border-brand-amber shadow-sm">
-          <h2 class="text-xl font-bold text-brand-deep mb-3">Misión</h2>
-          <p class="text-brand-dark-text font-medium mb-4 italic">
+        <article class="bg-white rounded-2xl p-5 sm:p-8 border-l-4 border-brand-amber shadow-sm">
+          <h2 class="text-lg sm:text-xl font-bold text-brand-deep mb-3">Misión</h2>
+          <p class="text-brand-dark-text font-medium mb-4 italic text-sm sm:text-base">
             Conectar detección en campo, conocimiento experto y señales comarcales en una red que anticipa brotes antes de que se propague.
           </p>
           <ul class="space-y-3 text-sm text-brand-light-text">
-            <li class="flex gap-3"><i class="fa-solid fa-mobile-screen text-brand-green mt-1"></i><span><strong class="text-brand-dark-text">Detección en campo</strong> — IA en el móvil del agricultor, operativa sin depender de la conectividad del invernadero.</span></li>
-            <li class="flex gap-3"><i class="fa-solid fa-user-check text-brand-cyan mt-1"></i><span><strong class="text-brand-dark-text">Conocimiento experto</strong> — La IA orienta; el perito y la cooperativa validan. La confianza institucional se acelera, no se sustituye.</span></li>
-            <li class="flex gap-3"><i class="fa-solid fa-map text-brand-amber mt-1"></i><span><strong class="text-brand-dark-text">Señales comarcales</strong> — Agregación anónima de focos y alertas tempranas que convierten datos aislados en inteligencia colectiva.</span></li>
+            <li class="flex gap-3"><i class="fa-solid fa-mobile-screen text-brand-green mt-1 shrink-0"></i><span><strong class="text-brand-dark-text">Detección en campo</strong> — IA en el móvil del agricultor, operativa sin depender de la conectividad del invernadero.</span></li>
+            <li class="flex gap-3"><i class="fa-solid fa-user-check text-brand-cyan mt-1 shrink-0"></i><span><strong class="text-brand-dark-text">Conocimiento experto</strong> — La IA orienta; el perito y la cooperativa validan. La confianza institucional se acelera, no se sustituye.</span></li>
+            <li class="flex gap-3"><i class="fa-solid fa-map text-brand-amber mt-1 shrink-0"></i><span><strong class="text-brand-dark-text">Señales comarcales</strong> — Agregación anónima de focos y alertas tempranas que convierten datos aislados en inteligencia colectiva.</span></li>
           </ul>
         </article>
 
-        <article class="bg-white rounded-2xl p-8 border-l-4 border-brand-deep shadow-sm">
-          <h2 class="text-xl font-bold text-brand-deep mb-3">Visión</h2>
-          <p class="text-brand-dark-text font-medium mb-4 italic">
+        <article class="bg-white rounded-2xl p-5 sm:p-8 border-l-4 border-brand-deep shadow-sm">
+          <h2 class="text-lg sm:text-xl font-bold text-brand-deep mb-3">Visión</h2>
+          <p class="text-brand-dark-text font-medium mb-4 italic text-sm sm:text-base">
             Un mundo donde cada foco fitosanitario es visible en horas, no en semanas — desde el surco de Almería hasta cualquier campo del planeta.
           </p>
           <p class="text-brand-light-text text-sm leading-relaxed">
@@ -127,36 +142,45 @@
       </div>
     </section>
 
-    <!-- Principios -->
-    <section class="max-w-3xl mx-auto px-4 sm:px-6 py-16 lg:py-20">
-      <h2 class="text-2xl font-bold text-brand-deep mb-8 text-center">Principios de compromiso</h2>
-      <div class="overflow-hidden rounded-2xl border border-gray-200">
-        <table class="w-full text-sm">
+    <section class="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-20">
+      <h2 class="text-xl sm:text-2xl font-bold text-brand-deep mb-6 sm:mb-8 text-center">Principios de compromiso</h2>
+
+      <div class="sm:hidden space-y-3">
+        <div class="rounded-xl border border-gray-200 bg-white p-4"><p class="font-semibold text-brand-deep text-sm mb-1">Campo primero</p><p class="text-xs text-brand-light-text">Usable a pie de cultivo, bajo el plástico y con conectividad limitada.</p></div>
+        <div class="rounded-xl border border-gray-200 bg-brand-slate/50 p-4"><p class="font-semibold text-brand-deep text-sm mb-1">IA con humildad</p><p class="text-xs text-brand-light-text">La IA orienta; no sustituye al agrónomo ni a la responsabilidad legal.</p></div>
+        <div class="rounded-xl border border-gray-200 bg-white p-4"><p class="font-semibold text-brand-deep text-sm mb-1">Prevención antes que reacción</p><p class="text-xs text-brand-light-text">Alertas y mapas que adelantan el brote, no solo documentan el daño.</p></div>
+        <div class="rounded-xl border border-gray-200 bg-brand-slate/50 p-4"><p class="font-semibold text-brand-deep text-sm mb-1">Confianza anónima</p><p class="text-xs text-brand-light-text">Inteligencia comarcal sin exponer la finca del productor.</p></div>
+        <div class="rounded-xl border border-gray-200 bg-white p-4"><p class="font-semibold text-brand-deep text-sm mb-1">Cumplimiento integrado</p><p class="text-xs text-brand-light-text">Detección, MAPA, carencia y cuaderno en un mismo hilo de trazabilidad.</p></div>
+        <div class="rounded-xl border border-gray-200 bg-brand-slate/50 p-4"><p class="font-semibold text-brand-deep text-sm mb-1">Expansión con evidencia</p><p class="text-xs text-brand-light-text">Nuevos cultivos y regiones tras validación en campo.</p></div>
+        <div class="rounded-xl border border-gray-200 bg-white p-4"><p class="font-semibold text-brand-deep text-sm mb-1">Alianza con el sector</p><p class="text-xs text-brand-light-text">Peritos, SATs y cooperativas como parte del sistema.</p></div>
+      </div>
+
+      <div class="hidden sm:block overflow-x-auto rounded-2xl border border-gray-200">
+        <table class="w-full text-sm min-w-[480px]">
           <thead class="bg-brand-deep text-white">
             <tr>
               <th class="text-left px-4 py-3 font-semibold">Principio</th>
-              <th class="text-left px-4 py-3 font-semibold hidden sm:table-cell">Compromiso</th>
+              <th class="text-left px-4 py-3 font-semibold">Compromiso</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100">
-            <tr class="bg-white"><td class="px-4 py-3 font-semibold text-brand-deep">Campo primero</td><td class="px-4 py-3 text-brand-light-text hidden sm:table-cell">Usable a pie de cultivo, bajo el plástico y con conectividad limitada.</td></tr>
-            <tr class="bg-brand-slate/50"><td class="px-4 py-3 font-semibold text-brand-deep">IA con humildad</td><td class="px-4 py-3 text-brand-light-text hidden sm:table-cell">La IA orienta; no sustituye al agrónomo ni a la responsabilidad legal.</td></tr>
-            <tr class="bg-white"><td class="px-4 py-3 font-semibold text-brand-deep">Prevención antes que reacción</td><td class="px-4 py-3 text-brand-light-text hidden sm:table-cell">Alertas y mapas que adelantan el brote, no solo documentan el daño.</td></tr>
-            <tr class="bg-brand-slate/50"><td class="px-4 py-3 font-semibold text-brand-deep">Confianza anónima</td><td class="px-4 py-3 text-brand-light-text hidden sm:table-cell">Inteligencia comarcal sin exponer la finca del productor.</td></tr>
-            <tr class="bg-white"><td class="px-4 py-3 font-semibold text-brand-deep">Cumplimiento integrado</td><td class="px-4 py-3 text-brand-light-text hidden sm:table-cell">Detección, MAPA, carencia y cuaderno en un mismo hilo de trazabilidad.</td></tr>
-            <tr class="bg-brand-slate/50"><td class="px-4 py-3 font-semibold text-brand-deep">Expansión con evidencia</td><td class="px-4 py-3 text-brand-light-text hidden sm:table-cell">Nuevos cultivos y regiones tras validación en campo.</td></tr>
-            <tr class="bg-white"><td class="px-4 py-3 font-semibold text-brand-deep">Alianza con el sector</td><td class="px-4 py-3 text-brand-light-text hidden sm:table-cell">Peritos, SATs y cooperativas como parte del sistema.</td></tr>
+            <tr class="bg-white"><td class="px-4 py-3 font-semibold text-brand-deep">Campo primero</td><td class="px-4 py-3 text-brand-light-text">Usable a pie de cultivo, bajo el plástico y con conectividad limitada.</td></tr>
+            <tr class="bg-brand-slate/50"><td class="px-4 py-3 font-semibold text-brand-deep">IA con humildad</td><td class="px-4 py-3 text-brand-light-text">La IA orienta; no sustituye al agrónomo ni a la responsabilidad legal.</td></tr>
+            <tr class="bg-white"><td class="px-4 py-3 font-semibold text-brand-deep">Prevención antes que reacción</td><td class="px-4 py-3 text-brand-light-text">Alertas y mapas que adelantan el brote, no solo documentan el daño.</td></tr>
+            <tr class="bg-brand-slate/50"><td class="px-4 py-3 font-semibold text-brand-deep">Confianza anónima</td><td class="px-4 py-3 text-brand-light-text">Inteligencia comarcal sin exponer la finca del productor.</td></tr>
+            <tr class="bg-white"><td class="px-4 py-3 font-semibold text-brand-deep">Cumplimiento integrado</td><td class="px-4 py-3 text-brand-light-text">Detección, MAPA, carencia y cuaderno en un mismo hilo de trazabilidad.</td></tr>
+            <tr class="bg-brand-slate/50"><td class="px-4 py-3 font-semibold text-brand-deep">Expansión con evidencia</td><td class="px-4 py-3 text-brand-light-text">Nuevos cultivos y regiones tras validación en campo.</td></tr>
+            <tr class="bg-white"><td class="px-4 py-3 font-semibold text-brand-deep">Alianza con el sector</td><td class="px-4 py-3 text-brand-light-text">Peritos, SATs y cooperativas como parte del sistema.</td></tr>
           </tbody>
         </table>
       </div>
     </section>
 
-    <!-- Hoy / mañana -->
-    <section class="bg-brand-deep text-white py-16 lg:py-20">
+    <section class="bg-brand-deep text-white py-12 sm:py-16 lg:py-20">
       <div class="max-w-3xl mx-auto px-4 sm:px-6">
-        <p class="text-brand-cyan text-sm font-semibold uppercase tracking-wider text-center mb-8">Foco de ejecución</p>
-        <div class="grid sm:grid-cols-2 gap-6">
-          <div class="rounded-2xl border border-brand-green/30 bg-white/5 p-6">
+        <p class="text-brand-cyan text-sm font-semibold uppercase tracking-wider text-center mb-6 sm:mb-8">Foco de ejecución</p>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+          <div class="rounded-2xl border border-brand-green/30 bg-white/5 p-5 sm:p-6">
             <p class="text-brand-green text-xs font-bold uppercase mb-2">Hoy — Piloto Poniente (2026)</p>
             <ul class="text-sm text-brand-light-text space-y-2">
               <li>· Invernadero bajo plástico, sur de Almería</li>
@@ -165,7 +189,7 @@
               <li>· Mapa SIGPAC anónimo y panel B2B de validación</li>
             </ul>
           </div>
-          <div class="rounded-2xl border border-brand-cyan/30 bg-white/5 p-6">
+          <div class="rounded-2xl border border-brand-cyan/30 bg-white/5 p-5 sm:p-6">
             <p class="text-brand-cyan text-xs font-bold uppercase mb-2">Mañana — Planeta</p>
             <ul class="text-sm text-brand-light-text space-y-2">
               <li>· Modelos por cultivo y región</li>
@@ -175,38 +199,36 @@
             </ul>
           </div>
         </div>
-        <p class="text-center text-sm text-brand-light-text mt-8 max-w-xl mx-auto">
+        <p class="text-center text-sm text-brand-light-text mt-6 sm:mt-8 max-w-xl mx-auto">
           Cada hito del piloto se evalúa contra la misión: ¿anticipamos brotes? ¿Conectamos campo, experto y comarca?
           ¿Reducimos el tiempo entre sospecha y acción?
         </p>
       </div>
     </section>
 
-    <!-- Declaración -->
-    <section class="max-w-3xl mx-auto px-4 sm:px-6 py-16 lg:py-20">
-      <h2 class="text-2xl font-bold text-brand-deep mb-6">Declaración de compromiso</h2>
-      <ol class="space-y-4 text-brand-light-text list-decimal list-inside marker:text-brand-green marker:font-bold">
-        <li class="pl-2">Orientar el roadmap de producto, la I+D y las alianzas comerciales por el propósito y la misión aquí definidos.</li>
-        <li class="pl-2">Medir el éxito por tiempo hasta la acción, calidad de la validación experta y capacidad de anticipación en campo.</li>
-        <li class="pl-2">Comunicar con honestidad las capacidades y límites de la IA fitosanitaria.</li>
-        <li class="pl-2">Escalar cultivo a cultivo y región a región manteniendo los principios de compromiso.</li>
-        <li class="pl-2">Revisar este documento cuando una nueva fase de producto lo exija, preservando la continuidad del propósito.</li>
+    <section class="max-w-3xl mx-auto px-4 sm:px-6 py-12 sm:py-16 lg:py-20">
+      <h2 class="text-xl sm:text-2xl font-bold text-brand-deep mb-5 sm:mb-6">Declaración de compromiso</h2>
+      <ol class="space-y-4 text-brand-light-text text-sm sm:text-base list-decimal list-inside marker:text-brand-green marker:font-bold">
+        <li class="pl-1 sm:pl-2">Orientar el roadmap de producto, la I+D y las alianzas comerciales por el propósito y la misión aquí definidos.</li>
+        <li class="pl-1 sm:pl-2">Medir el éxito por tiempo hasta la acción, calidad de la validación experta y capacidad de anticipación en campo.</li>
+        <li class="pl-1 sm:pl-2">Comunicar con honestidad las capacidades y límites de la IA fitosanitaria.</li>
+        <li class="pl-1 sm:pl-2">Escalar cultivo a cultivo y región a región manteniendo los principios de compromiso.</li>
+        <li class="pl-1 sm:pl-2">Revisar este documento cuando una nueva fase de producto lo exija, preservando la continuidad del propósito.</li>
       </ol>
-      <p class="mt-8 text-sm text-brand-light-text">
+      <p class="mt-6 sm:mt-8 text-sm text-brand-light-text">
         <strong class="text-brand-dark-text">NEXO Agro:</strong> AgroPlaga es el módulo de campo del ecosistema NEXO Agro.
         NEXO Climate y NEXO SIEX amplían la misma misión hacia clima y trazabilidad institucional.
       </p>
     </section>
 
-    <!-- CTA -->
-    <section class="bg-brand-slate py-16 border-t border-gray-200">
+    <section class="bg-brand-slate py-12 sm:py-16 border-t border-gray-200">
       <div class="max-w-3xl mx-auto px-4 sm:px-6 text-center">
-        <p class="text-brand-light-text mb-6 italic">Empezamos donde no hay cobertura y no hay margen de error: bajo el plástico del Poniente.</p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center">
-          <a href="/#contacto" class="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl bg-brand-green text-white font-semibold shadow-brand hover:bg-emerald-500 transition-all">
+        <p class="text-brand-light-text mb-6 italic text-sm sm:text-base">Empezamos donde no hay cobertura y no hay margen de error: bajo el plástico del Poniente.</p>
+        <div class="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
+          <a href="/#contacto" class="inline-flex w-full sm:w-auto items-center justify-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl bg-brand-green text-white font-semibold text-sm sm:text-base shadow-brand hover:bg-emerald-500 transition-all">
             <i class="fa-solid fa-handshake"></i> Probar la app
           </a>
-          <a href="/panel/" class="inline-flex items-center justify-center gap-2 px-8 py-4 rounded-xl border-2 border-brand-cyan text-brand-cyan font-semibold hover:bg-brand-cyan/10 transition-all">
+          <a href="/panel/" class="inline-flex w-full sm:w-auto items-center justify-center gap-2 px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl border-2 border-brand-cyan text-brand-cyan font-semibold text-sm sm:text-base hover:bg-brand-cyan/10 transition-all">
             <i class="fa-solid fa-user-shield"></i> Soy cooperativa
           </a>
         </div>
@@ -214,19 +236,41 @@
     </section>
   </main>
 
-  <footer class="bg-[#071018] py-10 border-t border-white/5">
+  <footer class="bg-[#071018] py-8 sm:py-10 border-t border-white/5">
     <div class="max-w-5xl mx-auto px-4 sm:px-6 text-center">
-      <p class="text-sm text-brand-light-text mb-4 italic max-w-xl mx-auto">
+      <p class="text-xs sm:text-sm text-brand-light-text mb-4 italic max-w-xl mx-auto">
         «Construir la inteligencia fitosanitaria del planeta: ver el riesgo antes de que el campo lo pague.»
       </p>
-      <div class="flex flex-wrap justify-center gap-4 text-sm">
+      <div class="flex flex-wrap justify-center gap-x-4 gap-y-2 text-sm">
         <a href="/" class="text-brand-cyan hover:text-white transition-colors">Inicio</a>
         <a href="/ayuda/" class="text-brand-cyan hover:text-white transition-colors">Ayuda</a>
         <a href="/panel/" class="text-brand-cyan hover:text-white transition-colors">Panel técnicos</a>
         <a href="/#contacto" class="text-brand-cyan hover:text-white transition-colors">Contacto</a>
       </div>
-      <p class="text-xs text-brand-light-text mt-4">AgroPlaga · Parte del ecosistema NEXO Agro · © 2026 Valentín Ruiz León</p>
+      <p class="text-xs text-brand-light-text mt-4 px-2">AgroPlaga · Parte del ecosistema NEXO Agro · © 2026 Valentín Ruiz León</p>
     </div>
   </footer>
+
+  <script>
+    (function () {
+      var menuBtn = document.getElementById('mobile-menu-btn');
+      var mobileMenu = document.getElementById('mobile-menu');
+      var menuOpen = false;
+      function setMobileMenu(open) {
+        menuOpen = open;
+        mobileMenu.classList.toggle('hidden', !menuOpen);
+        document.body.classList.toggle('menu-open', menuOpen);
+        menuBtn.innerHTML = menuOpen ? '<i class="fa-solid fa-xmark text-lg"></i>' : '<i class="fa-solid fa-bars text-lg"></i>';
+        menuBtn.setAttribute('aria-expanded', menuOpen ? 'true' : 'false');
+      }
+      menuBtn.addEventListener('click', function () { setMobileMenu(!menuOpen); });
+      document.querySelectorAll('.mobile-nav-link').forEach(function (link) {
+        link.addEventListener('click', function () { setMobileMenu(false); });
+      });
+      window.addEventListener('resize', function () {
+        if (window.innerWidth >= 768 && menuOpen) setMobileMenu(false);
+      });
+    })();
+  </script>
 </body>
 </html>
