@@ -12,6 +12,7 @@
 | Situación | Lee primero |
 |-----------|-------------|
 | **Ver qué construir y en qué orden** | [ROADMAP_NEXO.md](ROADMAP_NEXO.md) |
+| **Propósito, misión y visión (compromiso de marca)** | [AGROPLAGA_PROPOSITO_MISION_VISION.md](AGROPLAGA_PROPOSITO_MISION_VISION.md) |
 | **Entender arquitectura y módulos** | [NEXO_CONTEXT.md](NEXO_CONTEXT.md) |
 | **Catálogo comercial / portfolio** | [portfolio_nexoagro.md](portfolio_nexoagro.md) |
 | **Hacer un vídeo pitch (~1 min)** | [GUION_VIDEO_1MIN.md](GUION_VIDEO_1MIN.md) |
